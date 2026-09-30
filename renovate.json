@@ -63,7 +63,7 @@
       ],
       "matchStrings": [
         "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (?:lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))?(?: extractVersion=(?<extractVersion>[^\\s]+?))?(?: currentValue=(?<currentValue>[^\\s]+?))?\\s+[A-Za-z0-9_]+?_SHA\\s*:\\s*[\"']?(?<currentDigest>[a-f0-9]+?)[\"']?\\s",
-        "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (?:lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))?(?: extractVersion=(?<extractVersion>[^\\s]+?))?\\s+[^:]+\\s*:\\s*[\"']?(?:[a-zA-Z0-9._\/-]+:)?(?<currentValue>[^@]+?)(@(?<currentDigest>sha256:[0-9a-f]+))?[\"']?\\s"
+        "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (?:lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))?(?: extractVersion=(?<extractVersion>[^\\s]+?))?\\s+[^:]+\\s*:\\s*[\"']?(?:[a-zA-Z0-9._/-]+:)?(?<currentValue>[^@]+?)(@(?<currentDigest>sha256:[0-9a-f]+))?[\"']?\\s"
       ]
     },
     {
@@ -110,6 +110,64 @@
       ]
     },
     {
+      "description": "PGRX source tags; companion source and Cargo locks are refreshed together",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^(pg-durable|pg-graphql|pg-jsonschema|pg-parquet|pg-search|pg-session-jwt)/metadata\\.hcl$/"
+      ],
+      "matchStrings": [
+        "#\\s*renovate:\\s*datasource=(?<datasource>github-tags)\\s+depName=(?<depName>\\S+)\\s+versioning=(?<versioning>\\S+)\\s+package\\s*=\\s*\"(?<currentValue>[^\"]+)\""
+      ]
+    },
+    {
+      "description": "PGRX workflow/build tool releases (refresh all platform checksums before merge)",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/pgrx/dependencies/(workflow-tools|tools)\\.json$/"
+      ],
+      "matchStrings": [
+        "\"version\":\\s*\"(?<currentValue>[^\"]+)\"\\s*,\\s*\"depName\":\\s*\"(?<depName>[^\"]+)\"\\s*,\\s*\"datasource\":\\s*\"(?<datasource>[^\"]+)\"",
+        "\"version\":\\s*\"(?<currentValue>[^\"]+)\"\\s*,\\s*\"datasource\":\\s*\"(?<datasource>[^\"]+)\"\\s*,\\s*\"depName\":\\s*\"(?<depName>[^\"]+)\""
+      ]
+    },
+    {
+      "description": "PGRX digest-pinned execution images",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/pgrx/dependencies/workflow-tools\\.json$/"
+      ],
+      "matchStrings": [
+        "\"[a-z-]+\":\\s*\"(?<depName>[^\"\\s]+):(?<currentValue>[^\"@\\s]+)@(?<currentDigest>sha256:[a-f0-9]{64})\""
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    },
+    {
+      "description": "PGRX base indexes own both platform children and apt package locks",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/pgrx/dependencies/bases\\.json$/"
+      ],
+      "matchStrings": [
+        "\"(?<depName>[^\"\\s]+):(?<currentValue>[^\"@\\s]+)\":\\s*\\{\\s*\"index_digest\":\\s*\"(?<currentDigest>sha256:[a-f0-9]{64})\""
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    },
+    {
+      "description": "PGRX CNPG operator/catalog fixture commits; refresh URLs and checksums together",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/pgrx/dependencies/fixtures/lock\\.json$/"
+      ],
+      "matchStrings": [
+        "\"repository\":\\s*\"(?<packageName>[^\"\\s]+)\",\\s*\"ref\":\\s*\"(?<currentValue>[^\"\\s]+)\",\\s*\"revision\":\\s*\"(?<currentDigest>[a-f0-9]{40})\""
+      ],
+      "depNameTemplate": "https://github.com/{{{packageName}}}",
+      "datasourceTemplate": "git-refs",
+      "versioningTemplate": "git"
+    },
+    {
       "description": "updates the SPDX validation tool",
       "customType": "regex",
       "managerFilePatterns": [
@@ -121,6 +179,60 @@
     }
   ],
   "packageRules": [
+    {
+      "description": "require stable release verification for all updates",
+      "matchPackageNames": [
+        "*"
+      ],
+      "prBodyNotes": [
+        "⚠️ Before approving this PR, confirm that the new extension version is a stable release, not a beta or release candidate."
+      ]
+    },
+    {
+      "matchDatasources": [
+        "github-tags"
+      ],
+      "matchUpdateTypes": [
+        "digest",
+        "pinDigest",
+        "major",
+        "minor",
+        "patch"
+      ],
+      "groupName": "all github action",
+      "pinDigests": true,
+      "matchPackageNames": [
+        "!microsoft/pg_durable",
+        "!supabase/pg_graphql",
+        "!supabase/pg_jsonschema",
+        "!CrunchyData/pg_parquet",
+        "!paradedb/paradedb",
+        "!neondatabase/pg_session_jwt"
+      ]
+    },
+    {
+      "description": "PGRX release updates require coupled immutable lock refresh",
+      "matchFileNames": [
+        "pgrx/dependencies/**",
+        "pg-durable/metadata.hcl",
+        "pg-graphql/metadata.hcl",
+        "pg-jsonschema/metadata.hcl",
+        "pg-parquet/metadata.hcl",
+        "pg-search/metadata.hcl",
+        "pg-session-jwt/metadata.hcl"
+      ],
+      "automerge": false,
+      "prBodyNotes": [
+        "Run python3 pgrx/refresh_lock.py --check after refreshing the affected checksums. Source tags, resolved commits, archives and upstream Cargo.lock are one update; SQL version changes require review."
+      ]
+    },
+    {
+      "description": "cargo-cyclonedx releases have a tool-specific tag prefix",
+      "matchPackageNames": [
+        "CycloneDX/cyclonedx-rust-cargo"
+      ],
+      "extractVersion": "^cargo-cyclonedx-(?<version>.*)$"
+    },
     {
       "description": "review SPDX validator upgrades with ScanCode dependency compatibility",
       "matchPackageNames": [
@@ -140,15 +252,6 @@
       ],
       "groupName": "cnpg-sbom-generator image digests",
       "automerge": false
-    },
-    {
-      "description": "require stable release verification for all updates",
-      "matchPackageNames": [
-        "*"
-      ],
-      "prBodyNotes": [
-        "⚠️ Before approving this PR, confirm that the new extension version is a stable release, not a beta or release candidate."
-      ]
     },
     {
       "matchDatasources": [
