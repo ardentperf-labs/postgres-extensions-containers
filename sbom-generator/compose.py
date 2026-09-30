@@ -21,7 +21,6 @@ from typing import Any
 from urllib.parse import parse_qs, urlsplit
 
 
-EXTENSION_PACKAGE_ID = "SPDXRef-Package-extension-payload"
 GENERATOR_NAME = "cnpg-sbom-generator"
 GENERATOR_REPOSITORY = "https://github.com/cnpg-extensions/postgres-extensions-containers"
 LICENSE_REF = re.compile(r"LicenseRef-[A-Za-z0-9][A-Za-z0-9.-]*")
@@ -296,9 +295,7 @@ def compose(builder_document: dict[str, Any], *,
     composed_files: list[dict[str, Any]] = []
     source_to_final: defaultdict[str, set[str]] = defaultdict(set)
     direct_final_owners: defaultdict[str, set[str]] = defaultdict(set)
-    final_ids: set[str] = set()
-
-    def add_synthetic_file(record: dict[str, str], owner: str | None = None) -> None:
+    def add_final_file(record: dict[str, Any], owner: str | None = None) -> None:
         output_record = {
             "SPDXID": file_id(record["name"], record["algorithm"], record["value"]),
             "checksums": record.get("checksums", [{
@@ -311,7 +308,6 @@ def compose(builder_document: dict[str, Any], *,
             "licenseInfoInFiles": ["NOASSERTION"],
         }
         composed_files.append(output_record)
-        final_ids.add(output_record["SPDXID"])
         if owner is not None:
             retained_package_ids.add(owner)
             direct_final_owners[output_record["SPDXID"]].add(owner)
@@ -321,14 +317,14 @@ def compose(builder_document: dict[str, Any], *,
         license_parts = final_name.split("/", 2)
         if license_parts[0] == "licenses" and len(license_parts) > 1:
             owners = package_ids_by_name.get(license_parts[1], set())
-            add_synthetic_file(final_record, next(iter(owners)) if len(owners) == 1 else None)
+            add_final_file(final_record, next(iter(owners)) if len(owners) == 1 else None)
             continue
 
         candidates = by_checksum.get(
             checksum_key(final_record["algorithm"], final_record["value"]), []
         )
         if not candidates:
-            add_synthetic_file(final_record)
+            add_final_file(final_record)
             continue
 
         owned_candidates = [
@@ -343,7 +339,7 @@ def compose(builder_document: dict[str, Any], *,
         selected.sort(key=lambda record: record["SPDXID"])
         source_names = {record["fileName"].lstrip("/") for record in selected}
         if len(source_names) > 1:
-            add_synthetic_file(final_record)
+            add_final_file(final_record)
             continue
 
         source = selected[0]
@@ -372,7 +368,6 @@ def compose(builder_document: dict[str, Any], *,
         output_record["SPDXID"] = new_id
         output_record["fileName"] = final_record["name"]
         composed_files.append(output_record)
-        final_ids.add(new_id)
         for record in selected:
             source_to_final[record["SPDXID"]].add(new_id)
 
@@ -386,18 +381,11 @@ def compose(builder_document: dict[str, Any], *,
             - {"NONE", "NOASSERTION"}
         )
 
-    owned_final_ids: set[str] = set(direct_final_owners)
     for source_file_id, package_ids_for_file in owners_by_source_file.items():
         final_ids_for_source = source_to_final.get(source_file_id)
         if not final_ids_for_source:
             continue
         retained_package_ids.update(package_ids_for_file)
-        owned_final_ids.update(final_ids_for_source)
-
-    extension_file_ids = final_ids - owned_final_ids
-
-    if extension_file_ids:
-        retained_package_ids.add(EXTENSION_PACKAGE_ID)
 
     composed_relationships: list[dict[str, Any]] = []
     seen_relationships: set[str] = set()
@@ -454,30 +442,9 @@ def compose(builder_document: dict[str, Any], *,
         deepcopy(package) for package in packages
         if package["SPDXID"] in retained_package_ids
     ]
-    if extension_file_ids:
-        output["packages"].append({
-            "SPDXID": EXTENSION_PACKAGE_ID,
-            "copyrightText": "NOASSERTION",
-            "downloadLocation": "NOASSERTION",
-            "filesAnalyzed": True,
-            "licenseConcluded": "NOASSERTION",
-            "licenseDeclared": "NOASSERTION",
-            "name": f"{extension_name}-extension-artifacts",
-            "supplier": "NOASSERTION",
-            "versionInfo": "NOASSERTION",
-        })
     output["packages"].append(os_package)
     output["files"] = composed_files
     output["relationships"] = composed_relationships
-    if extension_file_ids:
-        composed_relationships.extend(
-            {
-                "spdxElementId": EXTENSION_PACKAGE_ID,
-                "relationshipType": "CONTAINS",
-                "relatedSpdxElement": file_id_value,
-            }
-            for file_id_value in sorted(extension_file_ids)
-        )
     package_by_id = {package["SPDXID"]: package for package in output["packages"]}
     file_by_id = {record["SPDXID"]: record for record in composed_files}
     licenses_by_package: defaultdict[str, set[str]] = defaultdict(set)

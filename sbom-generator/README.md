@@ -46,6 +46,15 @@ of the builder stage, not Bake's default SBOM. BuildKit pulls the generator
 image, supplies the mounts, and incorporates its output into the image index
 alongside provenance.
 
+Files with a clear builder-package owner keep a `CONTAINS` relationship to
+that package. Shipped files whose owner cannot be established remain as SPDX
+file records with their checksums and any ScanCode license findings, but are
+not assigned to a catch-all package. For owned files, ScanCode findings
+contribute to the package's `licenseInfoFromFiles` and can fill an otherwise
+unknown `licenseDeclared`. Package-oriented consumers such as Trivy report
+package licenses; findings on unassigned files remain available to consumers
+that inspect SPDX file records.
+
 ## Downstream extension hook
 
 The dashed path in the diagram is an optional extension point. Without a

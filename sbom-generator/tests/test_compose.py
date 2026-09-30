@@ -95,12 +95,17 @@ class ComposeTest(unittest.TestCase):
         self.assertEqual(output["name"], "plr-sbom")
         self.assertEqual(
             {record["name"] for record in output["packages"]},
-            {"extension", "debian", "plr-extension-artifacts"},
+            {"extension", "debian"},
         )
         self.assertEqual(
             [record["fileName"] for record in output["files"]],
             ["generated/artifact", "lib/ext.so"],
         )
+        self.assertFalse(any(
+            relationship["relationshipType"] == "CONTAINS"
+            and relationship["relatedSpdxElement"] == output["files"][0]["SPDXID"]
+            for relationship in output["relationships"]
+        ))
         self.assertNotIn("build-only", json.dumps(output))
         self.assertFalse("subject" in output)
 
@@ -181,7 +186,7 @@ class ComposeTest(unittest.TestCase):
         self.assertEqual(file_record["licenseInfoInFiles"], ["GPL-2.0-only"])
         self.assertEqual(package_record["licenseDeclared"], "GPL-2.0-only")
 
-    def test_unmatched_file_licenses_are_combined_on_synthetic_package(self):
+    def test_unmatched_files_and_scanned_licenses_are_kept_unclaimed(self):
         output = compose(
             builder_document(),
             extension_name="demo",
@@ -193,7 +198,7 @@ class ComposeTest(unittest.TestCase):
             scancode_report={"files": [
                 {
                     "path": "licenses/vendor/copyright",
-                    "license_detections": [{"license_expression_spdx": "MIT"}],
+                    "license_detections": [{"license_expression_spdx": "LicenseRef-Vendor"}],
                 },
                 {
                     "path": "licenses/other/copyright",
@@ -201,19 +206,34 @@ class ComposeTest(unittest.TestCase):
                         "license_expression_spdx": "Apache-2.0 OR BSD-2-Clause",
                     }],
                 },
-            ]},
+            ], "license_references": [{
+                "spdx_license_key": "LicenseRef-Vendor",
+                "name": "Vendor license",
+                "text": "vendor license text",
+            }]},
         )
-        synthetic = next(
-            item for item in output["packages"]
-            if item["name"] == "demo-extension-artifacts"
-        )
-        self.assertEqual(synthetic["licenseInfoFromFiles"], [
-            "Apache-2.0 OR BSD-2-Clause", "MIT",
-        ])
+        self.assertEqual({item["fileName"] for item in output["files"]}, {
+            "licenses/vendor/copyright", "licenses/other/copyright",
+        })
         self.assertEqual(
-            synthetic["licenseDeclared"],
-            "(Apache-2.0 OR BSD-2-Clause) AND MIT",
+            {item["fileName"]: item["licenseInfoInFiles"] for item in output["files"]},
+            {
+                "licenses/vendor/copyright": ["LicenseRef-Vendor"],
+                "licenses/other/copyright": ["Apache-2.0 OR BSD-2-Clause"],
+            },
         )
+        self.assertEqual(
+            [item["licenseId"] for item in output["hasExtractedLicensingInfos"]],
+            ["LicenseRef-Vendor"],
+        )
+        self.assertEqual({item["name"] for item in output["packages"]}, {"debian"})
+        file_ids = {item["SPDXID"] for item in output["files"]}
+        self.assertFalse(any(
+            relationship["relationshipType"] == "CONTAINS"
+            and relationship["relatedSpdxElement"] in file_ids
+            for relationship in output["relationships"]
+        ))
+        self.assertEqual(validate_spdx_document(output), [])
 
     def test_platform_documents_are_deterministic_and_isolated(self):
         first = compose(
@@ -267,19 +287,12 @@ class ComposeTest(unittest.TestCase):
         )
 
         self.assertNotIn(package_id, {item["SPDXID"] for item in output["packages"]})
-        self.assertIn(
-            {
-                "spdxElementId": "SPDXRef-Package-extension-payload",
-                "relationshipType": "CONTAINS",
-                "relatedSpdxElement": output["files"][0]["SPDXID"],
-            },
-            output["relationships"],
-        )
         self.assertFalse(any(
             relationship["relationshipType"] == "CONTAINS"
-            and relationship["spdxElementId"] == package_id
+            and relationship["relatedSpdxElement"] == output["files"][0]["SPDXID"]
             for relationship in output["relationships"]
         ))
+        self.assertEqual(validate_spdx_document(output), [])
 
     def test_license_path_does_not_claim_package_without_file_analysis(self):
         document = builder_document()
