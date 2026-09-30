@@ -455,8 +455,8 @@ def augment_spdx(document, context):
             has_library = True
             require(len(final_bytes) >= 20 and final_bytes[:6] == b'\x7fELF\x02\x01' and int.from_bytes(final_bytes[18:20], 'little') == machine, 'ELF architecture mismatch')
     require(has_library, 'missing compiled library binding')
-    root = next((p for p in result['packages'] if p['SPDXID'] == 'SPDXRef-Package-extension-payload'), None)
-    require(root is not None, 'generator payload package missing')
+    payload_package = next((p for p in result['packages'] if p['SPDXID'] == 'SPDXRef-Package-extension-payload'), None)
+    require(payload_package is not None, 'generator payload package missing')
     existing = {}
     for package in result['packages']:
         for ref in package.get('externalRefs', []):
@@ -466,7 +466,7 @@ def augment_spdx(document, context):
     ids = {}
     for key, component in packages.items():
         purl = cargo_purl(component, identity['revision'])
-        package = root if key == build['root_id'] else existing.get(purl)
+        package = existing.get(purl)
         if package is None:
             package = {'SPDXID': 'SPDXRef-Cargo-'+sha256(purl.encode())[:32], 'filesAnalyzed': False,
                        'downloadLocation': 'NOASSERTION', 'copyrightText': 'NOASSERTION',
@@ -480,11 +480,14 @@ def augment_spdx(document, context):
             package['externalRefs'].append(ref)
         ids[key] = package['SPDXID']
     relationships = result.setdefault('relationships', [])
+    # The shipped payload retains file evidence; Cargo packages describe components.
+    relationships.append({'spdxElementId': payload_package['SPDXID'], 'relationshipType': 'GENERATED_FROM',
+                          'relatedSpdxElement': ids[build['root_id']]})
     for source, dest in edges:
         relationships.append({'spdxElementId': ids[source], 'relationshipType': 'DEPENDS_ON', 'relatedSpdxElement': ids[dest]})
     for name in sorted(mapped):
         file = files.get(name) or files['./'+name]
-        relationships.append({'spdxElementId': root['SPDXID'], 'relationshipType': 'CONTAINS', 'relatedSpdxElement': file['SPDXID']})
+        relationships.append({'spdxElementId': payload_package['SPDXID'], 'relationshipType': 'CONTAINS', 'relatedSpdxElement': file['SPDXID']})
     # License associations are keyed by full Cargo ID, never ambiguous name/version.
     licensed = set()
     for evidence_license in manifest['licenses']:

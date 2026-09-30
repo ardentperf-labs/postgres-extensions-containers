@@ -70,11 +70,32 @@ class HookTest(unittest.TestCase):
         before = copy.deepcopy(self.document); builder = copy.deepcopy(self.context.builder_document)
         result = self.run_hook()
         self.assertEqual(self.document, before); self.assertEqual(self.context.builder_document, builder)
-        self.assertEqual({p['name'] for p in result['packages']}, {'demo','runtime','debian'})
+        self.assertEqual({p['name'] for p in result['packages']}, {'payload','demo','runtime','debian'})
         self.assertEqual(result['files'], before['files'])
         self.assertIn(before['relationships'][0], result['relationships'])
         self.assertEqual(result['creationInfo'], before['creationInfo'])
         self.assertEqual(result, self.run_hook())
+
+    def test_root_crate_is_separate_from_payload_license_evidence(self):
+        payload = self.document['packages'][0]
+        payload.update(licenseDeclared='Apache-2.0 AND MIT',
+                       licenseInfoFromFiles=['Apache-2.0', 'MIT'])
+        result = self.run_hook()
+        by_name = {package['name']: package for package in result['packages']}
+        root = by_name['demo']
+        self.assertNotEqual(payload['SPDXID'], root['SPDXID'])
+        self.assertEqual(root['licenseDeclared'], 'MIT')
+        self.assertFalse(root['filesAnalyzed'])
+        self.assertNotIn('licenseInfoFromFiles', root)
+        self.assertNotIn('externalRefs', by_name['payload'])
+        # The hook only adds attribution to Cargo entries, preserving payload metadata.
+        self.assertEqual(payload, by_name['payload'])
+        self.assertIn({'spdxElementId': payload['SPDXID'], 'relationshipType': 'GENERATED_FROM',
+                       'relatedSpdxElement': root['SPDXID']}, result['relationships'])
+        self.assertIn({'spdxElementId': root['SPDXID'], 'relationshipType': 'DEPENDS_ON',
+                       'relatedSpdxElement': by_name['runtime']['SPDXID']}, result['relationships'])
+        self.assertFalse(any(r['spdxElementId'] == root['SPDXID'] and
+                             r['relationshipType'] == 'CONTAINS' for r in result['relationships']))
 
     def test_invalid_evidence_fails_closed(self):
         for group,key,value in [('target','platform','linux/arm64'), ('identity','extension','wrong'), ('inputs','lock_sha256','0'*64)]:
