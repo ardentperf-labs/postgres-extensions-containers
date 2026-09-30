@@ -51,7 +51,11 @@ class HookTest(unittest.TestCase):
         license_text='MIT fixture license text'
         path=self.final/'licenses/rust/license.txt';path.parent.mkdir(parents=True);path.write_text(license_text)
         self.manifest['licenses']=[{'cargo_id':key,'name':'MIT','final':'licenses/rust/license.txt','sha256':digest(license_text.encode())} for key in ('demo','runtime')]
-        self.write_report('cargo-about', {'licenses': [{'id':'MIT','text':license_text,'used_by':[{'crate':{'id':key}} for key in ('demo','runtime')]}], 'crates': []})
+        self.write_report('cargo-about', {
+            'licenses': [{'id':'MIT','text':license_text,'used_by':[{'crate':{'id':key}} for key in ('demo','runtime')]}],
+            'crates': [{'package': {'id':key, 'name':key, 'version':'1.0'}, 'license':'MIT'}
+                       for key in ('demo','runtime')],
+        })
         self.document = {'SPDXID': 'SPDXRef-DOCUMENT', 'spdxVersion': 'SPDX-2.3', 'creationInfo': {'created': '2026-01-01T00:00:00Z', 'creators': ['Tool: generator']},
             'packages': [{'SPDXID': 'SPDXRef-Package-extension-payload', 'name': 'payload'}, {'SPDXID': 'SPDXRef-OS', 'name': 'debian'}],
             'files': [{'SPDXID': 'SPDXRef-file', 'fileName': 'lib/demo.so', 'checksums': [{'algorithm': 'SHA256', 'checksumValue': digest(elf)}]}],
@@ -171,6 +175,36 @@ class HookTest(unittest.TestCase):
         self.assertEqual(license_expression(expression),expression)
         self.assertEqual(license_expression('Unknown License Name'),'NOASSERTION')
         self.assertEqual(license_expression('MIT AND'),'NOASSERTION')
+
+    def test_cargo_about_resolved_expressions_are_used_for_every_crate(self):
+        self.metadata['packages'][0]['license'] = None
+        self.metadata['packages'][1]['license'] = 'not an SPDX expression'
+        report=json.loads((self.evidence/'cargo-about.json').read_text())
+        report['crates'][0]['license']='Apache-2.0 OR MIT'
+        report['crates'][1]['license']='(BSD-3-Clause OR MIT) AND Zlib'
+        self.write_report('cargo-about',report)
+        result=self.run_hook()
+        packages={package['name']:package for package in result['packages']}
+        self.assertEqual(packages['demo']['licenseDeclared'],'Apache-2.0 OR MIT')
+        self.assertEqual(packages['runtime']['licenseDeclared'],'(BSD-3-Clause OR MIT) AND Zlib')
+
+    def test_cargo_about_missing_or_unresolved_selected_license_fails(self):
+        report=json.loads((self.evidence/'cargo-about.json').read_text())
+        report['crates'].pop()
+        self.write_report('cargo-about',report)
+        with self.assertRaisesRegex(ValueError,'lacks resolved cargo-about licenses'):
+            self.run_hook()
+        report['crates'].append({'package': {'id':'runtime','name':'runtime','version':'1.0'}, 'license':'Unknown'})
+        self.write_report('cargo-about',report)
+        with self.assertRaisesRegex(ValueError,'did not resolve a crate license'):
+            self.run_hook()
+
+    def test_cargo_about_crate_identity_is_checked(self):
+        report=json.loads((self.evidence/'cargo-about.json').read_text())
+        report['crates'][0]['package']['name']='different-crate'
+        self.write_report('cargo-about',report)
+        with self.assertRaisesRegex(ValueError,'package identity mismatch'):
+            self.run_hook()
 
     def test_missing_or_wrong_license_association(self):
         self.manifest['licenses'].pop()
