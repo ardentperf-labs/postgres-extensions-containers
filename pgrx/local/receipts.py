@@ -7,7 +7,7 @@ import zipfile
 
 from record import load_preparation, validate_record
 from verify import validate_layout, safe_file
-from workflow import discover, source_digest
+from workflow import ROOT, discover, source_digest
 
 
 def file_digest(path):
@@ -41,7 +41,8 @@ def reconcile(directory, extension, distro, major, platforms):
     if preparation['extension'] != extension or preparation['platforms'] != platforms or len(preparation['targets']) != 1:
         raise ValueError('unexpected native case preparation')
     target, settings = next(iter(preparation['targets'].items()))
-    selector=preparation['inputs'].get('cnpg_version') or 'main'
+    fixture_lock=json.loads((ROOT/'pgrx/dependencies/fixtures/lock.json').read_text())
+    selector=preparation['inputs'].get('cnpg_version') or fixture_lock['selector']
     expected_directories={'prepared-'+extension,'assemblies-'+extension,'assembly-'+target,
         'sign-'+target,'security-'+target,'smoke-'+target+'-'+selector,'promote-'+target}
     expected_directories.update('platform-'+extension+'-'+row['id'] for row in preparation['rows'])
