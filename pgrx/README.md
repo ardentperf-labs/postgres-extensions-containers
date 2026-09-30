@@ -39,7 +39,11 @@ retained dependency conditions are evaluated against `rustc --print cfg` for
 the selected target. Generated Python bytecode is excluded from Docker
 contexts so local reporting caches cannot change the copied helper code.
 It preserves the generator's inventory, OS packages, checksums, and license
-associations. Unknown license expressions remain `NOASSERTION`; shipped text is
+associations. The synthetic extension-artifacts package retains the shipped files
+and their aggregate license evidence. It is `GENERATED_FROM` a separate root Cargo package;
+that package has its own Cargo identity and declared license, and `DEPENDS_ON`
+the selected Rust dependencies. Cargo entries do not claim file-level analysis.
+Unknown license expressions remain `NOASSERTION`; shipped text is
 retained and associated by full Cargo identity. cargo-about 0.9.2's repeated,
 identical Boolean `doctest` field is normalized before report hashing. Other
 duplicate JSON keys and conflicting values are rejected.

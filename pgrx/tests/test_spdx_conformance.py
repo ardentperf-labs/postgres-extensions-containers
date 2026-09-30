@@ -51,6 +51,10 @@ class SPDXConformanceTest(unittest.TestCase):
             builder_path=fixture.builder,
             final_inventory=final_inventory(fixture.final),
             platform='linux/amd64',
+            scancode_report={'files': [{
+                'path': 'licenses/rust/license.txt',
+                'license_detections': [{'license_expression_spdx': 'Apache-2.0 OR MIT'}],
+            }]},
         )
         fixture.context.builder_document = builder
         output = fixture.run_hook()
@@ -58,7 +62,18 @@ class SPDXConformanceTest(unittest.TestCase):
         path.write_text(json.dumps(output))
         findings = validate_full_spdx_document(parse_from_file(str(path)))
         self.assertEqual([], findings, '\n'.join(str(finding) for finding in findings))
-        self.assertIn('runtime', {package['name'] for package in output['packages']})
+        packages = {package['name']: package for package in output['packages']}
+        self.assertIn('runtime', packages)
+        payload = packages['pg-demo-extension-artifacts']
+        root = packages['demo']
+        self.assertNotEqual(payload['SPDXID'], root['SPDXID'])
+        self.assertEqual('(Apache-2.0 OR MIT)', payload['licenseDeclared'])
+        self.assertEqual(['Apache-2.0 OR MIT'], payload['licenseInfoFromFiles'])
+        self.assertEqual('MIT', root['licenseDeclared'])
+        self.assertFalse(root['filesAnalyzed'])
+        self.assertNotIn('externalRefs', payload)
+        self.assertIn({'spdxElementId': payload['SPDXID'], 'relationshipType': 'GENERATED_FROM',
+                       'relatedSpdxElement': root['SPDXID']}, output['relationships'])
         self.assertTrue(any(
             annotation.get('annotator') == 'Tool: cnpg-pgrx-hook-v1'
             for annotation in output['annotations']
