@@ -103,19 +103,46 @@ def bases_lock(root,refresh):
     return bases
 
 
+def operator_manifest_url(pin):
+    ref=pin['ref']
+    match=re.fullmatch(r'v(\d+\.\d+\.\d+)',ref)
+    if not match:raise ValueError('operator fixture must pin a published CNPG release tag')
+    if pin['repository']!='cloudnative-pg/cloudnative-pg':raise ValueError('operator fixture must use the official CNPG release repository')
+    return f"https://raw.githubusercontent.com/{pin['repository']}/{pin['revision']}/releases/cnpg-{match.group(1)}.yaml"
+
+
+def operator_fixture_file(directory,selector):
+    return directory/('operator-'+selector+'.yaml')
+
+
+def check_operator_manifest(data,pin):
+    version=pin['ref'].removeprefix('v')
+    image=f'ghcr.io/cloudnative-pg/cloudnative-pg:{version}'
+    if image not in data or 'cloudnative-pg-testing' in data:
+        raise ValueError('operator fixture must use its published production CNPG image')
+
+
 def fixtures_lock(root,refresh):
     directory=root/'fixtures';path=directory/'lock.json';lock=json.loads(path.read_text())
+    if lock['selector'] not in lock['operators'] or not set(lock['supported_releases'])<=set(lock['operators']):
+        raise ValueError('invalid default or supported CNPG fixture selector')
     for selector,pin in lock['operators'].items():
-        file=directory/('operator'+('' if selector=='main' else '-'+selector)+'.yaml')
+        if pin['ref'][1:].rsplit('.',1)[0]!=selector:raise ValueError('operator fixture release does not match its selector')
+        file=operator_fixture_file(directory,selector)
         if refresh:
-            ref='main' if selector=='main' else 'release-'+selector
-            pin['revision']=api('repos/'+pin['repository']+'/commits/'+ref)['sha']
-            pin['url']='https://raw.githubusercontent.com/'+pin['repository']+'/'+pin['revision']+'/manifests/operator-manifest.yaml'
+            pin['revision']=api('repos/'+pin['repository']+'/commits/'+pin['ref'])['sha']
+            pin['url']=operator_manifest_url(pin)
             data=fetch(pin['url']);file.write_bytes(data);pin['sha256']=sha(data)
-        if pin['revision'] not in pin['url'] or sha(file.read_bytes())!=pin['sha256']:raise ValueError('operator fixture requires refresh')
-    lock['files']['operator']=lock['operators']['main']
+        data=file.read_bytes()
+        if not re.fullmatch('[a-f0-9]{40}',pin['revision']) or pin['url']!=operator_manifest_url(pin) or sha(data)!=pin['sha256']:
+            raise ValueError('operator fixture requires refresh')
+        check_operator_manifest(data.decode(),pin)
+    if refresh:
+        lock['files']['operator']=lock['operators'][lock['selector']]
+    elif lock['files']['operator']!=lock['operators'][lock['selector']]:
+        raise ValueError('default operator fixture alias is stale')
     for name,pin in lock['files'].items():
-        file=directory/(name+'.yaml')
+        file=operator_fixture_file(directory,lock['selector']) if name=='operator' else directory/(name+'.yaml')
         if name!='operator' and refresh:
             old_revision=pin['revision'];pin['revision']=api('repos/'+pin['repository']+'/commits/main')['sha'];pin['url']=pin['url'].replace(old_revision,pin['revision'])
             data=fetch(pin['url']);file.write_bytes(data);pin['sha256']=sha(data)
