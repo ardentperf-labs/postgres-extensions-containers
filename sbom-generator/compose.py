@@ -77,14 +77,14 @@ def final_files(document: dict[str, Any], path: Path) -> list[dict[str, str]]:
     return files
 
 
-def final_inventory_files(inventory: dict[str, Any] | list[dict[str, Any]], path: Path) -> list[dict[str, str]]:
+def final_inventory_files(inventory: dict[str, Any] | list[dict[str, Any]], path: Path) -> list[dict[str, Any]]:
     """Validate and normalize the generator's direct final-files inventory."""
 
     records = inventory.get("files") if isinstance(inventory, dict) else inventory
     if not isinstance(records, list) or not records:
         raise ValueError(f"{path}: final filesystem has no files")
 
-    files: list[dict[str, str]] = []
+    files: list[dict[str, Any]] = []
     seen: set[tuple[str, str, str]] = set()
     for record in records:
         if not isinstance(record, dict):
@@ -94,20 +94,41 @@ def final_inventory_files(inventory: dict[str, Any] | list[dict[str, Any]], path
             raise ValueError(f"{path}: final inventory has an invalid file name")
         checksums = record.get("checksums")
         if checksums is not None:
-            if not isinstance(checksums, list) or len(checksums) != 1:
-                raise ValueError(f"{path}: final inventory entries need one checksum")
-            checksum = checksums[0]
-            algorithm = checksum.get("algorithm")
-            value = checksum.get("checksumValue")
+            if not isinstance(checksums, list) or not checksums:
+                raise ValueError(f"{path}: final inventory entries need checksums")
+            normalized_checksums = []
+            for checksum in checksums:
+                if not isinstance(checksum, dict):
+                    raise ValueError(f"{path}: final inventory checksum is not an object")
+                checksum_algorithm = checksum.get("algorithm")
+                checksum_value = checksum.get("checksumValue")
+                if not isinstance(checksum_algorithm, str) or not isinstance(checksum_value, str) or not checksum_value:
+                    raise ValueError(f"{path}: final inventory checksum is incomplete")
+                normalized_checksums.append({
+                    "algorithm": checksum_algorithm.upper(),
+                    "checksumValue": checksum_value.lower(),
+                })
+            sha256_checksum = next(
+                (item for item in normalized_checksums if item["algorithm"] == "SHA256"),
+                None,
+            )
+            primary = sha256_checksum or normalized_checksums[0]
+            algorithm = primary["algorithm"]
+            value = primary["checksumValue"]
         else:
             algorithm = record.get("algorithm", "sha256")
             value = record.get("value")
+            normalized_checksums = [{
+                "algorithm": str(algorithm).upper(),
+                "checksumValue": str(value).lower() if isinstance(value, str) else value,
+            }]
         if not isinstance(algorithm, str) or not isinstance(value, str) or not value:
             raise ValueError(f"{path}: final inventory entry has no checksum")
         normalized = {
             "name": name.lstrip("/"),
             "algorithm": algorithm.lower(),
             "value": value.lower(),
+            "checksums": normalized_checksums,
         }
         identity = (normalized["name"], normalized["algorithm"], normalized["value"])
         if identity not in seen:
@@ -236,6 +257,11 @@ def compose(builder_document: dict[str, Any], *,
     builder_records = builder["files"]
     relationships = builder["relationships"]
     packages = builder["packages"]
+    packages_without_file_analysis = {
+        package["SPDXID"]
+        for package in packages
+        if package.get("filesAnalyzed") is False
+    }
 
     builder_packages = {
         package["SPDXID"]: package
@@ -247,7 +273,8 @@ def compose(builder_document: dict[str, Any], *,
     package_ids = set(builder_packages)
     package_ids_by_name: defaultdict[str, set[str]] = defaultdict(set)
     for package_id, package in builder_packages.items():
-        package_ids_by_name[package["name"]].add(package_id)
+        if package_id not in packages_without_file_analysis:
+            package_ids_by_name[package["name"]].add(package_id)
     retained_package_ids: set[str] = set()
     owners_by_source_file: defaultdict[str, set[str]] = defaultdict(set)
     for relationship in relationships:
@@ -255,7 +282,7 @@ def compose(builder_document: dict[str, Any], *,
             continue
         package_id = relationship["spdxElementId"]
         source_file_id = relationship["relatedSpdxElement"]
-        if package_id in package_ids:
+        if package_id in package_ids and package_id not in packages_without_file_analysis:
             owners_by_source_file[source_file_id].add(package_id)
 
     by_checksum: defaultdict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
@@ -274,10 +301,10 @@ def compose(builder_document: dict[str, Any], *,
     def add_synthetic_file(record: dict[str, str], owner: str | None = None) -> None:
         output_record = {
             "SPDXID": file_id(record["name"], record["algorithm"], record["value"]),
-            "checksums": [{
+            "checksums": record.get("checksums", [{
                 "algorithm": record["algorithm"].upper(),
                 "checksumValue": record["value"],
-            }],
+            }]),
             "copyrightText": "NOASSERTION",
             "fileName": record["name"],
             "licenseConcluded": "NOASSERTION",
@@ -322,6 +349,26 @@ def compose(builder_document: dict[str, Any], *,
         source = selected[0]
         new_id = file_id(final_record["name"], final_record["algorithm"], final_record["value"])
         output_record = source.copy()
+        checksums_by_algorithm = {
+            checksum["algorithm"].upper(): {
+                "algorithm": checksum["algorithm"].upper(),
+                "checksumValue": checksum["checksumValue"].lower(),
+            }
+            for checksum in source.get("checksums", [])
+        }
+        # Prefer hashes computed from the final payload, while retaining any
+        # additional algorithms already supplied by the builder scan.
+        checksums_by_algorithm.update({
+            checksum["algorithm"].upper(): {
+                "algorithm": checksum["algorithm"].upper(),
+                "checksumValue": checksum["checksumValue"].lower(),
+            }
+            for checksum in final_record.get("checksums", [])
+        })
+        output_record["checksums"] = [
+            checksums_by_algorithm[algorithm]
+            for algorithm in sorted(checksums_by_algorithm)
+        ]
         output_record["SPDXID"] = new_id
         output_record["fileName"] = final_record["name"]
         composed_files.append(output_record)
@@ -357,6 +404,14 @@ def compose(builder_document: dict[str, Any], *,
     for relationship in relationships:
         element_id = relationship["spdxElementId"]
         related_id = relationship["relatedSpdxElement"]
+        if (
+            relationship["relationshipType"] == "CONTAINS"
+            and element_id in packages_without_file_analysis
+            and related_id in all_file_ids
+        ):
+            # SPDX forbids file ownership relationships for packages whose
+            # file analysis is explicitly disabled.
+            continue
         if (
             (element_id in all_file_ids and element_id not in source_to_final)
             or (related_id in all_file_ids and related_id not in source_to_final)

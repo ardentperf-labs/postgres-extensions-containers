@@ -37,7 +37,12 @@ jobs:
           persist-credentials: false
 
       - name: Run tests
-        run: python3 -m unittest discover -s sbom-generator/tests -p 'test_*.py'
+        run: |
+          python3 -m venv "$RUNNER_TEMP/sbom-generator-venv"
+          "$RUNNER_TEMP/sbom-generator-venv/bin/python" -m pip install \
+            --requirement sbom-generator/requirements-validation.txt
+          "$RUNNER_TEMP/sbom-generator-venv/bin/python" -m unittest discover \
+            -s sbom-generator/tests -p 'test_*.py'
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4

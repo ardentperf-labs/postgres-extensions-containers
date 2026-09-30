@@ -108,9 +108,31 @@
       "matchStrings": [
         "#\\s*renovate: datasource=(?<datasource>[^\\s]+) depName=(?<depName>[^\\s]+)(?: versioning=(?<versioning>[^\\s]+))?\\s+ARG [A-Z0-9_]+_VERSION=(?<currentValue>[^\\s]+)"
       ]
+    },
+    {
+      "description": "updates the SPDX validation tool",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "sbom-generator/requirements-validation.txt"
+      ],
+      "matchStrings": [
+        "#\\s*renovate: datasource=(?<datasource>[^\\s]+) depName=(?<depName>[^\\s]+)(?: versioning=(?<versioning>[^\\s]+))?\\s+spdx-tools==(?<currentValue>[^\\s]+)"
+      ]
     }
   ],
   "packageRules": [
+    {
+      "description": "review SPDX validator upgrades with ScanCode dependency compatibility",
+      "matchPackageNames": [
+        "spdx-tools",
+        "scancode-toolkit"
+      ],
+      "groupName": "SBOM validation dependencies",
+      "automerge": false,
+      "prBodyNotes": [
+        "⚠️ Check that the selected SPDX Tools release is compatible with the ScanCode Toolkit release. The current ScanCode Toolkit pins spdx-tools==0.8.2."
+      ]
+    },
     {
       "description": "require stable release verification for all updates",
       "matchPackageNames": [

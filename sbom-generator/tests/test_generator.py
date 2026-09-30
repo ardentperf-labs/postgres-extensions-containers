@@ -32,8 +32,18 @@ class GeneratorTest(unittest.TestCase):
             output = final_inventory(root)
         records = {record["name"]: record for record in output["files"]}
         self.assertEqual(records["lib/ext.so"]["value"], hashlib.sha256(payload).hexdigest())
+        self.assertEqual(
+            next(item["checksumValue"] for item in records["lib/ext.so"]["checksums"] if item["algorithm"] == "SHA1"),
+            hashlib.sha1(payload).hexdigest(),
+        )
         self.assertEqual(records["lib/alias.so"]["kind"], "symlink")
         self.assertNotEqual(records["lib/alias.so"]["value"], records["lib/ext.so"]["value"])
+        alias_sha1 = next(
+            item["checksumValue"]
+            for item in records["lib/alias.so"]["checksums"]
+            if item["algorithm"] == "SHA1"
+        )
+        self.assertEqual(alias_sha1, hashlib.sha1(b"ext.so").hexdigest())
         self.assertEqual(records["outside"]["kind"], "symlink")
 
     def test_platform_comes_from_builder_package_architecture(self):

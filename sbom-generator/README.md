@@ -18,7 +18,7 @@ flowchart TD
         I[5. ScanCode: shipped licenses]
         P[7. Compose SPDX with license metadata]
         X[8. Optional downstream augment_spdx hook:<br/>add dependency version and license information]
-        J[9. Wrap SPDX in an in-toto statement]
+        J[9. Validate SPDX and wrap in an in-toto statement]
         E --> H
         F --> H
         H --> P
@@ -77,11 +77,12 @@ version and license information for shipped artifacts to the SPDX document.
 Running after filtering prevents these additions from being discarded by the existing
 file-ownership selection logic.
 
-The upstream runner trusts the hook's returned document and wraps it
-directly in an in-toto statement. Downstream code is responsible for
-producing valid SPDX and for evidence that added components belong to shipped
-artifacts. BuildKit receives one completed SPDX statement through the
-existing output protocol.
+The upstream runner validates the final document with SPDX Python Tools after
+the hook returns and before wrapping it in an in-toto statement. Validation
+failures stop the build before the output artifact is written. Downstream code
+remains responsible for evidence that added components belong to shipped
+artifacts; SPDX conformance validation does not establish that evidence.
+BuildKit receives one completed SPDX statement through the existing output protocol.
 
 Place a Python file defining `augment_spdx(document, context)` at
 `/usr/local/share/cnpg-sbom/augment_spdx.py` in the extension's builder stage. For
@@ -95,7 +96,7 @@ COPY sbom/augment_spdx.py /usr/local/share/cnpg-sbom/augment_spdx.py
 The generator loads that file from the read-only builder mount and calls its
 function. No hook file means a no-op. The hook must return the complete SPDX
 document; it can modify the supplied document or return a replacement. Load
-and hook errors fail the build. There is no additional validation of the
+and hook errors fail the build. SPDX conformance validation also applies to the
 hook's returned SPDX.
 
 Downstream builds use the same generator image. The hook and its evidence
@@ -103,6 +104,21 @@ remain in the builder stage and need not be copied into scratch. The hook
 executes in the generator's Python environment, so dependencies installed
 only in the builder are not automatically available. Standard-library
 processing of precomputed JSON needs no additional generator dependencies.
+
+## Validate SPDX output
+
+Validate a raw SPDX JSON document or the generator's BuildKit statement with
+the same pinned SPDX validator used by the generator:
+
+```bash
+python3 -m venv /tmp/cnpg-spdx-venv
+/tmp/cnpg-spdx-venv/bin/pip install -r sbom-generator/requirements-validation.txt
+/tmp/cnpg-spdx-venv/bin/python sbom-generator/spdx_validation.py final-payload.spdx.json
+```
+
+The command exits nonzero on invalid output. Use this environment to run the
+generator tests with `python -m unittest discover -s sbom-generator/tests`.
+The validator version is kept compatible with ScanCode's dependency pin.
 
 ## Build locally
 
