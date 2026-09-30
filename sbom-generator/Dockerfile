@@ -12,17 +12,20 @@ ARG SYFT_VERSION=1.51.1
 # renovate: datasource=pypi depName=scancode-toolkit versioning=pep440
 ARG SCANCODE_VERSION=32.5.0
 
+COPY requirements-validation.txt /tmp/requirements-validation.txt
+
 RUN apt-get update \
     && apt-get install --no-install-recommends -y ca-certificates curl gcc g++ libxml2-dev libxslt1-dev pkg-config \
     && rm -rf /var/lib/apt/lists/* \
     && curl --fail --silent --show-error --location \
       "https://github.com/anchore/syft/releases/download/v${SYFT_VERSION}/syft_${SYFT_VERSION}_linux_${TARGETARCH}.tar.gz" \
       | tar -xz -C /usr/local/bin syft \
-    && python -m pip install --no-cache-dir "scancode-toolkit==${SCANCODE_VERSION}" \
+    && python -m pip install --no-cache-dir \
+      "scancode-toolkit==${SCANCODE_VERSION}" -r /tmp/requirements-validation.txt \
     && syft version
 
 WORKDIR /opt/cnpg-sbom-generator
-COPY compose.py generator.py hooks.py ./
+COPY compose.py generator.py hooks.py spdx_validation.py ./
 
 ARG SBOM_GENERATOR_REVISION=unknown
 ENV SBOM_GENERATOR_REVISION=${SBOM_GENERATOR_REVISION}

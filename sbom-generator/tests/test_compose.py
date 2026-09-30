@@ -12,10 +12,15 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).parents[1]))
 
 from compose import compose, final_inventory_files, set_document_namespace  # noqa: E402
+from spdx_validation import validate_spdx_document  # noqa: E402
 
 
 def checksum(value):
-    return [{"algorithm": "SHA256", "checksumValue": value}]
+    contents = value.encode()
+    return [
+        {"algorithm": "SHA1", "checksumValue": hashlib.sha1(contents).hexdigest()},
+        {"algorithm": "SHA256", "checksumValue": hashlib.sha256(contents).hexdigest()},
+    ]
 
 
 def package(spdxid, name, version, purl):
@@ -40,6 +45,7 @@ def package(spdxid, name, version, purl):
 def builder_document():
     return {
         "spdxVersion": "SPDX-2.3",
+        "dataLicense": "CC0-1.0",
         "SPDXID": "SPDXRef-DOCUMENT",
         "name": "builder",
         "creationInfo": {"created": "2026-01-01T00:00:00Z", "creators": ["Tool: syft"]},
@@ -63,7 +69,16 @@ def builder_document():
 
 
 def inventory(*entries):
-    return {"files": [{"name": name, "algorithm": "sha256", "value": digest} for name, digest in entries]}
+    records = []
+    for name, contents in entries:
+        checksums = checksum(contents)
+        records.append({
+            "name": name,
+            "algorithm": "sha256",
+            "value": checksums[1]["checksumValue"],
+            "checksums": checksums,
+        })
+    return {"files": records}
 
 
 class ComposeTest(unittest.TestCase):
@@ -88,6 +103,31 @@ class ComposeTest(unittest.TestCase):
         )
         self.assertNotIn("build-only", json.dumps(output))
         self.assertFalse("subject" in output)
+
+    def test_matched_file_uses_final_inventory_sha1_when_builder_only_has_sha256(self):
+        document = builder_document()
+        source = next(
+            item for item in document["files"]
+            if item["SPDXID"] == "SPDXRef-File-extension"
+        )
+        source["checksums"] = [checksum("extension")[1]]
+
+        output = compose(
+            document,
+            extension_name="plr",
+            final_inventory=inventory(("usr/lib/postgresql/ext.so", "extension")),
+            platform="linux/amd64",
+        )
+        file_record = next(
+            item for item in output["files"]
+            if item["fileName"] == "usr/lib/postgresql/ext.so"
+        )
+
+        self.assertEqual(
+            {item["algorithm"] for item in file_record["checksums"]},
+            {"SHA1", "SHA256"},
+        )
+        self.assertEqual(validate_spdx_document(output), [])
 
     @patch.dict(os.environ, {"SBOM_GENERATOR_REVISION": "abc123" * 6 + "abcd"})
     def test_generator_metadata_identifies_version_and_repository(self):
@@ -213,6 +253,54 @@ class ComposeTest(unittest.TestCase):
     def test_malformed_final_inventory_fails(self):
         with self.assertRaises(ValueError):
             final_inventory_files({"files": [{"name": "lib/ext.so", "checksums": []}]}, Path("inventory"))
+
+    def test_files_from_packages_without_file_analysis_are_not_claimed_as_contained(self):
+        document = builder_document()
+        package_id = "SPDXRef-Package-extension"
+        package = next(item for item in document["packages"] if item["SPDXID"] == package_id)
+        package["filesAnalyzed"] = False
+        output = compose(
+            document,
+            extension_name="demo",
+            final_inventory=inventory(("usr/lib/postgresql/ext.so", "extension")),
+            platform="linux/amd64",
+        )
+
+        self.assertNotIn(package_id, {item["SPDXID"] for item in output["packages"]})
+        self.assertIn(
+            {
+                "spdxElementId": "SPDXRef-Package-extension-payload",
+                "relationshipType": "CONTAINS",
+                "relatedSpdxElement": output["files"][0]["SPDXID"],
+            },
+            output["relationships"],
+        )
+        self.assertFalse(any(
+            relationship["relationshipType"] == "CONTAINS"
+            and relationship["spdxElementId"] == package_id
+            for relationship in output["relationships"]
+        ))
+
+    def test_license_path_does_not_claim_package_without_file_analysis(self):
+        document = builder_document()
+        rust_id = "SPDXRef-Package-rust"
+        document["packages"].append(package(
+            rust_id, "rust1.97.1", "1.97.1", "pkg:deb/debian/rust1.97.1@1.97.1?arch=amd64"
+        ))
+        next(item for item in document["packages"] if item["SPDXID"] == rust_id)["filesAnalyzed"] = False
+        output = compose(
+            document,
+            extension_name="demo",
+            final_inventory=inventory(("licenses/rust1.97.1/copyright", "rust-license")),
+            platform="linux/amd64",
+        )
+
+        self.assertNotIn(rust_id, {item["SPDXID"] for item in output["packages"]})
+        self.assertFalse(any(
+            relationship["relationshipType"] == "CONTAINS"
+            and relationship["spdxElementId"] == rust_id
+            for relationship in output["relationships"]
+        ))
 
     def test_builder_wrapper_is_accepted_only_as_legacy_input(self):
         wrapped = {

@@ -25,6 +25,7 @@ from typing import Any, Sequence
 
 from compose import compose, set_document_namespace
 from hooks import HookContext, run_augmentation_hook
+from spdx_validation import validate_spdx_document
 
 
 PLATFORM_ARCHITECTURES = {
@@ -69,6 +70,18 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def file_checksums(path: Path) -> dict[str, str]:
+    """Return the SHA1 and SHA256 checksums required by SPDX 2.3."""
+
+    sha1 = hashlib.sha1(usedforsecurity=False)
+    sha256 = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            sha1.update(chunk)
+            sha256.update(chunk)
+    return {"sha1": sha1.hexdigest(), "sha256": sha256.hexdigest()}
+
+
 def final_inventory(root: Path) -> dict[str, Any]:
     """Inventory regular files and symlinks without leaving ``root``."""
 
@@ -77,10 +90,15 @@ def final_inventory(root: Path) -> dict[str, Any]:
     def add_symlink(path: Path) -> None:
         relative = path.relative_to(root).as_posix()
         stat = path.lstat()
+        target = os.readlink(path).encode()
         records.append({
             "name": relative,
             "algorithm": "sha256",
-            "value": hashlib.sha256(os.readlink(path).encode()).hexdigest(),
+            "value": hashlib.sha256(target).hexdigest(),
+            "checksums": [
+                {"algorithm": "SHA1", "checksumValue": hashlib.sha1(target).hexdigest()},
+                {"algorithm": "SHA256", "checksumValue": hashlib.sha256(target).hexdigest()},
+            ],
             "kind": "symlink",
             "mode": stat.st_mode & 0o7777,
         })
@@ -105,7 +123,8 @@ def final_inventory(root: Path) -> dict[str, Any]:
                 add_symlink(path)
                 continue
             elif path.is_file():
-                value = sha256_file(path)
+                checksums = file_checksums(path)
+                value = checksums["sha256"]
                 kind = "file"
             else:
                 raise RuntimeError(f"unsupported final filesystem entry: {path}")
@@ -113,6 +132,10 @@ def final_inventory(root: Path) -> dict[str, Any]:
                 "name": relative,
                 "algorithm": "sha256",
                 "value": value,
+                "checksums": [
+                    {"algorithm": "SHA1", "checksumValue": checksums["sha1"]},
+                    {"algorithm": "SHA256", "checksumValue": checksums["sha256"]},
+                ],
                 "kind": kind,
                 "mode": stat.st_mode & 0o7777,
             })
@@ -444,6 +467,13 @@ def generate() -> Path:
         ))
         # Include any downstream augmentation in the final document identity.
         set_document_namespace(predicate, extension_name, platform)
+        findings = validate_spdx_document(predicate)
+        if findings:
+            formatted_findings = "\n".join(f"  - {finding}" for finding in findings)
+            raise RuntimeError(
+                f"generated SPDX document failed validation ({len(findings)} finding(s)):\n"
+                f"{formatted_findings}"
+            )
         statement = statement_for(predicate)
         output = destination / "final-payload.spdx.json"
         progress("writing SPDX attestation")

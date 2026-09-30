@@ -64,6 +64,39 @@ def augment_spdx(document, context: HookContext):
             self.assertEqual(statement["subject"], [])
             self.assertEqual([f["fileName"] for f in statement["predicate"]["files"]], ["artifact"])
 
+    def test_invalid_hook_output_fails_validation_before_writing_artifact(self):
+        evidence = builder_document()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source, extras, destination = root / "source", root / "extras", root / "output"
+            source.mkdir()
+            builder = extras / "sbom-builder"
+            builder.mkdir(parents=True)
+            destination.mkdir()
+            (source / "artifact").write_text("payload")
+            write_hook(builder, '''
+from hooks import HookContext
+
+def augment_spdx(document, context: HookContext):
+    document["files"][0]["checksums"] = [
+        item for item in document["files"][0]["checksums"]
+        if item["algorithm"] != "SHA1"
+    ]
+    return document
+''')
+            with patch.dict(os.environ, {
+                "BUILDKIT_SCAN_SOURCE": str(source),
+                "BUILDKIT_SCAN_SOURCE_EXTRAS": str(extras),
+                "BUILDKIT_SCAN_DESTINATION": str(destination),
+                "BUILDKIT_BUILDER_SPDX": "",
+                "SBOM_TARGET_PLATFORM": "linux/amd64",
+            }), patch.object(generator, "scan_builder", return_value=evidence), \
+                    patch.object(generator, "tool_version", return_value="test"):
+                with self.assertRaisesRegex(RuntimeError, "failed validation"):
+                    generator.generate()
+
+            self.assertEqual(list(destination.iterdir()), [])
+
     def test_hook_errors_are_not_silently_ignored(self):
         sources = (
             "def augment_spdx(document, context):\n    raise ValueError('evidence missing')\n",
