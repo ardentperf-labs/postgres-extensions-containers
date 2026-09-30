@@ -64,16 +64,33 @@ class SPDXConformanceTest(unittest.TestCase):
         self.assertEqual([], findings, '\n'.join(str(finding) for finding in findings))
         packages = {package['name']: package for package in output['packages']}
         self.assertIn('runtime', packages)
-        payload = packages['pg-demo-extension-artifacts']
+        self.assertNotIn('pg-demo-extension-artifacts', packages)
         root = packages['demo']
-        self.assertNotEqual(payload['SPDXID'], root['SPDXID'])
-        self.assertEqual('(Apache-2.0 OR MIT)', payload['licenseDeclared'])
-        self.assertEqual(['Apache-2.0 OR MIT'], payload['licenseInfoFromFiles'])
         self.assertEqual('MIT', root['licenseDeclared'])
         self.assertFalse(root['filesAnalyzed'])
-        self.assertNotIn('externalRefs', payload)
-        self.assertIn({'spdxElementId': payload['SPDXID'], 'relationshipType': 'GENERATED_FROM',
+        self.assertIn({'spdxElementId': 'SPDXRef-DOCUMENT', 'relationshipType': 'DESCRIBES',
                        'relatedSpdxElement': root['SPDXID']}, output['relationships'])
+        self.assertFalse(any(
+            relation.get('spdxElementId') == root['SPDXID'] and relation.get('relationshipType') == 'CONTAINS'
+            for relation in output['relationships']
+        ))
+        license_file = next(file for file in output['files']
+                            if file['fileName'].endswith('licenses/rust/license.txt'))
+        self.assertEqual(['Apache-2.0 OR MIT'], license_file['licenseInfoInFiles'])
+        self.assertFalse(any(
+            relation.get('relationshipType') == 'CONTAINS'
+            and relation.get('relatedSpdxElement') == license_file['SPDXID']
+            for relation in output['relationships']
+        ))
+        cargo_ids = {package['SPDXID'] for package in output['packages']
+                     if any(ref.get('referenceType') == 'purl'
+                            and ref.get('referenceLocator', '').startswith('pkg:cargo/')
+                            for ref in package.get('externalRefs', []))}
+        self.assertFalse(any(
+            relation.get('spdxElementId') in cargo_ids
+            and relation.get('relationshipType') == 'CONTAINS'
+            for relation in output['relationships']
+        ))
         self.assertTrue(any(
             annotation.get('annotator') == 'Tool: cnpg-pgrx-hook-v1'
             for annotation in output['annotations']
