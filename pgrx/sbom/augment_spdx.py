@@ -12,6 +12,7 @@ from urllib.parse import quote
 
 NAMESPACE = 'https://github.com/cnpg-extensions/postgres-extensions-containers/pgrx-enrichment/v1'
 TARGETS = {'linux/amd64': ('x86_64-unknown-linux-gnu', 62), 'linux/arm64': ('aarch64-unknown-linux-gnu', 183)}
+LEGACY_PAYLOAD_PACKAGE_ID = 'SPDXRef-Package-extension-payload'
 
 
 def require(condition, message):
@@ -440,6 +441,14 @@ def augment_spdx(document, context):
     require(set(build['features']) <= set(features), 'selected feature missing')
     require(('default' in features) == build['default_features'], 'default feature policy mismatch')
     result = deepcopy(document)
+    # Older versions of the shared generator assign unowned final-image files
+    # to this synthetic package. Remove only that reserved package and its
+    # relationships; keep the file records and any real package ownership.
+    result['packages'] = [p for p in result.get('packages', [])
+                          if p.get('SPDXID') != LEGACY_PAYLOAD_PACKAGE_ID]
+    result['relationships'] = [r for r in result.get('relationships', [])
+                               if LEGACY_PAYLOAD_PACKAGE_ID not in
+                               (r.get('spdxElementId'), r.get('relatedSpdxElement'))]
     files = indexed(result['files'], 'fileName')
     mapped, has_library = set(), False
     for payload in manifest['payload']:
@@ -455,8 +464,6 @@ def augment_spdx(document, context):
             has_library = True
             require(len(final_bytes) >= 20 and final_bytes[:6] == b'\x7fELF\x02\x01' and int.from_bytes(final_bytes[18:20], 'little') == machine, 'ELF architecture mismatch')
     require(has_library, 'missing compiled library binding')
-    payload_package = next((p for p in result['packages'] if p['SPDXID'] == 'SPDXRef-Package-extension-payload'), None)
-    require(payload_package is not None, 'generator payload package missing')
     existing = {}
     for package in result['packages']:
         for ref in package.get('externalRefs', []):
@@ -480,14 +487,15 @@ def augment_spdx(document, context):
             package['externalRefs'].append(ref)
         ids[key] = package['SPDXID']
     relationships = result.setdefault('relationships', [])
-    # The shipped payload retains file evidence; Cargo packages describe components.
-    relationships.append({'spdxElementId': payload_package['SPDXID'], 'relationshipType': 'GENERATED_FROM',
-                          'relatedSpdxElement': ids[build['root_id']]})
+    # The root crate represents the shipped extension. Individual file records
+    # retain their own checksums and scan evidence without synthetic ownership.
+    root_id = ids[build['root_id']]
+    describes_root = {'spdxElementId': result['SPDXID'], 'relationshipType': 'DESCRIBES',
+                      'relatedSpdxElement': root_id}
+    if describes_root not in relationships:
+        relationships.append(describes_root)
     for source, dest in edges:
         relationships.append({'spdxElementId': ids[source], 'relationshipType': 'DEPENDS_ON', 'relatedSpdxElement': ids[dest]})
-    for name in sorted(mapped):
-        file = files.get(name) or files['./'+name]
-        relationships.append({'spdxElementId': payload_package['SPDXID'], 'relationshipType': 'CONTAINS', 'relatedSpdxElement': file['SPDXID']})
     # License associations are keyed by full Cargo ID, never ambiguous name/version.
     licensed = set()
     for evidence_license in manifest['licenses']:
