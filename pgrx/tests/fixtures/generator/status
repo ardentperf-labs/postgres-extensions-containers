@@ -1,0 +1,6 @@
+Package: cnpg-hook-builder-only
+Status: install ok installed
+Architecture: amd64
+Version: 1.0
+Maintainer: Fixture <fixture@example.invalid>
+Description: Tests access to full unfiltered builder SPDX

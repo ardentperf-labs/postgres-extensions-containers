@@ -1,0 +1,54 @@
+{
+  "selector": "main",
+  "files": {
+    "operator": {
+      "repository": "cloudnative-pg/artifacts",
+      "ref": "main",
+      "revision": "837097eb0bf1fa9d66b34dfc3893fbf493e3e11c",
+      "url": "https://raw.githubusercontent.com/cloudnative-pg/artifacts/837097eb0bf1fa9d66b34dfc3893fbf493e3e11c/manifests/operator-manifest.yaml",
+      "sha256": "bed3b3503a51fc94f79f2c4b762cfbb2088aa52c28fd449e66ae13a6ffb1e483"
+    },
+    "catalog-bookworm": {
+      "repository": "cnpg-extensions/artifacts",
+      "ref": "main",
+      "revision": "67e823cff7c4a901635d3baac2f752e7490c7bc9",
+      "url": "https://raw.githubusercontent.com/cnpg-extensions/artifacts/67e823cff7c4a901635d3baac2f752e7490c7bc9/image-catalogs-extensions/catalog-minimal-bookworm.yaml",
+      "sha256": "a31442e66be5a6b234ba3462de6b27d31ba7741056b8843c41b16f2eb2ef4f8f"
+    },
+    "catalog-trixie": {
+      "repository": "cnpg-extensions/artifacts",
+      "ref": "main",
+      "revision": "67e823cff7c4a901635d3baac2f752e7490c7bc9",
+      "url": "https://raw.githubusercontent.com/cnpg-extensions/artifacts/67e823cff7c4a901635d3baac2f752e7490c7bc9/image-catalogs-extensions/catalog-minimal-trixie.yaml",
+      "sha256": "7fe629d1fc1e4f40f97a148a4f27fdbd7f44fc8adf972b8bb94b61dc2f345bf3"
+    }
+  },
+  "supported_releases": [
+    "main",
+    "1.29",
+    "1.30"
+  ],
+  "operators": {
+    "main": {
+      "repository": "cloudnative-pg/artifacts",
+      "ref": "main",
+      "revision": "837097eb0bf1fa9d66b34dfc3893fbf493e3e11c",
+      "url": "https://raw.githubusercontent.com/cloudnative-pg/artifacts/837097eb0bf1fa9d66b34dfc3893fbf493e3e11c/manifests/operator-manifest.yaml",
+      "sha256": "bed3b3503a51fc94f79f2c4b762cfbb2088aa52c28fd449e66ae13a6ffb1e483"
+    },
+    "1.29": {
+      "repository": "cloudnative-pg/artifacts",
+      "ref": "release-1.29",
+      "revision": "dff2f27577277fba96a83947ca25bcdc5368aadd",
+      "url": "https://raw.githubusercontent.com/cloudnative-pg/artifacts/dff2f27577277fba96a83947ca25bcdc5368aadd/manifests/operator-manifest.yaml",
+      "sha256": "d7bbb844574fa5acecdc844779471e9ffc365af4870847b241accf91fac88f1f"
+    },
+    "1.30": {
+      "repository": "cloudnative-pg/artifacts",
+      "ref": "release-1.30",
+      "revision": "d7e07efb1f25c58ae1a2cd6323bcce9f4ffbe6d6",
+      "url": "https://raw.githubusercontent.com/cloudnative-pg/artifacts/d7e07efb1f25c58ae1a2cd6323bcce9f4ffbe6d6/manifests/operator-manifest.yaml",
+      "sha256": "289593f738f1806991ccea5cc34b8ccbc81476c715427363171045994e3dd054"
+    }
+  }
+}
