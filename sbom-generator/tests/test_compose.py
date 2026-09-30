@@ -186,6 +186,81 @@ class ComposeTest(unittest.TestCase):
         self.assertEqual(file_record["licenseInfoInFiles"], ["GPL-2.0-only"])
         self.assertEqual(package_record["licenseDeclared"], "GPL-2.0-only")
 
+    def test_invalid_scancode_aggregate_keeps_valid_matches_and_exception_evidence(self):
+        document = builder_document()
+        document["packages"].append(
+            package(
+                "SPDXRef-Package-libgfortran5",
+                "libgfortran5",
+                "1",
+                "pkg:deb/debian/libgfortran5@1?arch=amd64&distro=debian-12.15",
+            )
+        )
+        output = compose(
+            document,
+            extension_name="plr",
+            final_inventory=inventory(
+                ("licenses/libgfortran5/copyright", "gfortran-license-evidence"),
+            ),
+            platform="linux/amd64",
+            scancode_report={
+                "files": [{
+                    "path": "licenses/libgfortran5/copyright",
+                    "license_detections": [
+                        {
+                            "license_expression_spdx": (
+                                "MIT AND GFDL-1.2-only AND GCC-exception-3.1"
+                            ),
+                            "matches": [
+                                {
+                                    "license_expression_spdx": "MIT",
+                                    "rule_identifier": "mit_1083.RULE",
+                                    "start_line": 216,
+                                    "end_line": 233,
+                                },
+                                {
+                                    "license_expression_spdx": "GFDL-1.2-only",
+                                    "rule_identifier": "gfdl-1.2_7.RULE",
+                                    "start_line": 236,
+                                    "end_line": 238,
+                                },
+                                {
+                                    "license_expression_spdx": "GCC-exception-3.1",
+                                    "rule_identifier": "gcc-exception-3.1.LICENSE",
+                                    "start_line": 241,
+                                    "end_line": 312,
+                                },
+                            ],
+                        },
+                        {
+                            "license_expression_spdx": (
+                                "GPL-3.0-or-later WITH GCC-exception-3.1"
+                            ),
+                        },
+                    ],
+                }],
+            },
+        )
+
+        file_record = output["files"][0]
+        self.assertEqual(file_record["licenseInfoInFiles"], [
+            "GFDL-1.2-only",
+            "GPL-3.0-or-later WITH GCC-exception-3.1",
+            "MIT",
+        ])
+        self.assertIn(
+            "MIT AND GFDL-1.2-only AND GCC-exception-3.1",
+            file_record["licenseComments"],
+        )
+        self.assertIn("GCC-exception-3.1", file_record["licenseComments"])
+        self.assertIn("lines 241-312", file_record["licenseComments"])
+        self.assertIn("gcc-exception-3.1.LICENSE", file_record["licenseComments"])
+        package_record = next(
+            item for item in output["packages"] if item["name"] == "libgfortran5"
+        )
+        self.assertIn("licenseDeclared", package_record)
+        self.assertEqual(validate_spdx_document(output), [])
+
     def test_unmatched_files_and_scanned_licenses_are_kept_unclaimed(self):
         output = compose(
             builder_document(),

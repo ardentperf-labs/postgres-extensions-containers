@@ -20,6 +20,8 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, urlsplit
 
+from spdx_tools.common.spdx_licensing import spdx_licensing
+
 
 GENERATOR_NAME = "cnpg-sbom-generator"
 GENERATOR_REPOSITORY = "https://github.com/cnpg-extensions/postgres-extensions-containers"
@@ -157,25 +159,76 @@ def file_id(name: str, algorithm: str, value: str) -> str:
 
 def scancode_licenses(
     document: dict[str, Any],
-) -> tuple[dict[str, set[str]], dict[str, dict[str, str]]]:
-    """Return ScanCode SPDX expressions and custom license definitions."""
+) -> tuple[dict[str, set[str]], dict[str, dict[str, str]], dict[str, list[str]]]:
+    """Return valid ScanCode expressions, definitions, and invalid-match evidence."""
 
     licenses_by_file: defaultdict[str, set[str]] = defaultdict(set)
+    comments_by_file: defaultdict[str, list[str]] = defaultdict(list)
     custom_licenses: set[str] = set()
+
+    def parse_expression(expression: str) -> tuple[str | None, str | None]:
+        try:
+            return str(spdx_licensing.parse(expression, validate=False, strict=True)), None
+        except Exception as error:
+            return None, str(error)
+
     for record in document.get("files", []):
-        licenses = {
-            expression
-            for detection in record.get("license_detections", [])
-            if (expression := detection.get("license_expression_spdx"))
-            and expression not in {"NONE", "NOASSERTION"}
-        }
-        if not licenses:
-            continue
         path = record["path"].lstrip("/")
-        licenses_by_file[path].update(licenses)
-        custom_licenses.update(
-            license_id for expression in licenses for license_id in LICENSE_REF.findall(expression)
-        )
+        for detection in record.get("license_detections", []):
+            expression = detection.get("license_expression_spdx")
+            if not expression or expression in {"NONE", "NOASSERTION"}:
+                continue
+
+            parsed_expression, parse_error = parse_expression(expression)
+            if parsed_expression is not None:
+                licenses_by_file[path].add(parsed_expression)
+                continue
+
+            # ScanCode sometimes aggregates separate matches into an expression
+            # that SPDX cannot represent (for example, an exception without
+            # its governing license). Keep every valid match expression, while
+            # retaining the invalid raw finding as file-level evidence.
+            matched_licenses: set[str] = set()
+            invalid_matches: list[str] = []
+            for match in detection.get("matches", []):
+                match_expression = match.get("license_expression_spdx")
+                if not match_expression or match_expression in {"NONE", "NOASSERTION"}:
+                    continue
+                parsed_match, match_error = parse_expression(match_expression)
+                if parsed_match is not None:
+                    matched_licenses.add(parsed_match)
+                    continue
+                rule = match.get("rule_identifier")
+                start_line = match.get("start_line")
+                end_line = match.get("end_line")
+                lines = (
+                    f"lines {start_line}-{end_line}"
+                    if start_line is not None and end_line is not None
+                    else f"line {start_line}"
+                    if start_line is not None
+                    else "line range unavailable"
+                )
+                invalid_matches.append(
+                    f"{match_expression!r} ({rule or 'ScanCode rule unavailable'}, {lines}; "
+                    f"{match_error or 'not a valid SPDX expression'})"
+                )
+
+            licenses_by_file[path].update(matched_licenses)
+            retained = ", ".join(sorted(matched_licenses)) or "none"
+            comment = (
+                f"ScanCode reported {expression!r}, which is not a valid SPDX license expression"
+                f" ({parse_error}). Valid match expressions retained: {retained}."
+            )
+            if invalid_matches:
+                comment += " Match evidence without a valid SPDX expression: " + "; ".join(
+                    sorted(invalid_matches)
+                ) + "."
+            comments_by_file[path].append(comment)
+
+    licenses = set().union(*licenses_by_file.values()) if licenses_by_file else set()
+    custom_licenses.update(
+        license_id for expression in licenses for license_id in LICENSE_REF.findall(expression)
+    )
     references = {
         reference["spdx_license_key"]: {
             "extractedText": reference.get("text") or "NOASSERTION",
@@ -191,7 +244,7 @@ def scancode_licenses(
             "licenseId": license_id,
             "name": license_id,
         })
-    return licenses_by_file, references
+    return licenses_by_file, references, comments_by_file
 
 
 def debian_os_package(packages: list[dict[str, Any]], path: Path) -> dict[str, Any]:
@@ -247,7 +300,9 @@ def compose(builder_document: dict[str, Any], *,
     """
 
     builder = builder_predicate(builder_document, builder_path)
-    licenses_by_file, custom_licenses = scancode_licenses(scancode_report or {})
+    licenses_by_file, custom_licenses, license_comments_by_file = scancode_licenses(
+        scancode_report or {}
+    )
     final = (
         final_inventory_files(final_inventory, builder_path)
         if final_inventory is not None
@@ -372,14 +427,19 @@ def compose(builder_document: dict[str, Any], *,
             source_to_final[record["SPDXID"]].add(new_id)
 
     for record in composed_files:
-        licenses = licenses_by_file.get(record["fileName"].lstrip("/"))
-        if not licenses:
-            continue
-        record["licenseInfoInFiles"] = sorted(
-            set(record.get("licenseInfoInFiles", []))
-            .union(licenses)
-            - {"NONE", "NOASSERTION"}
-        )
+        source_path = record["fileName"].lstrip("/")
+        licenses = licenses_by_file.get(source_path)
+        if licenses:
+            record["licenseInfoInFiles"] = sorted(
+                set(record.get("licenseInfoInFiles", []))
+                .union(licenses)
+                - {"NONE", "NOASSERTION"}
+            )
+        comments = license_comments_by_file.get(source_path)
+        if comments:
+            existing_comment = record.get("licenseComments")
+            comment_parts = ([existing_comment] if existing_comment else []) + sorted(set(comments))
+            record["licenseComments"] = "\n".join(comment_parts)
 
     for source_file_id, package_ids_for_file in owners_by_source_file.items():
         final_ids_for_source = source_to_final.get(source_file_id)
