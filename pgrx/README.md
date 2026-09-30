@@ -54,10 +54,13 @@ dry-run merge. Normal tags are assigned only after reading back a valid candidat
 Sign, security, smoke, and promotion consume per-target assembly artifacts.
 Production promotion is restricted to trusted `main` push/dispatch events.
 Trivy reports vulnerabilities and licenses; findings are retained for review,
-while scanner errors fail the job. CNPG smoke uses pinned operator/catalog
-fixtures and the shared Task/Dagger tests, then checks mounted-library hashes,
-ELF architecture, dynamic-library resolution, SQL version, preload settings,
-and the pg-durable worker's connection to `app`. The shared finalizer additionally
+while scanner errors fail the job. CNPG smoke installs pinned, published
+CloudNativePG release manifests from the upstream `cloudnative-pg/cloudnative-pg`
+repository and production `cloudnative-pg` operator images. Local runs default to
+the locked 1.30 release; CI also exercises the pinned 1.29 compatibility release.
+The smoke uses pinned catalog fixtures and shared Task/Dagger tests, then checks
+mounted-library hashes, ELF architecture, dynamic-library resolution, SQL version,
+preload settings, and the pg-durable worker's connection to `app`. The shared finalizer additionally
 stages Bookworm/amd64's required quadmath library and copyright for pg-search;
 the existing OpenBLAS and Fortran copies remain in the recipe.
 
@@ -68,6 +71,15 @@ Buildx, Go, and Python available. The harness installs its checksum-pinned tools
 It uses a dedicated Docker network, two local registries, disposable signing
 keys, and a separate Kind/Dagger test environment. It may add local registry
 container addresses to `/etc/hosts`. Outputs and keys stay outside the checkout.
+
+Before running validation, create and activate a virtual environment and install
+the repository's SPDX validation dependencies:
+
+```sh
+python3 -m venv /tmp/cnpg-pgrx-venv
+source /tmp/cnpg-pgrx-venv/bin/activate
+python -m pip install -r sbom-generator/requirements-validation.txt
+```
 
 ```sh
 task pgrx:test
@@ -112,7 +124,9 @@ OIDC, and public publishing require a separate rollout check.
 ## Dependency updates
 
 All lock material lives in `dependencies/`. Renovate proposes source tags, tool
-versions, image digests, and operator/catalog commits. Coupled updates are not
+versions, image digests, and CNPG release tags/catalog commits. Operator fixtures
+are fetched from the official versioned release manifests, not the unsupported
+`artifacts` development snapshots. Coupled updates are not
 automerged. Before merging, refresh the affected children and run the checks:
 
 ```sh

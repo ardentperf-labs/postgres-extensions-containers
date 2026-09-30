@@ -66,4 +66,7 @@ jobs:
         run: go test ./...
 
       - name: Run generator and PGRX contract tests
-        run: python3 pgrx/test.py
+        run: |
+          python3 -m venv "$RUNNER_TEMP/pgrx-tests"
+          "$RUNNER_TEMP/pgrx-tests/bin/pip" install -r sbom-generator/requirements-validation.txt
+          "$RUNNER_TEMP/pgrx-tests/bin/python" pgrx/test.py

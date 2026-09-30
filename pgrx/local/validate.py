@@ -21,7 +21,9 @@ from local.fixtures import run_fixtures
 from local.renovate import check_renovate
 
 
-def invoke_case(extension,distro,directory,pins,secrets,multi=False,receipt=None,target=None,cnpg_version='main'):
+def invoke_case(extension,distro,directory,pins,secrets,multi=False,receipt=None,target=None,cnpg_version=None):
+    if cnpg_version is None:
+        cnpg_version=json.loads((ROOT/'pgrx/dependencies/fixtures/lock.json').read_text())['selector']
     identity='pgrx-'+uuid.uuid4().hex
     case=directory/identity;case.mkdir()
     paths=subprocess.check_output(['git','ls-files','-z','--cached','--others','--exclude-standard'],cwd=ROOT).decode().split('\0')
@@ -48,12 +50,13 @@ def invoke_case(extension,distro,directory,pins,secrets,multi=False,receipt=None
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('phase',choices=['native','multiplatform','case'])
     parser.add_argument('--output',type=Path,default=Path('/tmp')/('pgrx-validation-'+uuid.uuid4().hex))
-    parser.add_argument('--extension');parser.add_argument('--distro');parser.add_argument('--cnpg-version',default='main');parser.add_argument('--native-report',type=Path)
+    parser.add_argument('--extension');parser.add_argument('--distro');parser.add_argument('--cnpg-version');parser.add_argument('--native-report',type=Path)
     args=parser.parse_args()
     os.environ['PGRX_LOCAL']='true'
     initial_source=source_digest()
     fixtures=json.loads((ROOT/'pgrx/dependencies/fixtures/lock.json').read_text())
-    if args.cnpg_version not in fixtures['operators']:raise ValueError('fixture lock must be resolved for the selected CNPG version')
+    cnpg_version=args.cnpg_version or fixtures['selector']
+    if cnpg_version not in fixtures['operators']:raise ValueError('fixture lock must be resolved for the selected CNPG version')
     args.output.mkdir(parents=True,exist_ok=False)
     subprocess.run([sys.executable,str(ROOT/'pgrx/bootstrap_workflow_tools.py'),'--output',str(args.output/'bin')],check=True)
     os.environ['PATH']=str(args.output/'bin')+':'+os.environ['PATH']
@@ -64,13 +67,13 @@ def main():
         'cpu_count':os.cpu_count(),'tool_pins':pins},indent=2)+'\n')
     if args.phase=='case':
         if not args.extension or not args.distro:parser.error('case requires extension and distro')
-        print(invoke_case(args.extension,args.distro,args.output,pins,secrets,cnpg_version=args.cnpg_version));return
+        print(invoke_case(args.extension,args.distro,args.output,pins,secrets,cnpg_version=cnpg_version));return
     if args.phase=='multiplatform':
         if args.extension!='pg-session-jwt' or args.distro!='trixie' or not args.native_report:raise ValueError('bounded final case and native report required')
         verify_receipt(args.native_report,hashlib.sha256(args.native_report.read_bytes()).hexdigest())
         # Enabling ARM execution is deliberately after full receipt reconciliation.
         subprocess.run(['docker','run','--rm','--privileged','--platform','linux/amd64',pins['images']['binfmt'],'--install','arm64'],check=True)
-        case=invoke_case('pg-session-jwt','trixie',args.output,pins,secrets,multi=True,receipt=args.native_report.resolve(),cnpg_version=args.cnpg_version)
+        case=invoke_case('pg-session-jwt','trixie',args.output,pins,secrets,multi=True,receipt=args.native_report.resolve(),cnpg_version=cnpg_version)
         destination=args.output/'final-artifacts';extract_artifacts(case,destination)
         result=reconcile(destination,'pg-session-jwt','trixie','18',['linux/amd64','linux/arm64'])
         (args.output/'multiplatform-report.json').write_text(json.dumps(result,indent=2)+'\n')
@@ -118,7 +121,7 @@ def main():
                 definition=json.loads(subprocess.check_output(['docker','buildx','bake','-f','docker-bake-pgrx.hcl','-f',extension+'/metadata.hcl','--print'],cwd=ROOT,env=env))
                 targets=[name for name,value in definition['target'].items() if value['args']['PG_MAJOR']==major]
                 if len(targets)!=1:raise ValueError('ambiguous metadata target: '+extension+'/'+distro+'/'+major)
-                case=invoke_case(extension,distro,args.output,pins,secrets,target=targets[0],cnpg_version=args.cnpg_version)
+                case=invoke_case(extension,distro,args.output,pins,secrets,target=targets[0],cnpg_version=cnpg_version)
                 destination=acceptance/'cases'/case.name
                 extract_artifacts(case,destination)
                 cases.append(reconcile(destination,extension,distro,major,['linux/amd64']))

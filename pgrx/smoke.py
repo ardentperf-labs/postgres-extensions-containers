@@ -17,7 +17,7 @@ from verify import validate_layout
 def smoke(preparation, assembly, output, selector=None):
     fixtures = ROOT / 'pgrx/dependencies/fixtures'
     lock = json.loads((fixtures / 'lock.json').read_text())
-    requested = selector or preparation['inputs'].get('cnpg_version') or 'main'
+    requested = selector or preparation['inputs'].get('cnpg_version') or lock['selector']
     if requested not in lock['operators']:
         raise ValueError('CNPG selector has no matching immutable fixture lock')
     target = preparation['targets'][assembly['target']]
@@ -26,7 +26,8 @@ def smoke(preparation, assembly, output, selector=None):
     lock['files']['operator']=lock['operators'][requested]
     lock['selector']=requested
     for name, entry in lock['files'].items():
-        if hashlib.sha256((fixtures / (('operator-'+requested if name=='operator' and requested!='main' else name) + '.yaml')).read_bytes()).hexdigest() != entry['sha256']:
+        fixture_name='operator-'+requested if name=='operator' else name
+        if hashlib.sha256((fixtures / (fixture_name + '.yaml')).read_bytes()).hexdigest() != entry['sha256']:
             raise ValueError('fixture checksum mismatch')
     pins = json.loads((ROOT / 'pgrx/dependencies/workflow-tools.json').read_text())
     # Reuse the shared tasks with a pinned toolbox and a separate test engine.
