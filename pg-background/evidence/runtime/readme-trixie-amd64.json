@@ -1,0 +1,22 @@
+{
+  "target": "pg-background",
+  "readme_sha256": "f2b08e7eef699f85f0c30711ba603e7bb48fcd101b0a5b084396c41a08e5cf83",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pg-background"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pg-background-app"
+    }
+  ],
+  "images": {
+    "pg-background-testing:2.0.3-18-trixie": "sha256:3cbe63e7fdd95eb3be82e312be6dd873e0c61360e2d6d60eb4916e822b23c65b"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:27:44Z"
+}

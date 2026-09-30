@@ -1,0 +1,49 @@
+{
+  "completed_utc": "2026-09-30T00:22:58.964751+00:00",
+  "environments": [
+    {
+      "command": "task e2e:cleanup DAGGER_ENGINE_NAME=cnpg-approved-batch-engine E2E_NETWORK=pg-extensions-e2e KIND_CLUSTER_NAME=pg-extensions-1.37.0 REGISTRY_NAME=registry.pg-extensions REGISTRY_HOST_PORT=5000",
+      "exit_code": 0,
+      "remaining_resources": [],
+      "result": "PASS"
+    },
+    {
+      "command": "task e2e:cleanup DAGGER_ENGINE_NAME=cnpg-approved-batch-b E2E_NETWORK=approved-batch-b KIND_CLUSTER_NAME=approved-batch-b-1.37.0 REGISTRY_NAME=registry.approved-batch-b REGISTRY_HOST_PORT=5001",
+      "exit_code": 0,
+      "remaining_resources": [],
+      "result": "PASS"
+    },
+    {
+      "command": "task e2e:cleanup DAGGER_ENGINE_NAME=cnpg-approved-batch-c E2E_NETWORK=approved-batch-c KIND_CLUSTER_NAME=approved-batch-c-1.37.0 REGISTRY_NAME=registry.approved-batch-c REGISTRY_HOST_PORT=5002",
+      "exit_code": 0,
+      "remaining_resources": [],
+      "result": "PASS"
+    }
+  ],
+  "research_containers_removed": [
+    "batch-gvm-artifact",
+    "batch-gvm-artifact-final",
+    "batch-gvm-mounted",
+    "batch-perl-artifact",
+    "batch-perl-artifact-bookworm",
+    "batch-perl-mounted",
+    "batch-perl-mounted-bookworm",
+    "batch-python-artifact-bookworm",
+    "batch-python-artifact-trixie",
+    "batch-python-mounted-bookworm",
+    "batch-python-mounted-trixie",
+    "batch-root-bookworm",
+    "batch-root-perl-bookworm",
+    "batch-root-sql",
+    "batch-root-trixie",
+    "ext-pkg-audit",
+    "plang-research-bookworm",
+    "plang-research-trixie",
+    "pljava-mounted-bookworm",
+    "pljava-mounted-trixie",
+    "pljava-mounted-trixie-closure3",
+    "simple-ext-fixture-bookworm",
+    "simple-ext-fixture-trixie",
+    "taskprobe-documentdb-payload"
+  ]
+}

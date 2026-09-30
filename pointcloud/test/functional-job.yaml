@@ -1,0 +1,52 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: functional-check
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: psql
+        # renovate: datasource=docker depName=alpine/psql versioning=docker
+        image: alpine/psql:18.6@sha256:794901afa39b7f80d8245a6d8fa9aaf987380e4b7a6d0be22d404194352e8c17
+        env:
+        - name: PGSSLROOTCERT
+        - name: DB_URI
+          valueFrom:
+            secretKeyRef:
+              name: (join('-', [$values.name, 'superuser']))
+              key: uri
+        command: ['sh', '-c']
+        args:
+        - |
+          set -eu
+          DB_URI=$(printf '%s' "$DB_URI" | sed 's|/\*|/app|')
+          ready=false
+          attempt=0
+          while [ "$attempt" -lt 60 ]; do
+            if [ "$(psql "$DB_URI" -XqAt -v ON_ERROR_STOP=1 -c "SELECT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pointcloud')" 2>/dev/null || true)" = t ]; then
+              ready=true
+              break
+            fi
+            attempt=$((attempt + 1))
+            sleep 2
+          done
+          test "$ready" = true
+          result=$(psql "$DB_URI" -XqAt -v ON_ERROR_STOP=1 <<'SQL'
+          INSERT INTO pointcloud_formats (pcid, srid, schema) VALUES (1, 4326, $schema$
+          <pc:PointCloudSchema xmlns:pc="http://pointcloud.org/schemas/PC/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <pc:dimension><pc:position>1</pc:position><pc:size>4</pc:size><pc:description>X coordinate scaled to metres.</pc:description><pc:name>X</pc:name><pc:interpretation>int32_t</pc:interpretation><pc:scale>0.01</pc:scale></pc:dimension>
+            <pc:dimension><pc:position>2</pc:position><pc:size>4</pc:size><pc:description>Y coordinate scaled to metres.</pc:description><pc:name>Y</pc:name><pc:interpretation>int32_t</pc:interpretation><pc:scale>0.01</pc:scale></pc:dimension>
+            <pc:dimension><pc:position>3</pc:position><pc:size>4</pc:size><pc:description>Z coordinate scaled to metres.</pc:description><pc:name>Z</pc:name><pc:interpretation>int32_t</pc:interpretation><pc:scale>0.01</pc:scale></pc:dimension>
+            <pc:dimension><pc:position>4</pc:position><pc:size>2</pc:size><pc:description>Pulse return intensity.</pc:description><pc:name>Intensity</pc:name><pc:interpretation>uint16_t</pc:interpretation><pc:scale>1</pc:scale></pc:dimension>
+            <pc:metadata><Metadata name="compression">dimensional</Metadata></pc:metadata>
+          </pc:PointCloudSchema>
+          $schema$);
+          GRANT SELECT ON pointcloud_formats TO app;
+          SET ROLE app;
+          SELECT PC_Get(PC_MakePoint(1, ARRAY[-127, 45, 124.0, 4.0]), 'Intensity') = 4;
+          SQL
+          )
+          test "$result" = t

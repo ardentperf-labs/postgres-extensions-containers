@@ -1,0 +1,57 @@
+Package: postgresql-18-pgnodemx
+Source: pgnodemx
+Version: 2.0.1-1.pgdg12+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 262
+Depends: postgresql-18, libc6 (>= 2.34)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/pgnodemx/pgnodemx
+Priority: optional
+Section: database
+Filename: pool/main/p/pgnodemx/postgresql-18-pgnodemx_2.0.1-1.pgdg12+1_amd64.deb
+Size: 97468
+SHA512: b46678bf0045c5ec1a1b9e2bf3faab07850876da69610c664df842378535ada128a779087e35458e9c886c839c6509b8fe18c339a39de1003a6d6abf6bcdc05b
+SHA256: fd13cb3caec1a91f439125db3b0c86553acbbc6b387608381f9911ed251011c8
+SHA1: beefd1e2528db6ee1b6ded0b0cff9e2530e1fd51
+MD5sum: 4735ccd6fd90a59e1c300fb4339a5a68
+Description: capture node OS metrics from PostgreSQL
+ pgnodemx is a PostgreSQL extension that provides SQL functions to allow
+ capture of node OS metrics via SQL queries.
+ .
+  * cgroup related functions
+  * environment variable related functions
+  * /proc related functions
+  * system information related functions
+  * Kubernetes DownwardAPI related functions
+  * general information functions
+Description-md5: 7954f623ea3ca9d4a6ea67777f391089
+
+Package: postgresql-18-pgnodemx
+Source: pgnodemx
+Version: 1.7-2.pgdg12+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 243
+Depends: postgresql-18, libc6 (>= 2.34)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/CrunchyData/pgnodemx
+Priority: optional
+Section: database
+Filename: pool/main/p/pgnodemx/postgresql-18-pgnodemx_1.7-2.pgdg12+1_amd64.deb
+Size: 84296
+SHA256: 9229ececb3cc4b7b0e8677ef8f8832d4d8354272bb43ae833e65388124083fc0
+SHA1: 28e30fa49f6d959d92cf08a3af1a8bda4136d878
+MD5sum: 35fb2a4e5d768eb1f36e4240e6624b41
+Description: capture node OS metrics from PostgreSQL
+ pgnodemx is a PostgreSQL extension that provides SQL functions to allow
+ capture of node OS metrics via SQL queries.
+ .
+  * cgroup related functions
+  * environment variable related functions
+  * /proc related functions
+  * system information related functions
+  * Kubernetes DownwardAPI related functions
+  * general information functions
+Description-md5: 7954f623ea3ca9d4a6ea67777f391089
+

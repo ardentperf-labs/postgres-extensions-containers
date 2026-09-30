@@ -1,0 +1,11 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: (join('-', [$values.name, 'bucardo']))
+status:
+  applied: true
+  extensions:
+  - name: plperl
+    applied: true
+  - name: plperlu
+    applied: true

@@ -1,0 +1,57 @@
+Package: postgresql-18-pgnodemx
+Source: pgnodemx
+Version: 2.0.1-1.pgdg13+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 262
+Depends: postgresql-18, libc6 (>= 2.34)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/pgnodemx/pgnodemx
+Priority: optional
+Section: database
+Filename: pool/main/p/pgnodemx/postgresql-18-pgnodemx_2.0.1-1.pgdg13+1_amd64.deb
+Size: 97732
+SHA512: fd4a7f6635f800fb317496e7e6065e0dd66c2a8ee62a2802b915d798dfccef06320828cc8f4a1faa8ae0ef3b15c7e19c258d376d9e33a07e4188b341962de5de
+SHA256: 5e7843967978c6213c9dc384142e6f0012dda4de4c6b081a4258c2db93fcc4f7
+SHA1: f85a63529be991d12c71ef950aff9e87062998dd
+MD5sum: b21a1a25911c1f0452d0d73020968171
+Description: capture node OS metrics from PostgreSQL
+ pgnodemx is a PostgreSQL extension that provides SQL functions to allow
+ capture of node OS metrics via SQL queries.
+ .
+  * cgroup related functions
+  * environment variable related functions
+  * /proc related functions
+  * system information related functions
+  * Kubernetes DownwardAPI related functions
+  * general information functions
+Description-md5: 
+
+Package: postgresql-18-pgnodemx
+Source: pgnodemx
+Version: 1.7-2.pgdg13+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 243
+Depends: postgresql-18, libc6 (>= 2.38)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/CrunchyData/pgnodemx
+Priority: optional
+Section: database
+Filename: pool/main/p/pgnodemx/postgresql-18-pgnodemx_1.7-2.pgdg13+1_amd64.deb
+Size: 84212
+SHA256: 33a02a378303b152cc4acdf5e86e02e15bb0ed41984b7b25853a3c7e1ba3a874
+SHA1: e0e2c416623ce6e30529fdba0501af8c3eb8d0d0
+MD5sum: 2755121949a179a16e02adceeb48b3fa
+Description: capture node OS metrics from PostgreSQL
+ pgnodemx is a PostgreSQL extension that provides SQL functions to allow
+ capture of node OS metrics via SQL queries.
+ .
+  * cgroup related functions
+  * environment variable related functions
+  * /proc related functions
+  * system information related functions
+  * Kubernetes DownwardAPI related functions
+  * general information functions
+Description-md5: 
+

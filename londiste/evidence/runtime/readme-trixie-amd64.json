@@ -1,0 +1,24 @@
+{
+  "target": "londiste",
+  "readme_sha256": "3078f499d7bf175a1534e8f2d0e02ea263a923cd1a30a96535af1e7051f008c7",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-c:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-londiste"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-londiste-app"
+    }
+  ],
+  "images": {
+    "pgq-testing:3.5.1-18-trixie": "sha256:b49177723c6ef8706222e04faccccd302a9744a043acfeb30590106b3b25d718",
+    "pgq-node-testing:3.5-18-trixie": "sha256:c193c8e49f4b56f50f90ac7a684ace1734ac8a816e20505b79a42ca517896f20",
+    "londiste-testing:3.8-18-trixie": "sha256:f68709db3196bd0d12639417545c8d94edfad14430e4a8bf16a4ced45976159e"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:36:50Z"
+}

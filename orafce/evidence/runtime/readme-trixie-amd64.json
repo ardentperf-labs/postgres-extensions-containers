@@ -1,0 +1,22 @@
+{
+  "target": "orafce",
+  "readme_sha256": "6208f0326d905585e23c9a88d987ac52222bab90ea159c608f8790b552fe5bcb",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-b:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-orafce"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-orafce-app"
+    }
+  ],
+  "images": {
+    "orafce-testing:4.16.12-18-trixie": "sha256:f0314975fa551f87ef1b4f9f913548fffdddf77487b64ab6f8412b54600ae232"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:20:27Z"
+}

@@ -1,0 +1,54 @@
+{
+  "command": "task e2e:test:full TARGET=plproxy DISTRO=trixie DAGGER_ENGINE_NAME=cnpg-approved-batch-engine",
+  "exit_code": 0,
+  "started_utc": "2026-09-29T22:11:46Z",
+  "duration_seconds": 72,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "plproxy/Dockerfile": "e927eabf0d5483912d90653f94906fc3de80dcaf7a04d564b9d1cea6d7e722b1",
+    "plproxy/README.md": "d047551c59cb5c491360b35c6f2d4d4255c77220ef15d746625745d52169b590",
+    "plproxy/metadata.hcl": "9ea021f8c2aaaa943c1af5d6d9e9cb780e976ccacab4a3af16d5d9bc77247621",
+    "plproxy/test/chainsaw-test.yaml": "57e979433dd8b08170055e36b186b42c87d15e9b2f87bc16212ea02f1fc427a8",
+    "plproxy/test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "plproxy/test/cluster.yaml": "95424e0f209dd9abca0d38a53805dffa74e5993794cdd9598c5dcc10e8bdacc6",
+    "plproxy/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "plproxy/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "plproxy/test/functional.sql": "a95c7c624df0c00be8948ac337d25cb8b35882f494d5a6c7b0c6fd808e4b699c",
+    "plproxy/test/job-assert.yaml": "b657517c8fc5570b9d89b507dc356915df8dbf33380c35b32d528346806de4c6",
+    "plproxy/test/job.yaml": "fb775e738dbd7315eeb55a596e90e43a46e86eabc2ab7911c067d1bf29956b5b",
+    "plproxy/test/sql.yaml": "65dd002a2a11dd2d33f1458026d12f055459e4f39854615454ffc567bd254929"
+  },
+  "shared_source_sha256": {
+    "Taskfile.yml": "9fc81befd4004bfaf012128ca6f6652abc0f0cd2aaf0e8afe298314768075ccd",
+    "docker-bake.hcl": "8c8a7228e03135424231bdab3579d020b5db0c0ea8a50bf1343506c1ab11be33",
+    "test/chainsaw-test.yaml": "0174a85c78c9ad3fa462fa532e0de6bcce6052a24f5d11bfeea82ecd397f1b19",
+    "test/check-extension-assert.yaml": "7a45714b7a37a7d57e71ca5f2d56c0d7e4490d91663001ea91d0da6eefb012a6",
+    "test/check-extension.yaml": "8113908a6612bde54f32de89b42b5183b1518021f57bbea50822dedf0fd4a9c3",
+    "test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "test/cluster.yaml": "5a27b229c6047734ced8e8af2d8f6449946197e29192e978ff874a9c7893d388",
+    "test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "dagger/maintenance/catalogs.go": "0b625983085112dfe30277e679c7693ee1b8825bbc90066adf0ff60c9183f147",
+    "dagger/maintenance/dagger.gen.go": "7972c1975f4406a86e75d3b637d75a87a9b7c03ad39f5493a659c00d061235ab",
+    "dagger/maintenance/dependencies.go": "a7409ee16cfcd0e32c9198a96cf0b6a2ceda68998d656acbfdfd3cd1d1688e7e",
+    "dagger/maintenance/dependencies_test.go": "ac341cc168f05476f31dab36fdb48d5b37088d36ddfb17cb8605c43bc0084269",
+    "dagger/maintenance/image.go": "0949136bf012e3c2c8e927633e925e4f58894cadb7f958fd9bbb33d421bceb54",
+    "dagger/maintenance/image_test.go": "1c02b920c6c5bcd3803e96c729dac64537d0ce18170cc98d96e60a051a34d657",
+    "dagger/maintenance/main.go": "65fb9e81371554a9dff95e8234e13e5cb48b6eb967715ecbb604af94ad379d31",
+    "dagger/maintenance/parse.go": "f00dde76ea734d5dc53cd373c03ff23ad1523b11cbce7bac942b5dd00f8cadea",
+    "dagger/maintenance/parse_test.go": "f523e839b34508bb1d8f918a0c8cada04b4d7473373dd0f47fcbe72650fd4d6e",
+    "dagger/maintenance/testingvalues.go": "dd61979933fc3af4b2285d838aec08e3d96f64ff46b566e4ae344c08d816a5e6",
+    "dagger/maintenance/updatelibs.go": "e33a49ba8a8f137ad07c6ede8139360fd1832ace45b92ed818733264460e7ef8",
+    "dagger/maintenance/updatelibs_test.go": "56aa65f3d16c414d32c00bf6145d4b6576b20e55107bb411c888e0d718000d10"
+  },
+  "image": "registry.pg-extensions:5000/plproxy-testing:2.12.0-18-trixie@sha256:d79c5c9b970eb6cb3d794e17ce11a8ffd2fd7b67d25d89d12f1fbd06fc77baf2",
+  "architecture_manifests": {
+    "amd64": "sha256:ee1e2e63cc8376ea60de58a76ee3cf3aa47622b25e10054e064c2b24997c569b",
+    "arm64": "sha256:3d30e52ab3f7e276d3edd8dc7ed518a067bc71125af67e7e1f5c8c1dd9db99d2"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

@@ -1,0 +1,22 @@
+{
+  "target": "plpython3",
+  "readme_sha256": "96176da0da7ee1e28105b415e899f8b84ab17a975f7e0da1930ffa02b282590e",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-plpython3"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-plpython3-app"
+    }
+  ],
+  "images": {
+    "plpython3-testing:18.6-18-trixie": "sha256:c84f77ce13eaf7b18142bda7cad6f10de50d94f9264495e5975cb712bf1e6799"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:21:56Z"
+}

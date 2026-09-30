@@ -1,0 +1,71 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: functional
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsUser: 0
+      containers:
+      - name: pg-repack-client
+        image: ghcr.io/cloudnative-pg/postgresql:18-minimal-trixie
+        env:
+        - name: PGHOST
+          value: (join('-', [$values.name, 'rw']))
+        - name: PGPORT
+          value: "5432"
+        - name: PGDATABASE
+          value: app
+        - name: PGUSER
+          value: postgres
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: (join('-', [$values.name, 'superuser']))
+              key: password
+        - name: PGSSLMODE
+          value: require
+        command:
+        - sh
+        - -ec
+        - |
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get update -qq
+          apt-get install -y --no-install-recommends postgresql-18-repack=1.5.3-1.pgdg13+2
+          psql -X -v ON_ERROR_STOP=1 -f /sql/functional.sql
+          pg_repack --no-order --table=public.pg_repack_fixture
+          psql -X -v ON_ERROR_STOP=1 -c "DO \$\$ BEGIN IF (SELECT count(*) FROM public.pg_repack_fixture) <> 3000 OR EXISTS (SELECT FROM public.pg_repack_fixture WHERE payload <> repeat('y', 2048)) THEN RAISE EXCEPTION 'pg_repack changed table contents'; END IF; END \$\$;"
+        volumeMounts:
+        - name: sql
+          mountPath: /sql
+          readOnly: true
+      volumes:
+      - name: sql
+        configMap:
+          name: functional-sql
+      initContainers:
+      - name: wait-for-postgresql
+        image: ghcr.io/cloudnative-pg/postgresql:18-minimal-trixie
+        env:
+        - name: PGHOST
+          value: (join('-', [$values.name, 'rw']))
+        - name: PGPORT
+          value: "5432"
+        - name: PGDATABASE
+          value: app
+        - name: PGUSER
+          value: postgres
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: (join('-', [$values.name, 'superuser']))
+              key: password
+        - name: PGSSLMODE
+          value: require
+        command:
+        - sh
+        - -ec
+        - for attempt in $(seq 1 60); do pg_isready -q && exit 0; sleep 1; done; exit 1

@@ -1,0 +1,22 @@
+{
+  "target": "pg-stat-log",
+  "readme_sha256": "2f9707ed0fca1be954ec3af93e52f4d610b01685c68de3f4e1d7339a8bd3af57",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pg-stat-log"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pg-stat-log-app"
+    }
+  ],
+  "images": {
+    "pg-stat-log-testing:0.2-18-trixie": "sha256:1b5c4ca51dc548b41dd6bc4cc6a026941dd2103b31d4109de4ce51d9a1081381"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:35:43Z"
+}

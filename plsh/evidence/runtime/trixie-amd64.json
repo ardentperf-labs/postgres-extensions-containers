@@ -1,0 +1,31 @@
+{
+  "command": "task e2e:test:full TARGET=plsh DISTRO=trixie DAGGER_ENGINE_NAME=cnpg-approved-batch-engine",
+  "exit_code": 0,
+  "started_utc": "2026-09-29T21:47:19Z",
+  "duration_seconds": 153,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "plsh/Dockerfile": "6b9c662745598f326501813d77d6e71f23ea0391d7295c14dedce13b95692a38",
+    "plsh/README.md": "eae1a93cb5a8e312bc0b037826db4bedf690050f707597d8fbf7e2aeb708b6e3",
+    "plsh/metadata.hcl": "690b3627a660a6e61eab7f5011a7a400c49d99f5285503d3c25f233a98dd7703",
+    "plsh/test/chainsaw-test.yaml": "57e979433dd8b08170055e36b186b42c87d15e9b2f87bc16212ea02f1fc427a8",
+    "plsh/test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "plsh/test/cluster.yaml": "95424e0f209dd9abca0d38a53805dffa74e5993794cdd9598c5dcc10e8bdacc6",
+    "plsh/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "plsh/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "plsh/test/functional.sql": "35db8b135ff4dc8f7ba098fdefa95a5e190088c9277028292865294668c4bb78",
+    "plsh/test/job-assert.yaml": "b657517c8fc5570b9d89b507dc356915df8dbf33380c35b32d528346806de4c6",
+    "plsh/test/job.yaml": "fb775e738dbd7315eeb55a596e90e43a46e86eabc2ab7911c067d1bf29956b5b",
+    "plsh/test/sql.yaml": "5d9b032590e70bdc75afc0da1829a9de3b89ae101f0ae1a9aea959c87f03858a"
+  },
+  "image": "registry.pg-extensions:5000/plsh-testing:1.20220917-18-trixie@sha256:7fd1abe0b4d5889529174b14498fe298979c4ccbfcbf7bdafa737fdf27d0739f",
+  "architecture_manifests": {
+    "amd64": "sha256:30fc074f825b3004069c6de0187b6f51b0157c4d73d785c19c4c4cac8539e4f8",
+    "arm64": "sha256:490942e8fac84bbf5af89d206a56cefa274c4f6a8983081845b8c0ab12a5cd94"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

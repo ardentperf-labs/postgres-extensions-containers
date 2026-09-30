@@ -1,0 +1,32 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: functional
+spec:
+  timeouts:
+    apply: 5s
+    assert: 5m
+    delete: 30s
+  steps:
+  - name: create-cluster-and-database
+    try:
+    - apply:
+        file: cluster.yaml
+    - assert:
+        file: cluster-assert.yaml
+    - apply:
+        file: database.yaml
+    - assert:
+        file: database-assert.yaml
+  - name: repack-table-with-external-client
+    try:
+    - apply:
+        file: functional-sql.yaml
+    - apply:
+        file: functional-job.yaml
+    - assert:
+        file: functional-job-assert.yaml
+    catch:
+    - podLogs:
+        selector: job-name=functional
+    - events: {}

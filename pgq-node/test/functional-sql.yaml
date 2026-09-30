@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  functional.sql: |-
+    DO $$
+    DECLARE created record;
+    BEGIN
+        PERFORM pgq.create_queue('cnpg_node_functional');
+        PERFORM * FROM pgq_node.register_location(
+            'cnpg_node_functional', 'cnpg_root', 'dbname=app', false
+        );
+        SELECT * INTO created FROM pgq_node.create_node(
+        i_queue_name := 'cnpg_node_functional',
+        i_node_type := 'root',
+        i_node_name := 'cnpg_root',
+        i_worker_name := 'cnpg_worker',
+        i_provider_name := NULL,
+        i_global_watermark := NULL,
+        i_combined_queue := NULL
+        );
+        IF created.ret_code IS DISTINCT FROM 200 THEN
+            RAISE EXCEPTION 'pgq_node could not create a root node: %', created;
+        END IF;
+    END
+    $$;
+    DO $$
+    DECLARE node_info record;
+    BEGIN
+        SELECT * INTO node_info FROM pgq_node.get_node_info('cnpg_node_functional');
+        IF node_info.ret_code IS DISTINCT FROM 100
+           OR node_info.node_type IS DISTINCT FROM 'root'
+           OR node_info.node_name IS DISTINCT FROM 'cnpg_root' THEN
+            RAISE EXCEPTION 'pgq_node did not initialize a root node: %', node_info;
+        END IF;
+    END
+    $$;

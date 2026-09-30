@@ -1,0 +1,22 @@
+{
+  "target": "mimeo",
+  "readme_sha256": "5458dbf13990c9feac5a8aa537ddc97bdd4780d31fc2c586f2a2797b169d67dd",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-c:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-mimeo"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-mimeo-app"
+    }
+  ],
+  "images": {
+    "mimeo-testing:1.5.1-18-trixie": "sha256:f3bd06450e06dfc93a3200145e5deeb0477fecc913de5cce8361a4f9411bb3fd"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:32:09Z"
+}

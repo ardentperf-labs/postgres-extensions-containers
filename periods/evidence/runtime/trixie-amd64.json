@@ -1,0 +1,31 @@
+{
+  "command": "task e2e:test:full TARGET=periods DISTRO=trixie DAGGER_ENGINE_NAME=cnpg-approved-batch-engine",
+  "exit_code": 0,
+  "started_utc": "2026-09-29T21:02:56Z",
+  "duration_seconds": 71,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "periods/Dockerfile": "c1b435b6b2aecaf106d1433e076352715597fafadda1bd3b6bf81628ca9bac4c",
+    "periods/README.md": "bfcefe14576a8a967a101a47b5b00006412fe674690edeffdbf449776d36eff4",
+    "periods/metadata.hcl": "63e8f8e894adf28498237b884c64c4a55a609bf6ca36ad6211021e855e278436",
+    "periods/test/chainsaw-test.yaml": "57e979433dd8b08170055e36b186b42c87d15e9b2f87bc16212ea02f1fc427a8",
+    "periods/test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "periods/test/cluster.yaml": "95424e0f209dd9abca0d38a53805dffa74e5993794cdd9598c5dcc10e8bdacc6",
+    "periods/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "periods/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "periods/test/functional.sql": "3fa93e909b13854a3b9d6c868dfef470eafa49efb3b6c282baaff5afcce3418b",
+    "periods/test/job-assert.yaml": "b657517c8fc5570b9d89b507dc356915df8dbf33380c35b32d528346806de4c6",
+    "periods/test/job.yaml": "fb775e738dbd7315eeb55a596e90e43a46e86eabc2ab7911c067d1bf29956b5b",
+    "periods/test/sql.yaml": "cc07732e7ad60f4d820390b8b1bf6c397eb5d597b908d298252bbb84421e3014"
+  },
+  "image": "registry.pg-extensions:5000/periods-testing:1.2.3-18-trixie@sha256:b4c9f783073b443d27b647f4a6273e2358dcdd51962deefb21423dbaf316d469",
+  "architecture_manifests": {
+    "amd64": "sha256:5f1b1594ce077a2e2fc986bde0d654aa5eb489d29332f8095a125e0fe70b84d5",
+    "arm64": "sha256:274589c737ce887a78fc0e3afc28f844ff13b8b8e3b796a7ce7349e8e7285723"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

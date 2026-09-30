@@ -1,0 +1,22 @@
+{
+  "target": "pg-csv",
+  "readme_sha256": "f546403a49894f225aa31062b7cef6c65fe79c502ef16b0d8aa1526185a570c4",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pg-csv"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pg-csv-app"
+    }
+  ],
+  "images": {
+    "pg-csv-testing:1.0.2-18-trixie": "sha256:9da6da51842186661c1ac1a32a98d7c30960b94f5c64d84dd57d94875ebf88fd"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:11:05Z"
+}

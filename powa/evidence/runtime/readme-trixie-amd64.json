@@ -1,0 +1,22 @@
+{
+  "target": "powa",
+  "readme_sha256": "8b10fa9dc1a2d8a840e8eaaec0a2c655e3d49352d79b5c9490e8d93c0c2577f6",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-c:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-powa"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-powa-app"
+    }
+  ],
+  "images": {
+    "powa-testing:5.3.0-18-trixie": "sha256:832e275e614634dd09478477a324dd231a94fccbf07310e33ab8346785733e4e"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:42:20Z"
+}

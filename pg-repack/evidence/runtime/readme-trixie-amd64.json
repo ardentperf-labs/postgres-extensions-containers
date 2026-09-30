@@ -1,0 +1,22 @@
+{
+  "target": "pg-repack",
+  "readme_sha256": "e291e83c7cb2cb08367c52051f25d3c0a17a7add63b9e3a88bb5756d5dd77a96",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pg-repack"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pg-repack-app"
+    }
+  ],
+  "images": {
+    "pg-repack-testing:1.5.3-18-trixie": "sha256:bce0a1e914c8873aefef58ee79b2412ea60e569aeebdb202fd5be23de2f2bc4c"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:39:52Z"
+}

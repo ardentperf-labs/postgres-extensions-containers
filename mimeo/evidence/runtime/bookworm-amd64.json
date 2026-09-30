@@ -1,0 +1,60 @@
+{
+  "command": "task e2e:test:full TARGET=mimeo DISTRO=bookworm DAGGER_ENGINE_NAME=cnpg-approved-batch-c E2E_NETWORK=approved-batch-c KIND_CLUSTER_NAME=approved-batch-c-1.37.0 REGISTRY_NAME=registry.approved-batch-c REGISTRY_HOST_PORT=5002",
+  "working_directory": "isolated checkout with matching source hashes",
+  "registry_host_port": 5002,
+  "registry_name": "registry.approved-batch-c",
+  "exit_code": 0,
+  "started_utc": "2026-09-29T23:31:24Z",
+  "duration_seconds": 77,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "mimeo/Dockerfile": "d1bee6473d39d77bac5ab6a7776c8412c1868d83cbc27c2a2400081807f83711",
+    "mimeo/README.md": "5458dbf13990c9feac5a8aa537ddc97bdd4780d31fc2c586f2a2797b169d67dd",
+    "mimeo/metadata.hcl": "6cd51d00519745bf7097bd5b02390da77527d3b02f12f2df5e9f0cc31b704139",
+    "mimeo/test/chainsaw-test.yaml": "44f7bffa08247ed548fbed1c95dfcebbddebab228bbfde0a736e58b43b11cc21",
+    "mimeo/test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "mimeo/test/cluster.yaml": "95424e0f209dd9abca0d38a53805dffa74e5993794cdd9598c5dcc10e8bdacc6",
+    "mimeo/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "mimeo/test/database-source-assert.yaml": "bd04d04c0fdb6de93e88150cd9121ab76120d3fa402b6305befb3e8e8b9d6599",
+    "mimeo/test/database-source.yaml": "d30531814bff851dfdc284480606e93bc2821f333e53e5ea0caba62d56632a24",
+    "mimeo/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "mimeo/test/functional-job-assert.yaml": "b657517c8fc5570b9d89b507dc356915df8dbf33380c35b32d528346806de4c6",
+    "mimeo/test/functional-job.yaml": "83003cfcd60d1f45be55e2bcc61232dcc4f1da2c88ba961247f7bcdeb0731b0e",
+    "mimeo/test/functional-sql.yaml": "56efb9e3e8dc7e627166a98d215702d7c401d371deed2b75097dd997a62db8ff",
+    "mimeo/test/functional.sql": "84d218e8364ec9c8bf5ca7e83d433ea5785ac2fb43a7452dd03426541c03d3b4",
+    "mimeo/test/source.sql": "599dc4dfc401adcfcc2420422a12e10546fc88ae9e54530de3a4cc066c4d7523"
+  },
+  "shared_source_sha256": {
+    "Taskfile.yml": "3476e9ac10e5435935f7165eaf06d0cba0d8a6041a57789d58e3dd8ca6785133",
+    "docker-bake.hcl": "8c8a7228e03135424231bdab3579d020b5db0c0ea8a50bf1343506c1ab11be33",
+    "test/chainsaw-test.yaml": "0174a85c78c9ad3fa462fa532e0de6bcce6052a24f5d11bfeea82ecd397f1b19",
+    "test/check-extension-assert.yaml": "7a45714b7a37a7d57e71ca5f2d56c0d7e4490d91663001ea91d0da6eefb012a6",
+    "test/check-extension.yaml": "8113908a6612bde54f32de89b42b5183b1518021f57bbea50822dedf0fd4a9c3",
+    "test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "test/cluster.yaml": "5a27b229c6047734ced8e8af2d8f6449946197e29192e978ff874a9c7893d388",
+    "test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "dagger/maintenance/catalogs.go": "0b625983085112dfe30277e679c7693ee1b8825bbc90066adf0ff60c9183f147",
+    "dagger/maintenance/dagger.gen.go": "7972c1975f4406a86e75d3b637d75a87a9b7c03ad39f5493a659c00d061235ab",
+    "dagger/maintenance/dependencies.go": "a7409ee16cfcd0e32c9198a96cf0b6a2ceda68998d656acbfdfd3cd1d1688e7e",
+    "dagger/maintenance/dependencies_test.go": "ac341cc168f05476f31dab36fdb48d5b37088d36ddfb17cb8605c43bc0084269",
+    "dagger/maintenance/image.go": "0949136bf012e3c2c8e927633e925e4f58894cadb7f958fd9bbb33d421bceb54",
+    "dagger/maintenance/image_test.go": "1c02b920c6c5bcd3803e96c729dac64537d0ce18170cc98d96e60a051a34d657",
+    "dagger/maintenance/main.go": "65fb9e81371554a9dff95e8234e13e5cb48b6eb967715ecbb604af94ad379d31",
+    "dagger/maintenance/parse.go": "f00dde76ea734d5dc53cd373c03ff23ad1523b11cbce7bac942b5dd00f8cadea",
+    "dagger/maintenance/parse_test.go": "f523e839b34508bb1d8f918a0c8cada04b4d7473373dd0f47fcbe72650fd4d6e",
+    "dagger/maintenance/testingvalues.go": "dd61979933fc3af4b2285d838aec08e3d96f64ff46b566e4ae344c08d816a5e6",
+    "dagger/maintenance/updatelibs.go": "e33a49ba8a8f137ad07c6ede8139360fd1832ace45b92ed818733264460e7ef8",
+    "dagger/maintenance/updatelibs_test.go": "56aa65f3d16c414d32c00bf6145d4b6576b20e55107bb411c888e0d718000d10"
+  },
+  "image": "registry.approved-batch-c:5000/mimeo-testing:1.5.1-18-bookworm@sha256:11ea7362a2d16cebb273ed43ea5832b4037b98da8e9fc039c1b748bba2a46e31",
+  "architecture_manifests": {
+    "amd64": "sha256:d0ecf01598ead02e6d213361b304db5b2e240273e3340354aff05935842bc749",
+    "arm64": "sha256:de06dec9957ca1fb93d004aad586bdaeb17ecab6771707149a42bdfd2c57fddf"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

@@ -1,0 +1,9 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: (join('-', [$values.name, 'target']))
+spec:
+  name: target_data
+  owner: postgres
+  cluster:
+    name: ($values.name)

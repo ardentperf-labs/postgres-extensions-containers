@@ -1,0 +1,22 @@
+{
+  "target": "credcheck",
+  "readme_sha256": "32e1bf6ba9d1174342a088dc3db7c2dae50a179703984da6af3c4a7ac9d92a71",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-credcheck"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-credcheck-app"
+    }
+  ],
+  "images": {
+    "credcheck-testing:5.0-18-trixie": "sha256:dcd3d998ecf348cee07efb1015d82d1250d34b9bd41f0e8a2fdd87943be5e14c"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:09:45Z"
+}

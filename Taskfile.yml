@@ -128,6 +128,25 @@ tasks:
       vars:
         - name: TARGET
 
+  bake:dependencies:
+    desc: Build local image dependencies in dependency order
+    vars:
+      DEPENDENCIES:
+        sh: |
+          set -eu
+          dependency_json=$(env _EXPERIMENTAL_DAGGER_RUNNER_HOST="{{ ._EXPERIMENTAL_DAGGER_RUNNER_HOST | default "" }}" \
+            dagger call -sm ./dagger/maintenance/ get-dependencies --target {{ .TARGET }})
+          printf '%s\n' "$dependency_json" | tr -d '[]"' | tr ',' '\n'
+    cmds:
+      - for:
+          var: DEPENDENCIES
+        task: bake
+        vars:
+          TARGET: '{{ .ITEM }}'
+          PUSH: '{{ .PUSH | default "false" }}'
+    requires:
+      vars: [TARGET]
+
   bake:all:
     desc: Bake all the available targets
     vars:
@@ -454,6 +473,11 @@ tasks:
           REGISTRY_HOST: '{{ .REGISTRY_HOST }}'
           REGISTRY_USERNAME: '{{ .REGISTRY_USERNAME }}'
           CNPG_RELEASE: '{{ .CNPG_RELEASE }}'
+      - task: bake:dependencies
+        vars:
+          TARGET: "{{ .TARGET }}"
+          PUSH: "true"
+          _EXPERIMENTAL_DAGGER_RUNNER_HOST: container://{{ .DAGGER_ENGINE_NAME }}
       - task: bake
         vars:
           PUSH: "true"

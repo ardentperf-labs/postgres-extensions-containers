@@ -1,0 +1,22 @@
+{
+  "target": "plperl",
+  "readme_sha256": "403c2b06fedacc47ccc5f9d52201e0b7972307f0a45b1aa4f55921c43192b430",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-plperl"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-plperl-app"
+    }
+  ],
+  "images": {
+    "plperl-testing:18.6-18-trixie": "sha256:93d817f62a443675ac82588c6f2bbc1e2048ee96b1dc6eae6643395971bfd776"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:00:54Z"
+}

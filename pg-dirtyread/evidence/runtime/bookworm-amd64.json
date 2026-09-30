@@ -1,0 +1,31 @@
+{
+  "command": "task e2e:test:full TARGET=pg-dirtyread DISTRO=bookworm DAGGER_ENGINE_NAME=cnpg-approved-batch-engine",
+  "exit_code": 0,
+  "started_utc": "2026-09-29T21:07:46Z",
+  "duration_seconds": 73,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "pg-dirtyread/Dockerfile": "cc440b6712bdf1bae6b66d117a065b05127395d9c067f05b6d07498d6a41bb8a",
+    "pg-dirtyread/README.md": "8b1a9a603d993f602978beefe00c7e1fff7357109f44bb4bb949b18ff9a8be93",
+    "pg-dirtyread/metadata.hcl": "9287c484e83cbc669b831fffa064029933469da4f46953729c968390cbd7e6dd",
+    "pg-dirtyread/test/chainsaw-test.yaml": "57e979433dd8b08170055e36b186b42c87d15e9b2f87bc16212ea02f1fc427a8",
+    "pg-dirtyread/test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "pg-dirtyread/test/cluster.yaml": "95424e0f209dd9abca0d38a53805dffa74e5993794cdd9598c5dcc10e8bdacc6",
+    "pg-dirtyread/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "pg-dirtyread/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "pg-dirtyread/test/functional.sql": "d420063a51b7503685cb7e8aa4e1b79135dc7b55c054498e2288ddde7daaac9e",
+    "pg-dirtyread/test/job-assert.yaml": "b657517c8fc5570b9d89b507dc356915df8dbf33380c35b32d528346806de4c6",
+    "pg-dirtyread/test/job.yaml": "fb775e738dbd7315eeb55a596e90e43a46e86eabc2ab7911c067d1bf29956b5b",
+    "pg-dirtyread/test/sql.yaml": "fb985861bd60989033f7d0e30bf280ae7696553257085ce7cbc9905c8b369071"
+  },
+  "image": "registry.pg-extensions:5000/pg-dirtyread-testing:2.8-18-bookworm@sha256:aa306d88c4d514e4c4a255448e0dfb04e6c4660ffa57952dc5dbc3fcb6e537b7",
+  "architecture_manifests": {
+    "amd64": "sha256:335c6f04a8b0bffba6edc37f9d0d5f8a1448cc0ea574a1478925f36b76a05eda",
+    "arm64": "sha256:805cd44cc5faf67a9a8e535ffd51cd95839bf9c9c14c7b39b1c8b5e50cd3dbf9"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

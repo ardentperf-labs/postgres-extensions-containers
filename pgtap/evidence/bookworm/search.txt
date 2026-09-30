@@ -1,0 +1,8 @@
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Sorting...
+Full Text Search...
+postgresql-18-pgtap/bookworm-pgdg 1.3.4-1.pgdg12+1 all
+  Unit testing framework extension for PostgreSQL 18
+

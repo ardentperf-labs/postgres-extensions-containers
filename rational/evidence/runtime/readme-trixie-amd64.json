@@ -1,0 +1,22 @@
+{
+  "target": "rational",
+  "readme_sha256": "ab7ea23c5d274b567632e615c70a1083ccf2b20c1476fadba985880afc6e5fba",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-b:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-rational"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-rational-app"
+    }
+  ],
+  "images": {
+    "rational-testing:0.0.3-18-trixie": "sha256:e5d6879c1781adb2ce27cc1195fac6be1ca18249028836ea1e7d039590558488"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:26:21Z"
+}

@@ -1,0 +1,22 @@
+{
+  "target": "semver",
+  "readme_sha256": "3c13ae43a964db775e3617fdae6d27b4978846f5c2cb47ce0c9ba1512f798514",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-b:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-semver"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-semver-app"
+    }
+  ],
+  "images": {
+    "semver-testing:0.41.0-18-trixie": "sha256:423b8df13e24c40b44cf81d1496b9b75d571d7f05347a1cf2ac01369e4148871"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:34:32Z"
+}

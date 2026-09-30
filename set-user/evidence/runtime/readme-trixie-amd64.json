@@ -1,0 +1,22 @@
+{
+  "target": "set-user",
+  "readme_sha256": "8f841dfbdff92edbf65e51a9f0f5d445d34f268cfa4280aed5c40d0409f4a18f",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-set-user"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-set-user-app"
+    }
+  ],
+  "images": {
+    "set-user-testing:4.2.0-18-trixie": "sha256:dcfbd4c1b1b1335cf04965c90048288320adbfe0808ade0048c78658b1c8a0b2"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:25:04Z"
+}

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  functional.sql: "\\set ON_ERROR_STOP on\nCREATE TABLE period_probe (id int, starts\
+    \ date, ends date);\nSELECT periods.add_period('period_probe', 'validity', 'starts',\
+    \ 'ends');\nINSERT INTO period_probe VALUES (1, '2026-01-01', '2026-02-01');\n\
+    DO $$ BEGIN\n BEGIN\n  INSERT INTO period_probe VALUES (2, '2026-02-01', '2026-01-01');\n\
+    \  RAISE EXCEPTION 'inverted period accepted';\n EXCEPTION WHEN check_violation\
+    \ THEN NULL;\n END;\nEND $$;\n"

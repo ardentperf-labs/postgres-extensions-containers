@@ -213,12 +213,16 @@ func (m *Maintenance) GenerateTestingValues(
 	databaseConfig := generateDatabaseConfig(extensionInfos)
 	databaseAssertStatus := generateDatabaseAssertStatus(extensionInfos)
 
+	preloads, parameters, err := mergeTestingSettings(extensionInfos)
+	if err != nil {
+		return nil, err
+	}
 	// Build values.yaml content
 	values := TestingValues{
 		Name:                   metadata.Name,
 		SQLName:                metadata.SQLName,
-		SharedPreloadLibraries: metadata.SharedPreloadLibraries,
-		PostgresqlParameters:   metadata.PostgresqlParameters,
+		SharedPreloadLibraries: preloads,
+		PostgresqlParameters:   parameters,
 		PgImage:                pgImage,
 		Version:                version,
 		CreateExtension:        metadata.CreateExtension,

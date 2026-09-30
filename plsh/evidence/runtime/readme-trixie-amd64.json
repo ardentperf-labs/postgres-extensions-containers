@@ -1,0 +1,22 @@
+{
+  "target": "plsh",
+  "readme_sha256": "eae1a93cb5a8e312bc0b037826db4bedf690050f707597d8fbf7e2aeb708b6e3",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-plsh"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-plsh-app"
+    }
+  ],
+  "images": {
+    "plsh-testing:1.20220917-18-trixie": "sha256:221cc24866583a3b5c0fc7a757dbc88d0b020397285a17767f0be285c38ef7e5"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:05:36Z"
+}

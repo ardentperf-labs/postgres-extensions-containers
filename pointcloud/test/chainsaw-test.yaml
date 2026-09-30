@@ -1,0 +1,34 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: functional-extension
+spec:
+  timeouts:
+    apply: 30s
+    assert: 5m
+    delete: 30s
+  description: Provisions a CNPG database and exercises the extension API with SQL.
+  steps:
+  - name: Provision Cluster
+    try:
+    - apply:
+        file: cluster.yaml
+    - assert:
+        file: cluster-assert.yaml
+  - name: Install extension
+    try:
+    - apply:
+        file: database.yaml
+    - assert:
+        file: database-assert.yaml
+  - name: Exercise extension
+    try:
+    - apply:
+        file: functional-job.yaml
+    - assert:
+        file: functional-job-assert.yaml
+    catch:
+    - podLogs:
+        selector: job-name=functional-check
+        tail: 60
+    - events: {}

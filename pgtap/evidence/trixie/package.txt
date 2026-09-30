@@ -1,0 +1,28 @@
+Package: postgresql-18-pgtap
+Source: pgtap
+Version: 1.3.4-1.pgdg13+1
+Architecture: all
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 1812
+Depends: postgresql-18
+Recommends: libtap-harness-archive-perl, libtap-parser-sourcehandler-pgtap-perl, libtest-harness-perl, pgtap-doc
+Provides: postgresql-pgtap
+Homepage: https://pgtap.org/
+Priority: optional
+Section: database
+Filename: pool/main/p/pgtap/postgresql-18-pgtap_1.3.4-1.pgdg13+1_all.deb
+Size: 63616
+SHA256: e6cdbc6527ac70496df22ea063360709d11d3154ee6d3340c46fecc32c8c8e05
+SHA1: 6f30e752f9938ed33b476cd7401e7a3e5387ccc1
+MD5sum: 8f661298fe954ba5a2e566df52ef1536
+Description: Unit testing framework extension for PostgreSQL 18
+ pgTAP is a suite of database functions that make it easy to write
+ TAP-emitting unit tests in psql scripts suitable for harvesting,
+ analysis, and reporting by a TAP harness, such as those used in Perl
+ and PHP applications.
+ .
+ TAP is the Test Anything Protocol (http://testanything.org/).
+ .
+ This package contains the extension for PostgreSQL 18.
+Description-md5: 
+

@@ -1,0 +1,10 @@
+postgresql-18-pgtt:
+  Installed: (none)
+  Candidate: 4.6-1.pgdg13+2
+  Version table:
+     4.6-1.pgdg13+2 500
+        500 https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main amd64 Packages
+     4.6-1.pgdg13+1 500
+        500 https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main amd64 Packages
+     4.5-1.pgdg13+1 500
+        500 https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main amd64 Packages

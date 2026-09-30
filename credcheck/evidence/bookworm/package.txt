@@ -1,0 +1,90 @@
+Package: postgresql-18-credcheck
+Source: credcheck
+Version: 5.0-2.pgdg12+2
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 200
+Depends: postgresql-18, libc6 (>= 2.4)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/MigOpsRepos/credcheck
+Priority: optional
+Section: database
+Filename: pool/main/c/credcheck/postgresql-18-credcheck_5.0-2.pgdg12+2_amd64.deb
+Size: 82764
+SHA512: b28d0e61779909eb46319734d54ebc03549116e1ab9a92590f99d2916a9b32103124a327fb6895fab42c1a7d3e7dfcfbd5c2b84afdc1f139badd9ae8bdc30679
+SHA256: abd9cd729cfa41f9b8d525d62304487f155845549c3bf3d9ad0e5ff732e6898b
+SHA1: 096786cf283fb6ea6bb21047cf2d7e9e80c6604f
+MD5sum: 575981443d330149fb835149f5e1fffe
+Description: PostgreSQL username/password checks
+ The credcheck PostgreSQL extension provides few general credential checks,
+ which will be evaluated during the user creation, during the password change
+ and user renaming. By using this extension, we can define a set of rules:
+ .
+  * allow a specific set of credentials
+  * reject a certain type of credentials
+  * deny password that can be easily cracked
+  * enforce use of an expiration date with a minimum of day for a password
+  * define a password reuse policy
+  * define the number of authentication failure allowed before a user is banned
+Description-md5: 18ad910b0dc537a23b8d6de8b771df2d
+
+Package: postgresql-18-credcheck
+Source: credcheck
+Version: 5.0-2.pgdg12+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 200
+Depends: postgresql-18, libc6 (>= 2.4)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/MigOpsRepos/credcheck
+Priority: optional
+Section: database
+Filename: pool/main/c/credcheck/postgresql-18-credcheck_5.0-2.pgdg12+1_amd64.deb
+Size: 82748
+SHA512: 9901c17a5c46ee88751da0f84322066ba25e40c09f916c58f73d5207e83472ed08ffe16c6b8dd6f60e74854a57859bc90e51e06fd19855761dc234a31c9e76ab
+SHA256: 2763e9c7879442899fe788e9aa8a9e817f193c448ce32c2f38cac32c6bdf1637
+SHA1: c4e14475d6bb968dd6a5b2d4d95ec5ebb4103a36
+MD5sum: 0c4a92d87192b07d413f3dbb1e955971
+Description: PostgreSQL username/password checks
+ The credcheck PostgreSQL extension provides few general credential checks,
+ which will be evaluated during the user creation, during the password change
+ and user renaming. By using this extension, we can define a set of rules:
+ .
+  * allow a specific set of credentials
+  * reject a certain type of credentials
+  * deny password that can be easily cracked
+  * enforce use of an expiration date with a minimum of day for a password
+  * define a password reuse policy
+  * define the number of authentication failure allowed before a user is banned
+Description-md5: 18ad910b0dc537a23b8d6de8b771df2d
+
+Package: postgresql-18-credcheck
+Source: credcheck
+Version: 5.0-1.pgdg12+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 200
+Depends: postgresql-18, libc6 (>= 2.4)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/MigOpsRepos/credcheck
+Priority: optional
+Section: database
+Filename: pool/main/c/credcheck/postgresql-18-credcheck_5.0-1.pgdg12+1_amd64.deb
+Size: 82736
+SHA512: 3b5f2eee831881f55fca38ffb26605a6a63c594231b2dc12fdbcbdb933c63103d14f23402f0410c71d457e514c743a43be865d3e04a4783f6ec057302d2cd008
+SHA256: d0c65fc440c8694eb5bfe81e402d43af3d96854d807eb19220204bdf7c57791f
+SHA1: dc9ba656b314a9c68c269ec80b09c0ded0e6842f
+MD5sum: a776d76dd8fec576091e4fc4c9f251fe
+Description: PostgreSQL username/password checks
+ The credcheck PostgreSQL extension provides few general credential checks,
+ which will be evaluated during the user creation, during the password change
+ and user renaming. By using this extension, we can define a set of rules:
+ .
+  * allow a specific set of credentials
+  * reject a certain type of credentials
+  * deny password that can be easily cracked
+  * enforce use of an expiration date with a minimum of day for a password
+  * define a password reuse policy
+  * define the number of authentication failure allowed before a user is banned
+Description-md5: 18ad910b0dc537a23b8d6de8b771df2d
+

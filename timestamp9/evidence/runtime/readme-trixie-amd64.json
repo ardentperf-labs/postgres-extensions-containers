@@ -1,0 +1,22 @@
+{
+  "target": "timestamp9",
+  "readme_sha256": "32debaf92d6fb3cafa0a94318b0064a1381f448e8af546f3f187a51f3a68a248",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-b:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-timestamp9"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-timestamp9-app"
+    }
+  ],
+  "images": {
+    "timestamp9-testing:1.4.0-18-trixie": "sha256:e5a8e392ba573900de5ed40fc95e02de32764bc16f0fd42c4333f1715200dc5d"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:42:17Z"
+}

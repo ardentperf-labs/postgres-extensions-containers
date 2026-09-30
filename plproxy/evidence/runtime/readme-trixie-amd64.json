@@ -1,0 +1,22 @@
+{
+  "target": "plproxy",
+  "readme_sha256": "d047551c59cb5c491360b35c6f2d4d4255c77220ef15d746625745d52169b590",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-plproxy"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-plproxy-app"
+    }
+  ],
+  "images": {
+    "plproxy-testing:2.12.0-18-trixie": "sha256:0c96b5320d8fd96edab8b5cc5d402618118967601a7cd13fe7d9f2129085ed43"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:13:06Z"
+}

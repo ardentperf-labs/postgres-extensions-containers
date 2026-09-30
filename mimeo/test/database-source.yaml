@@ -1,0 +1,9 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: (join('-', [$values.name, 'source']))
+spec:
+  name: mimeo_source
+  owner: postgres
+  cluster:
+    name: ($values.name)

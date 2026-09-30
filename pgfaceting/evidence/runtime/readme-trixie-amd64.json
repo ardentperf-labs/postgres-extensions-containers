@@ -1,0 +1,23 @@
+{
+  "target": "pgfaceting",
+  "readme_sha256": "2254c96b289e0bec668ee7bbfdf96f9f32ef5d84b49424fff2c0ee584e760cd0",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pgfaceting"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pgfaceting-app"
+    }
+  ],
+  "images": {
+    "pgfaceting-testing:0.2.0-18-trixie": "sha256:d473463b27543363f33c9acd00aa121a60896d207b50edd674a272c1936eb1e5",
+    "roaringbitmap-testing:1.2.0-18-trixie": "sha256:0d6365c55ccd215776e086f873ffb3bd1c7b7720dceaf4fdba77e58cd4120ebf"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:25:49Z"
+}

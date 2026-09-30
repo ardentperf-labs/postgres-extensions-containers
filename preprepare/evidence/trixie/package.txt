@@ -1,0 +1,21 @@
+Package: postgresql-18-preprepare
+Source: preprepare
+Version: 0.9-10.pgdg13+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 54
+Depends: postgresql-18, libc6 (>= 2.4)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Priority: optional
+Section: database
+Filename: pool/main/p/preprepare/postgresql-18-preprepare_0.9-10.pgdg13+1_amd64.deb
+Size: 17220
+SHA256: b0597aa1a12577330fa0608f5f017e334229fb25c29554d40ed04a3b9cc6f5e5
+SHA1: 8fddd2622882fd575560e643d80f1966377a4faa
+MD5sum: 2bb8027acfd8249f9b7f9f3d41b936de
+Description: pre prepare your PostgreSQL statements server side
+ The pre_prepare module for PostgreSQL aims to prepare all your statements as
+ soon as possible and in a way that allows client queries not to bother at all
+ and just call EXECUTE.
+Description-md5: 
+

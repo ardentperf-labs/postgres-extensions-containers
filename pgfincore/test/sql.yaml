@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  functional.sql: "\\set ON_ERROR_STOP on\nCREATE TABLE fincore_probe AS SELECT generate_series(1,1000)\
+    \ id;\nDO $$ BEGIN\n IF NOT EXISTS (SELECT FROM pgfincore('fincore_probe')) THEN\
+    \ RAISE EXCEPTION 'relation cache inspection empty'; END IF;\nEND $$;\n"

@@ -1,0 +1,28 @@
+Package: postgresql-18-pg-track-settings
+Source: pg-track-settings
+Version: 2.1.2-5.pgdg12+1
+Architecture: all
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 150
+Depends: postgresql-18
+Homepage: https://powa.readthedocs.io/
+Priority: optional
+Section: database
+Filename: pool/main/p/pg-track-settings/postgresql-18-pg-track-settings_2.1.2-5.pgdg12+1_all.deb
+Size: 9976
+SHA256: dbf90f87bf776fc4a9a501fbd956c872c62f7251d43cd3ba85f47cbc9755c981
+SHA1: faccb07ea918866acfe45320df6d3f7373d171d8
+MD5sum: c98cc991a6db28755328cac07141754e
+Description: PostgreSQL extension tracking of configuration settings
+ pg_track_settings is a small PostgreSQL extension that helps you keep track of
+ PostgreSQL settings configuration.
+ .
+ It provides a function (pg_track_settings_snapshot()), that must be called
+ regularly. At each call, it will store the settings that have been changed
+ since last call. It will also track the postgresql start time if it's
+ different from the last one.
+ .
+ This extension tracks both overall settings (the pg_settings view) and
+ overloaded settings (the pg_db_role_setting table).
+Description-md5: 4837f25c851c996d8ddd0f478a8dba02
+

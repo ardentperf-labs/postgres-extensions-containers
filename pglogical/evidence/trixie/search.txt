@@ -1,0 +1,8 @@
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Sorting...
+Full Text Search...
+postgresql-18-pglogical/trixie-pgdg,now 2.4.8-1.pgdg13+1 amd64 [installed]
+  Logical Replication Extension for PostgreSQL
+

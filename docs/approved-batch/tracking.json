@@ -1,0 +1,4084 @@
+[
+  {
+    "candidate": "asn1oid",
+    "image": "asn1oid",
+    "package_pattern": "postgresql-{major}-asn1oid",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/df7cb/pgsql-asn1oid",
+    "sql_extensions": [
+      "asn1oid"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-asn1oid",
+        "version": "1.6-3.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-asn1oid",
+        "version": "1.6-3.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "GPL-3.0-or-later"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/asn1oid-testing:1.6-18-trixie@sha256:749ae785461083d13fb53252d4241da85ebce660c00b80d6a6f47f904c2fec44"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/asn1oid-testing:1.6-18-bookworm@sha256:e08d061c17a20f8159f81ee021b9c9bcda01340265c42ccdd7a00afbc22dfa85"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "dependency_accounting": "asn1oid/dependency-manifest.json",
+    "evidence": "asn1oid/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    }
+  },
+  {
+    "candidate": "credcheck",
+    "image": "credcheck",
+    "package_pattern": "postgresql-{major}-credcheck",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/MigOpsRepos/credcheck",
+    "sql_extensions": [
+      "credcheck"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-credcheck",
+        "version": "5.0-2.pgdg13+2",
+        "origin": "apt.postgresql.org trixie-pgdg/main",
+        "installed_architecture": "amd64"
+      },
+      "bookworm": {
+        "name": "postgresql-18-credcheck",
+        "version": "5.0-2.pgdg12+2",
+        "origin": "apt.postgresql.org bookworm-pgdg/main",
+        "installed_architecture": "amd64"
+      }
+    },
+    "licenses": [
+      "MIT"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/credcheck-testing:5.0-18-trixie@sha256:b5553b53e28e65babd1abf7530c71c66d5624f7b500eb5971e9f76a2c8d89dbd"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/credcheck-testing:5.0-18-bookworm@sha256:9ad7934811ec0776f2305fd0b5c196a4ee229a76bde66a3a9a69f90ac8f7b41e"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie",
+        "bookworm"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "credcheck/evidence.md",
+    "dependency_accounting": "credcheck/evidence.md"
+  },
+  {
+    "candidate": "db2fce",
+    "image": "db2fce",
+    "package_pattern": "postgresql-{major}-db2fce",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/credativ/db2fce",
+    "sql_extensions": [
+      "db2fce"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-db2fce",
+        "version": "0.0.17-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-db2fce",
+        "version": "0.0.17-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/db2fce-testing:0.0.17-18-trixie@sha256:e3fd29b0256c6503f2ba472efb93c024ab7ae75b9ed6f74fad7299d4ad318c11"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/db2fce-testing:0.0.17-18-bookworm@sha256:8424365f9e80a716a834066a8487b9ed0f87c442a14e6fee9ed272a568b891a9"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "dependency_accounting": "db2fce/dependency-manifest.json",
+    "evidence": "db2fce/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    }
+  },
+  {
+    "candidate": "decoderbufs",
+    "image": "decoderbufs",
+    "package_pattern": "postgresql-{major}-decoderbufs",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/debezium/postgres-decoderbufs",
+    "sql_extensions": [],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-decoderbufs",
+        "version": "3.6.1-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-decoderbufs",
+        "version": "3.6.1-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "MIT"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/decoderbufs-testing:3.6.1-18-trixie@sha256:814aa5cf03c6be65f526d79869ca6faa461e1ff01e1a9158bdfd707ced6d69d8"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/decoderbufs-testing:3.6.1-18-bookworm@sha256:5192471016b0d1e736ad7a2089634c9ed6f9eb50949a3b72b77279dd14c82f88"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "evidence": "decoderbufs/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "dependency_accounting": "decoderbufs/evidence.md"
+  },
+  {
+    "candidate": "extra_window_functions",
+    "image": "extra-window-functions",
+    "package_pattern": "postgresql-{major}-extra-window-functions",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/xocolatl/extra_window_functions",
+    "sql_extensions": [
+      "extra_window_functions"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-extra-window-functions",
+        "version": "2.0-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-extra-window-functions",
+        "version": "2.0-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/extra-window-functions-testing:2.0-18-trixie@sha256:e068bd2a4d9551a4beb1481aa1ed3d0fce2baa0f3fb6b3bb476b06cbb7ce0b6e"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/extra-window-functions-testing:2.0-18-bookworm@sha256:d009b9c6f9ce564580e6a5335975183552ee2d1be0d6183a734dbfd27530766d"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "dependency_accounting": "extra-window-functions/dependency-manifest.json",
+    "evidence": "extra-window-functions/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    }
+  },
+  {
+    "candidate": "hll",
+    "image": "hll",
+    "package_pattern": "postgresql-{major}-hll",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/citusdata/postgresql-hll",
+    "sql_extensions": [
+      "hll"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-hll",
+        "version": "2.21-1.pgdg12+2",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-hll",
+        "version": "2.21-1.pgdg13+2",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "Apache-2.0"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/hll-testing:2.21-18-trixie@sha256:4a72a9981b1cbe085b3f494e8f64aac763a8f39a1d60563c1aabc80ea083f628"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/hll-testing:2.21-18-bookworm@sha256:f164acabfb6a47c473f25434a818d7927694406f2997d8a9a5cbe1f52e0653f3"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "dependency_accounting": "hll/dependency-manifest.json",
+    "evidence": "hll/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    }
+  },
+  {
+    "candidate": "ip4r",
+    "image": "ip4r",
+    "package_pattern": "postgresql-{major}-ip4r",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/RhodiumToad/ip4r",
+    "sql_extensions": [
+      "ip4r"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-ip4r",
+        "version": "2.4.3-1.pgdg12+2",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-ip4r",
+        "version": "2.4.3-1.pgdg13+2",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/ip4r-testing:2.4.3-18-trixie@sha256:21c6d32d6b7c436752c213c53125a8e1c0f7de41c4b55273513a7eaddc42d3df"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/ip4r-testing:2.4.3-18-bookworm@sha256:87fbb42db735e7ac046dd305d961b10088c005896930c2e09cfebebc9b7c4ca2"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "dependency_accounting": "ip4r/dependency-manifest.json",
+    "evidence": "ip4r/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    }
+  },
+  {
+    "candidate": "jsquery",
+    "image": "jsquery",
+    "package_pattern": "postgresql-{major}-jsquery",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/postgrespro/jsquery",
+    "sql_extensions": [
+      "jsquery"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-jsquery",
+        "version": "1.2-3.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-jsquery",
+        "version": "1.2-3.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/jsquery-testing:1.2-18-trixie@sha256:643ae574177e891e8cc43d30d160621570c7f8e839f54498dba5506123d84007"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/jsquery-testing:1.2-18-bookworm@sha256:18552fce5907df20da7ab9b6c8c8653f06e522cf95f0f1cd338150c3b79828f2"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "dependency_accounting": "jsquery/dependency-manifest.json",
+    "evidence": "jsquery/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    }
+  },
+  {
+    "candidate": "numeral",
+    "image": "numeral",
+    "package_pattern": "postgresql-{major}-numeral",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/df7cb/postgresql-numeral",
+    "sql_extensions": [
+      "numeral"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-numeral",
+        "version": "1.3-9.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-numeral",
+        "version": "1.3-9.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/numeral-testing:1.3-18-trixie@sha256:57909f86bd8a13590c2a716563f9c666242a01120c85c2f2187d0a0f24c2edb6"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/numeral-testing:1.3-18-bookworm@sha256:89dfe8017f2356cbb289935e6f97054fe16d85775660aa8adf76f231e5939f22"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "dependency_accounting": "numeral/dependency-manifest.json",
+    "evidence": "numeral/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    }
+  },
+  {
+    "candidate": "orafce",
+    "image": "orafce",
+    "package_pattern": "postgresql-{major}-orafce",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/orafce/orafce",
+    "sql_extensions": [
+      "orafce"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-orafce",
+        "version": "4.16.12-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-orafce",
+        "version": "4.16.12-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "0BSD",
+      "GPL-3.0-or-later WITH Bison-exception-2.2"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/orafce-testing:4.16.12-18-trixie@sha256:9a6e8c5536a26a242fc4a609804425d85a7e2b0d509849cb402dfcdd8eabd534"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/orafce-testing:4.16.12-18-bookworm@sha256:777699b5055847722081ce82be3207e3aa9f42f02923a68562b33410f5d39a3f"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "dependency_accounting": "orafce/dependency-manifest.json",
+    "evidence": "orafce/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    }
+  },
+  {
+    "candidate": "pg_background",
+    "image": "pg-background",
+    "package_pattern": "postgresql-{major}-pg-background",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/vibhorkum/pg_background",
+    "sql_extensions": [
+      "pg_background"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-pg-background",
+        "version": "2.0.3-1.pgdg12+2",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-pg-background",
+        "version": "2.0.3-1.pgdg13+2",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-background-testing:2.0.3-18-trixie@sha256:3cbe63e7fdd95eb3be82e312be6dd873e0c61360e2d6d60eb4916e822b23c65b"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-background-testing:2.0.3-18-bookworm@sha256:aa7d91f42e9f3488796872713d48ae22626c56e51b8a008d155270c4379f5311"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "evidence": "pg-background/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "dependency_accounting": "pg-background/evidence.md"
+  },
+  {
+    "candidate": "pg_csv",
+    "image": "pg-csv",
+    "package_pattern": "postgresql-{major}-pg-csv",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/PostgREST/pg_csv/",
+    "sql_extensions": [
+      "pg_csv"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-pg-csv",
+        "version": "1.0.2-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main",
+        "installed_architecture": "amd64"
+      },
+      "bookworm": {
+        "name": "postgresql-18-pg-csv",
+        "version": "1.0.2-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main",
+        "installed_architecture": "amd64"
+      }
+    },
+    "licenses": [
+      "MIT"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-csv-testing:1.0.2-18-trixie@sha256:5c700c23d647c9d16324c460b1937fc7d68a7ed8718fc9ac0d506676b5ca9cc2"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-csv-testing:1.0.2-18-bookworm@sha256:d99d2c7495d9f920a575f3fde81cddd8f8faa516b47f9a3daa0f53eed3f441c7"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie",
+        "bookworm"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "pg-csv/evidence.md",
+    "dependency_accounting": "pg-csv/evidence.md"
+  },
+  {
+    "candidate": "pg_dirtyread",
+    "image": "pg-dirtyread",
+    "package_pattern": "postgresql-{major}-dirtyread",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/df7cb/pg_dirtyread",
+    "sql_extensions": [
+      "pg_dirtyread"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-dirtyread",
+        "version": "2.8-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main",
+        "installed_architecture": "amd64"
+      },
+      "bookworm": {
+        "name": "postgresql-18-dirtyread",
+        "version": "2.8-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main",
+        "installed_architecture": "amd64"
+      }
+    },
+    "licenses": [
+      "BSD-3-Clause"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-dirtyread-testing:2.8-18-bookworm@sha256:aa306d88c4d514e4c4a255448e0dfb04e6c4660ffa57952dc5dbc3fcb6e537b7"
+      },
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-dirtyread-testing:2.8-18-trixie@sha256:e9aaa599375667c264a71c5a97df6061b13bd9bc6c25e6a8856cf895a006dc44"
+      }
+    },
+    "runtime_results": {
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites",
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie",
+        "bookworm"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "pg-dirtyread/evidence.md",
+    "dependency_accounting": "pg-dirtyread/evidence.md"
+  },
+  {
+    "candidate": "pg_permissions",
+    "image": "pg-permissions",
+    "package_pattern": "postgresql-{major}-pg-permissions",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/cybertec-postgresql/pg_permissions",
+    "sql_extensions": [
+      "pg_permissions"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-pg-permissions",
+        "version": "1.4.1-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main",
+        "installed_architecture": "amd64"
+      },
+      "bookworm": {
+        "name": "postgresql-18-pg-permissions",
+        "version": "1.4.1-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main",
+        "installed_architecture": "amd64"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-permissions-testing:1.4.1-18-bookworm@sha256:0c7891fbd86d8b45e52e26f24ec13e296fe1f24705ad3fdcea714182d5d75e5a"
+      },
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-permissions-testing:1.4.1-18-trixie@sha256:7c5d946cb4d3ea98c8918b42ba827f6eef739c26716746c20b58c3d63fece333"
+      }
+    },
+    "runtime_results": {
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites",
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie",
+        "bookworm"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "pg-permissions/evidence.md",
+    "dependency_accounting": "pg-permissions/evidence.md"
+  },
+  {
+    "candidate": "pg_rewrite",
+    "image": "pg-rewrite",
+    "package_pattern": "postgresql-{major}-pg-rewrite",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/cybertec-postgresql/pg_rewrite",
+    "sql_extensions": [
+      "pg_rewrite"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-pg-rewrite",
+        "version": "2.2-2.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main",
+        "installed_architecture": "amd64"
+      },
+      "bookworm": {
+        "name": "postgresql-18-pg-rewrite",
+        "version": "2.2-2.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main",
+        "installed_architecture": "amd64"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-rewrite-testing:2.2-18-bookworm@sha256:3b89eb3cd912b6ca57c3bad3b9e412a592d69ac6cfe785f6e1e759604dfc2e68"
+      },
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-rewrite-testing:2.2-18-trixie@sha256:7c8ea16656ecf8b6a6c58333fa6aac0e005adae8608b694f63ae5f3a960235e7"
+      }
+    },
+    "runtime_results": {
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites",
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie",
+        "bookworm"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "pg-rewrite/evidence.md",
+    "dependency_accounting": "pg-rewrite/evidence.md"
+  },
+  {
+    "candidate": "pg_similarity",
+    "image": "pg-similarity",
+    "package_pattern": "postgresql-{major}-similarity",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/eulerto/pg_similarity",
+    "sql_extensions": [
+      "pg_similarity"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-similarity",
+        "version": "1.0-9.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main",
+        "installed_architecture": "amd64"
+      },
+      "bookworm": {
+        "name": "postgresql-18-similarity",
+        "version": "1.0-9.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main",
+        "installed_architecture": "amd64"
+      }
+    },
+    "licenses": [
+      "BSD-3-Clause"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-similarity-testing:1.0-18-trixie@sha256:2122062b7bb2adaf0dbfdca0ca74e07358bde8f6189ab198b4c01e731f155525"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-similarity-testing:1.0-18-bookworm@sha256:b4595a98580d3839adfe35417cab799a964f6024ad6aa8ff94f2790950e259ea"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie",
+        "bookworm"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "pg-similarity/evidence.md",
+    "dependency_accounting": "pg-similarity/evidence.md"
+  },
+  {
+    "candidate": "pg_stat_log",
+    "image": "pg-stat-log",
+    "package_pattern": "postgresql-{major}-stat-log",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/fabriziomello/pg_stat_log",
+    "sql_extensions": [
+      "pg_stat_log"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-stat-log",
+        "version": "0.2-1.pgdg12+2",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-stat-log",
+        "version": "0.2-1.pgdg13+2",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-stat-log-testing:0.2-18-trixie@sha256:1b5c4ca51dc548b41dd6bc4cc6a026941dd2103b31d4109de4ce51d9a1081381"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-stat-log-testing:0.2-18-bookworm@sha256:f31930f637c4d1970543dba104c2cd72cffd4301a1c979501171a777e97b091d"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "evidence": "pg-stat-log/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "dependency_accounting": "pg-stat-log/evidence.md"
+  },
+  {
+    "candidate": "pg_track_settings",
+    "image": "pg-track-settings",
+    "package_pattern": "postgresql-{major}-pg-track-settings",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://powa.readthedocs.io/",
+    "sql_extensions": [
+      "pg_track_settings"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-pg-track-settings",
+        "version": "2.1.2-5.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main",
+        "installed_architecture": "amd64"
+      },
+      "bookworm": {
+        "name": "postgresql-18-pg-track-settings",
+        "version": "2.1.2-5.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main",
+        "installed_architecture": "amd64"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-track-settings-testing:2.1.2-18-trixie@sha256:7b2d56d326afbd2abbf34aa69bbe8fe3b2b6cc9f5ef9199cf3708a9616bf0c84"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-track-settings-testing:2.1.2-18-bookworm@sha256:c1dd5ee9a69cdf417738d31adb006aaa2ea3d517dbb3ef90760de534298781cd"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie",
+        "bookworm"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "pg-track-settings/evidence.md",
+    "dependency_accounting": "pg-track-settings/evidence.md"
+  },
+  {
+    "candidate": "pg_wait_sampling",
+    "image": "pg-wait-sampling",
+    "package_pattern": "postgresql-{major}-pg-wait-sampling",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/postgrespro/pg_wait_sampling",
+    "sql_extensions": [
+      "pg_wait_sampling"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-pg-wait-sampling",
+        "version": "1.1.11-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-pg-wait-sampling",
+        "version": "1.1.11-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-wait-sampling-testing:1.1.11-18-trixie@sha256:d00d7955bd7cca9313ba61fd68c3b7567c92a8c9f3c7228392784bb0ce68c0f6"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-wait-sampling-testing:1.1.11-18-bookworm@sha256:bc57bfba53f19a11210ca35aa7068b107b687f7496613cfa1c0a32fe091a3a47"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "evidence": "pg-wait-sampling/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "dependency_accounting": "pg-wait-sampling/evidence.md"
+  },
+  {
+    "candidate": "pgextwlist",
+    "image": "pgextwlist",
+    "package_pattern": "postgresql-{major}-pgextwlist",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/dimitri/pgextwlist",
+    "sql_extensions": [],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-pgextwlist",
+        "version": "1.20-1.pgdg13+2",
+        "origin": "apt.postgresql.org trixie-pgdg/main",
+        "installed_architecture": "amd64"
+      },
+      "bookworm": {
+        "name": "postgresql-18-pgextwlist",
+        "version": "1.20-1.pgdg12+2",
+        "origin": "apt.postgresql.org bookworm-pgdg/main",
+        "installed_architecture": "amd64"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pgextwlist-testing:1.20-18-bookworm@sha256:3bf243c28990a4f8fd29488bf066f2b2ed6c5d2f3c2e89d3734f277345bd8f24"
+      },
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pgextwlist-testing:1.20-18-trixie@sha256:77ff3cf503007755f500ca42edca8073a255a001cf2be0002135e0b75fda5c04"
+      }
+    },
+    "runtime_results": {
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites",
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie",
+        "bookworm"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "pgextwlist/evidence.md",
+    "dependency_accounting": "pgextwlist/evidence.md"
+  },
+  {
+    "candidate": "pgfaceting",
+    "image": "pgfaceting",
+    "package_pattern": "postgresql-{major}-pgfaceting",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/cybertec-postgresql/pgfaceting",
+    "sql_extensions": [
+      "pgfaceting"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-pgfaceting",
+        "version": "0.2.0-6.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main",
+        "installed_architecture": "amd64"
+      },
+      "bookworm": {
+        "name": "postgresql-18-pgfaceting",
+        "version": "0.2.0-6.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main",
+        "installed_architecture": "amd64"
+      }
+    },
+    "licenses": [
+      "BSD-3-Clause"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pgfaceting-testing:0.2.0-18-trixie@sha256:7dedacda6537f8864045c084c540d4e714f9d922dd8be553b4047dc9a90df832"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pgfaceting-testing:0.2.0-18-bookworm@sha256:98c9fc7be9665a13cf2fb8df36dd19e8cf39d282f2d7001173cb3322ac5d9e47"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie",
+        "bookworm"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "pgfaceting/evidence.md",
+    "dependency_accounting": "pgfaceting/evidence.md"
+  },
+  {
+    "candidate": "pgfincore",
+    "image": "pgfincore",
+    "package_pattern": "postgresql-{major}-pgfincore",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "http://villemain.org/projects/pgfincore",
+    "sql_extensions": [
+      "pgfincore"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-pgfincore",
+        "version": "1.4.0-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main",
+        "installed_architecture": "amd64"
+      },
+      "bookworm": {
+        "name": "postgresql-18-pgfincore",
+        "version": "1.4.0-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main",
+        "installed_architecture": "amd64"
+      }
+    },
+    "licenses": [
+      "BSD-3-Clause"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pgfincore-testing:1.4.0-18-trixie@sha256:94dedef3807dffa89ea2267d29b318d7afc709ce872fe5e138d84b0244b0523e"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pgfincore-testing:1.4.0-18-bookworm@sha256:1a1e2ddb83ad8ea47b519d0317d3d88969c7d8cd6417992cf46ce5f0ade78bcc"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie",
+        "bookworm"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "pgfincore/evidence.md",
+    "dependency_accounting": "pgfincore/evidence.md"
+  },
+  {
+    "candidate": "pglogical",
+    "image": "pglogical",
+    "package_pattern": "postgresql-{major}-pglogical",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/2ndQuadrant/pglogical",
+    "sql_extensions": [
+      "pglogical",
+      "pglogical_origin"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-pglogical",
+        "version": "2.4.8-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-pglogical",
+        "version": "2.4.8-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pglogical-testing:2.4.8-18-trixie@sha256:ee94f0851360d061a778f94054aad58a92c35821ba51b5b26095bc9cd7d547ca"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pglogical-testing:2.4.8-18-bookworm@sha256:103f5af22c5e04dba4c2d16ada7e775ff8caad23133e10a5d634e652a7607025"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "evidence": "pglogical/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "dependency_accounting": "pglogical/evidence.md"
+  },
+  {
+    "candidate": "pgnodemx",
+    "image": "pgnodemx",
+    "package_pattern": "postgresql-{major}-pgnodemx",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/pgnodemx/pgnodemx",
+    "sql_extensions": [
+      "pgnodemx"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-pgnodemx",
+        "version": "2.0.1-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main",
+        "installed_architecture": "amd64"
+      },
+      "bookworm": {
+        "name": "postgresql-18-pgnodemx",
+        "version": "2.0.1-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main",
+        "installed_architecture": "amd64"
+      }
+    },
+    "licenses": [
+      "PostgreSQL",
+      "Apache-2.0"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pgnodemx-testing:2.0.1-18-trixie@sha256:f02085de6cd8ff28f993fbb4fd99e2494a6179cd9041fa6fa96c76ff17fe3353"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pgnodemx-testing:2.0.1-18-bookworm@sha256:7c1138fff92a39e81b8682eb5a1f54d471ec7024b32381636c5d8ede6a499bf7"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie",
+        "bookworm"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "pgnodemx/evidence.md",
+    "dependency_accounting": "pgnodemx/evidence.md"
+  },
+  {
+    "candidate": "pgTAP",
+    "image": "pgtap",
+    "package_pattern": "postgresql-{major}-pgtap",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://pgtap.org/",
+    "sql_extensions": [
+      "pgtap"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-pgtap",
+        "version": "1.3.4-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main",
+        "installed_architecture": "amd64"
+      },
+      "bookworm": {
+        "name": "postgresql-18-pgtap",
+        "version": "1.3.4-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main",
+        "installed_architecture": "amd64"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pgtap-testing:1.3.4-18-bookworm@sha256:58e634e2972932cd0be5dc46379e64d9f42149fa46c28d2e9e1060c535f44ab8"
+      },
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pgtap-testing:1.3.4-18-trixie@sha256:968eb01de65963b93bece563627be2fef5609228c10bb36032b6830d9c81fb31"
+      }
+    },
+    "runtime_results": {
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites",
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie",
+        "bookworm"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "pgtap/evidence.md",
+    "dependency_accounting": "pgtap/evidence.md"
+  },
+  {
+    "candidate": "pgtt",
+    "image": "pgtt",
+    "package_pattern": "postgresql-{major}-pgtt",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/darold/pgtt/",
+    "sql_extensions": [
+      "pgtt"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-pgtt",
+        "version": "4.6-1.pgdg13+2",
+        "origin": "apt.postgresql.org trixie-pgdg/main",
+        "installed_architecture": "amd64"
+      },
+      "bookworm": {
+        "name": "postgresql-18-pgtt",
+        "version": "4.6-1.pgdg12+2",
+        "origin": "apt.postgresql.org bookworm-pgdg/main",
+        "installed_architecture": "amd64"
+      }
+    },
+    "licenses": [
+      "ISC"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pgtt-testing:4.6-18-trixie@sha256:3bab17f789af729ec0aced9b911ca888431f45a3de15a66baed427e76628af28"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pgtt-testing:4.6-18-bookworm@sha256:b7dc127029489fe9d95eb1b9c69a2ae3a8c32c89c68656885faa4cc0fd19e6ec"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie",
+        "bookworm"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "pgtt/evidence.md",
+    "dependency_accounting": "pgtt/evidence.md"
+  },
+  {
+    "candidate": "plproxy",
+    "image": "plproxy",
+    "package_pattern": "postgresql-{major}-plproxy",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://plproxy.github.io/",
+    "sql_extensions": [
+      "plproxy"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-plproxy",
+        "version": "2.12.0-1.pgdg13+2",
+        "origin": "apt.postgresql.org trixie-pgdg/main",
+        "installed_architecture": "amd64"
+      },
+      "bookworm": {
+        "name": "postgresql-18-plproxy",
+        "version": "2.12.0-1.pgdg12+2",
+        "origin": "apt.postgresql.org bookworm-pgdg/main",
+        "installed_architecture": "amd64"
+      }
+    },
+    "licenses": [
+      "ISC"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/plproxy-testing:2.12.0-18-trixie@sha256:d79c5c9b970eb6cb3d794e17ce11a8ffd2fd7b67d25d89d12f1fbd06fc77baf2"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/plproxy-testing:2.12.0-18-bookworm@sha256:a6128cb8486189874c1e64ae5ed10ca3fbb9aeda18c0b010a48341bda4140cd2"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie",
+        "bookworm"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "plproxy/evidence.md",
+    "dependency_accounting": "plproxy/evidence.md"
+  },
+  {
+    "candidate": "plsh",
+    "image": "plsh",
+    "package_pattern": "postgresql-{major}-plsh",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/petere/plsh",
+    "sql_extensions": [
+      "plsh"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-plsh",
+        "version": "1.20220917-4.pgdg13+2",
+        "origin": "apt.postgresql.org trixie-pgdg/main",
+        "installed_architecture": "amd64"
+      },
+      "bookworm": {
+        "name": "postgresql-18-plsh",
+        "version": "1.20220917-4.pgdg12+2",
+        "origin": "apt.postgresql.org bookworm-pgdg/main",
+        "installed_architecture": "amd64"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/plsh-testing:1.20220917-18-trixie@sha256:7fd1abe0b4d5889529174b14498fe298979c4ccbfcbf7bdafa737fdf27d0739f"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/plsh-testing:1.20220917-18-bookworm@sha256:4170d5065e0e6779f5ab186a3ba954c4e4cf74a8869711e4a5c7094c749600b9"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie",
+        "bookworm"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "plsh/evidence.md",
+    "dependency_accounting": "plsh/evidence.md"
+  },
+  {
+    "candidate": "prefix",
+    "image": "prefix",
+    "package_pattern": "postgresql-{major}-prefix",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/dimitri/prefix",
+    "sql_extensions": [
+      "prefix"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-prefix",
+        "version": "1.2.11-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-prefix",
+        "version": "1.2.11-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "BSD-2-Clause"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/prefix-testing:1.2.11-18-trixie@sha256:816bb1d4d2bcfef4fd8404e22e851c2a9c1d53004c02360cb3f0c4eb71464037"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/prefix-testing:1.2.11-18-bookworm@sha256:729e57a5d06257ce2942134be8ef01dde163e6429f3dd4dbe38fa4500618b0ab"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "dependency_accounting": "prefix/dependency-manifest.json",
+    "evidence": "prefix/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    }
+  },
+  {
+    "candidate": "preprepare",
+    "image": "preprepare",
+    "package_pattern": "postgresql-{major}-preprepare",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://apt.postgresql.org/pub/repos/apt/",
+    "sql_extensions": [
+      "pre_prepare"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-preprepare",
+        "version": "0.9-10.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main",
+        "installed_architecture": "amd64"
+      },
+      "bookworm": {
+        "name": "postgresql-18-preprepare",
+        "version": "0.9-10.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main",
+        "installed_architecture": "amd64"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/preprepare-testing:0.9-18-trixie@sha256:1a80dbf646812d6b68059d108e9c0467a5524aaf51b83a970a56df522927c44e"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/preprepare-testing:0.9-18-bookworm@sha256:27be83e7ec9436f1af592520ec0d59b79c5547d82c09fa82ac556cec7479afe1"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie",
+        "bookworm"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "preprepare/evidence.md",
+    "dependency_accounting": "preprepare/evidence.md"
+  },
+  {
+    "candidate": "rational",
+    "image": "rational",
+    "package_pattern": "postgresql-{major}-rational",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/begriffs/pg_rational",
+    "sql_extensions": [
+      "pg_rational"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-rational",
+        "version": "0.0.3-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-rational",
+        "version": "0.0.3-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "MIT"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/rational-testing:0.0.3-18-trixie@sha256:a5448db97fd5694fd74ff95fbef13e7ea34e5035c6adcfaca6cff869b0f36a7d"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/rational-testing:0.0.3-18-bookworm@sha256:47990e329924ec561a8ebc470670b1bee23575cf7e349ce7083e18baa9a9afd2"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "dependency_accounting": "rational/dependency-manifest.json",
+    "evidence": "rational/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    }
+  },
+  {
+    "candidate": "roaringbitmap",
+    "image": "roaringbitmap",
+    "package_pattern": "postgresql-{major}-roaringbitmap",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/ChenHuajun/pg_roaringbitmap",
+    "sql_extensions": [
+      "roaringbitmap"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-roaringbitmap",
+        "version": "1.2.0-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-roaringbitmap",
+        "version": "1.2.0-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "Apache-2.0"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/roaringbitmap-testing:1.2.0-18-trixie@sha256:1b9dcbbdb55fd6b154628bbd14bc344df2dd18dbb28a4cd38be475dfb320c68a"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/roaringbitmap-testing:1.2.0-18-bookworm@sha256:5268e28cc0e4e9a1bde463a3d7dc4eb512ffde357ade512c78f29b1c5ef80f1c"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "dependency_accounting": "roaringbitmap/dependency-manifest.json",
+    "evidence": "roaringbitmap/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    }
+  },
+  {
+    "candidate": "rum",
+    "image": "rum",
+    "package_pattern": "postgresql-{major}-rum",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/postgrespro/rum",
+    "sql_extensions": [
+      "rum"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-rum",
+        "version": "1.3.15-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-rum",
+        "version": "1.3.15-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/rum-testing:1.3.15-18-trixie@sha256:145ba262f4a1b07f895f7369aa1042703f3d7b557001d90be338ef33e3795673"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/rum-testing:1.3.15-18-bookworm@sha256:23a237010fb1502784b368ff985f1b5223da5af75a6269ce5c920fc4b594e598"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "dependency_accounting": "rum/dependency-manifest.json",
+    "evidence": "rum/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    }
+  },
+  {
+    "candidate": "semver",
+    "image": "semver",
+    "package_pattern": "postgresql-{major}-semver",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://pgxn.org/dist/semver/doc/semver.html",
+    "sql_extensions": [
+      "semver"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-semver",
+        "version": "0.41.0-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-semver",
+        "version": "0.41.0-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/semver-testing:0.41.0-18-trixie@sha256:423b8df13e24c40b44cf81d1496b9b75d571d7f05347a1cf2ac01369e4148871"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/semver-testing:0.41.0-18-bookworm@sha256:0c0abb027b9704deb48313528568f49d5fda6a2b0c74aec572dc7e7d03d17bf1"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "dependency_accounting": "semver/dependency-manifest.json",
+    "evidence": "semver/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    }
+  },
+  {
+    "candidate": "set_user",
+    "image": "set-user",
+    "package_pattern": "postgresql-{major}-set-user",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/pgaudit/set_user",
+    "sql_extensions": [
+      "set_user"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-set-user",
+        "version": "4.2.0-1.pgdg13+2",
+        "origin": "apt.postgresql.org trixie-pgdg/main",
+        "installed_architecture": "amd64"
+      },
+      "bookworm": {
+        "name": "postgresql-18-set-user",
+        "version": "4.2.0-1.pgdg12+2",
+        "origin": "apt.postgresql.org bookworm-pgdg/main",
+        "installed_architecture": "amd64"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/set-user-testing:4.2.0-18-trixie@sha256:bc30090ca818977d4dd6817b8258d5408f8807e8c6d5ce5af7ea55fe378654d6"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/set-user-testing:4.2.0-18-bookworm@sha256:4501336a6e88495359960de46561f6524809645af8d3eb772183788c9879fb2a"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie",
+        "bookworm"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "set-user/evidence.md",
+    "dependency_accounting": "set-user/evidence.md"
+  },
+  {
+    "candidate": "table_log",
+    "image": "table-log",
+    "package_pattern": "postgresql-{major}-tablelog",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/df7cb/table_log",
+    "sql_extensions": [
+      "table_log"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-tablelog",
+        "version": "0.6.4-4.pgdg13+2",
+        "origin": "apt.postgresql.org trixie-pgdg/main",
+        "installed_architecture": "amd64"
+      },
+      "bookworm": {
+        "name": "postgresql-18-tablelog",
+        "version": "0.6.4-4.pgdg12+2",
+        "origin": "apt.postgresql.org bookworm-pgdg/main",
+        "installed_architecture": "amd64"
+      }
+    },
+    "licenses": [
+      "LicenseRef-table-log"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/table-log-testing:0.6.4-18-trixie@sha256:86ecac873c7b7230b2f7044ef0d75c13b859b26cb1804e18cadfdbb102d6e15d"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/table-log-testing:0.6.4-18-bookworm@sha256:01f90e441d34023edd47f5f9b5419f36a997a1d2f386b46423ce1c583d383eb9"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie",
+        "bookworm"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "table-log/evidence.md",
+    "dependency_accounting": "table-log/evidence.md"
+  },
+  {
+    "candidate": "tdigest",
+    "image": "tdigest",
+    "package_pattern": "postgresql-{major}-tdigest",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/tvondra/tdigest",
+    "sql_extensions": [
+      "tdigest"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-tdigest",
+        "version": "1.4.7-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-tdigest",
+        "version": "1.4.7-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/tdigest-testing:1.4.7-18-trixie@sha256:713163d87c669378f5ec9dae8bedda28f5c376c26d11651c124c5d5da3d1df2a"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/tdigest-testing:1.4.7-18-bookworm@sha256:6e0ec5288d434ee863f2d5dc9be075c97a18372a74bb1dc20b079d6fcc0aee96"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "dependency_accounting": "tdigest/dependency-manifest.json",
+    "evidence": "tdigest/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    }
+  },
+  {
+    "candidate": "timestamp9",
+    "image": "timestamp9",
+    "package_pattern": "postgresql-{major}-timestamp9",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/optiver/timestamp9",
+    "sql_extensions": [
+      "timestamp9"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-timestamp9",
+        "version": "1.4.0-2.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-timestamp9",
+        "version": "1.4.0-2.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "MIT"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/timestamp9-testing:1.4.0-18-trixie@sha256:e5a8e392ba573900de5ed40fc95e02de32764bc16f0fd42c4333f1715200dc5d"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/timestamp9-testing:1.4.0-18-bookworm@sha256:f04029f7493d7d7fcc7a834cb2880772d1b7d347632fb6445c43041fa57178ee"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "dependency_accounting": "timestamp9/dependency-manifest.json",
+    "evidence": "timestamp9/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    }
+  },
+  {
+    "candidate": "unit",
+    "image": "unit",
+    "package_pattern": "postgresql-{major}-unit",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/df7cb/postgresql-unit",
+    "sql_extensions": [
+      "unit"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-unit",
+        "version": "7.10-2.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-unit",
+        "version": "7.10-2.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "GPL-3.0-or-later"
+    ],
+    "dependencies": [
+      "base-image:plpgsql"
+    ],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/unit-testing:7.10-18-trixie@sha256:7d3a6f59b696c906ec6035c282304682d4492361220f3028a317bd1a0075b6f1"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/unit-testing:7.10-18-bookworm@sha256:1ac796db1aec6a246409cf85734e0f5da1a9eb1b64747c4c0fdcba36d2a31f83"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "dependency_accounting": "unit/dependency-manifest.json",
+    "evidence": "unit/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    }
+  },
+  {
+    "candidate": "documentdb",
+    "image": "documentdb",
+    "package_pattern": "postgresql-{major}-documentdb",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/microsoft/documentdb",
+    "sql_extensions": [
+      "documentdb_core",
+      "documentdb",
+      "documentdb_extended_rum"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-documentdb",
+        "version": "1.0~RC1-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "MIT",
+      "Apache-2.0",
+      "PostgreSQL",
+      "AGPL-3.0-or-later"
+    ],
+    "dependencies": [
+      "image-sql:documentdb_core",
+      "pg-cron",
+      "base-image:tsm_system_rows",
+      "catalog:pgvector:vector",
+      "postgis",
+      "rum"
+    ],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/documentdb-testing:1.0-18-trixie@sha256:65f85c741efc21a7d058589740389c7894b5ba04a73fc8d947a45f3ba328cfa6"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "documentdb/evidence.md",
+    "dependency_accounting": "documentdb/evidence.md",
+    "unsupported_components": [
+      {
+        "name": "documentdb_distributed",
+        "reason": "Requires Citus; no PostgreSQL 18 Citus package was found in the checked PGDG Trixie repository and no compatible catalog dependency image is available. Runtime artifacts are omitted.",
+        "remedy": "Supply a compatible PG18/Trixie Citus extension image and validate distributed integration."
+      },
+      {
+        "name": "Mongo wire-protocol gateway",
+        "reason": "Outside the approved PostgreSQL extension-image scope."
+      }
+    ],
+    "authentication_boundary": {
+      "supported": "SQL session authenticated as postgres through the CNPG-managed endpoint; SET ROLE app verifies effective DocumentDB permissions. Internal connections use the CNPG Unix socket and peer authentication.",
+      "unsupported": "Direct application-authenticated sessions for operations that make internal libpq connections; this example supplies no per-login internal password.",
+      "remedy": "Provision and validate secure internal credentials for each authenticated login before supporting direct application sessions."
+    }
+  },
+  {
+    "candidate": "http",
+    "image": "http",
+    "package_pattern": "postgresql-{major}-http",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/pramsey/pgsql-http",
+    "sql_extensions": [
+      "http"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-http",
+        "version": "1.7.2-2.pgdg12+2",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-http",
+        "version": "1.7.2-2.pgdg13+2",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "MIT"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/http-testing:1.7.2-18-trixie@sha256:564b9201a320c4e157ca37fd2728a37d2fadf40895908a183744da4e03cbef73"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/http-testing:1.7.2-18-bookworm@sha256:f7e28bcbc5c5b75349ba4459d1bcda4a2c31e4ac5dce2bb54fa53ec56c2a7418"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "evidence": "http/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "dependency_accounting": "http/evidence.md"
+  },
+  {
+    "candidate": "icu_ext",
+    "image": "icu-ext",
+    "package_pattern": "postgresql-{major}-icu-ext",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/dverite/icu_ext",
+    "sql_extensions": [
+      "icu_ext"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-icu-ext",
+        "version": "1.11.0-1.pgdg12+2",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-icu-ext",
+        "version": "1.11.0-1.pgdg13+2",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "LicenseRef-verite"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/icu-ext-testing:1.11.0-18-trixie@sha256:b1e0f8a78512bd36639e53565abdfd12b4662606cc3d9371fe40ed13918124ce"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/icu-ext-testing:1.11.0-18-bookworm@sha256:c6a8a40a91749946ab591005d61c8bc1800124499102751fa52f3dbe6a119f4f"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "evidence": "icu-ext/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "dependency_accounting": "icu-ext/evidence.md"
+  },
+  {
+    "candidate": "mongo_fdw",
+    "image": "mongo-fdw",
+    "package_pattern": "postgresql-{major}-mongo-fdw",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/EnterpriseDB/mongo_fdw",
+    "sql_extensions": [
+      "mongo_fdw"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-mongo-fdw",
+        "version": "5.5.3-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL",
+      "LGPL-3.0-only",
+      "Apache-2.0"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/mongo-fdw-testing:5.5.3-18-trixie@sha256:27bcb02750b10fbabd6eba5c3e85e6c03fca02d7e85881ddf2d4482602433f3b"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "mongo-fdw/evidence.md",
+    "dependency_accounting": "mongo-fdw/evidence.md"
+  },
+  {
+    "candidate": "ogr_fdw",
+    "image": "ogr-fdw",
+    "package_pattern": "postgresql-{major}-ogr-fdw",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/pramsey/pgsql-ogr-fdw",
+    "sql_extensions": [
+      "ogr_fdw"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-ogr-fdw",
+        "version": "1.1.9-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-ogr-fdw",
+        "version": "1.1.9-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "MIT"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/ogr-fdw-testing:1.1.9-18-trixie@sha256:7240da16cc21901b60fd001d84f10c944f0d2d6d3382d3be6e80c0d02f0c7198"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/ogr-fdw-testing:1.1.9-18-bookworm@sha256:ab27ba1a5fa463a1b559428f6197a615f64002fd0c41a24f25eba36480901b9e"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "ogr-fdw/evidence.md",
+    "dependency_accounting": "ogr-fdw/evidence.md"
+  },
+  {
+    "candidate": "pg_gvm",
+    "image": "pg-gvm",
+    "package_pattern": "postgresql-{major}-pg-gvm",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/greenbone/pg-gvm",
+    "sql_extensions": [
+      "pg-gvm"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-pg-gvm",
+        "version": "22.6.17-1.pgdg13+2",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "GPL-3.0-or-later",
+      "AGPL-3.0-or-later"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/pg-gvm-testing:22.6.17-18-trixie@sha256:de631dcd06a795f2410d642dc9d0726e211e3842c842c83015645c66d0909bea"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "pg-gvm/evidence.md",
+    "dependency_accounting": "pg-gvm/evidence.md"
+  },
+  {
+    "candidate": "pg_pwhash",
+    "image": "pg-pwhash",
+    "package_pattern": "postgresql-{major}-pg-pwhash",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/cybertec-postgresql/pg_pwhash",
+    "sql_extensions": [
+      "pg_pwhash"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-pg-pwhash",
+        "version": "1.0-2.pgdg12+3",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-pg-pwhash",
+        "version": "1.0-2.pgdg13+3",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "MIT"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/pg-pwhash-testing:1.0-18-trixie@sha256:8992506e32837cc9b65914cb8572575b7af1ad957ae5de2a25c9c41fe5494d22"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/pg-pwhash-testing:1.0-18-bookworm@sha256:beea4d9217d864af601c06bb18b6256190591d35cef08cae18b4f07271521b17"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "evidence": "pg-pwhash/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "dependency_accounting": "pg-pwhash/evidence.md"
+  },
+  {
+    "candidate": "pgpcre",
+    "image": "pgpcre",
+    "package_pattern": "postgresql-{major}-pgpcre",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/petere/pgpcre",
+    "sql_extensions": [
+      "pgpcre"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-pgpcre",
+        "version": "0.20190509-9.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-pgpcre",
+        "version": "0.20190509-9.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/pgpcre-testing:0.20190509-18-trixie@sha256:883f3365c984428a08456d72e529e909c10e7cb81c9171874f917ffb1b944d43"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/pgpcre-testing:0.20190509-18-bookworm@sha256:ffcf13b17b3b36019deb9bbf8f108ffed79470090b41fb4f3414fdd319202df7"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "evidence": "pgpcre/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "dependency_accounting": "pgpcre/evidence.md"
+  },
+  {
+    "candidate": "pljava",
+    "image": "pljava",
+    "package_pattern": "postgresql-{major}-pljava",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://tada.github.io/pljava/",
+    "sql_extensions": [
+      "pljava"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-pljava",
+        "version": "1.6.10-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-pljava",
+        "version": "1.6.10-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "BSD-3-Clause"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/pljava-testing:1.6.10-18-trixie@sha256:85a01cf06878a7841e3452d8ff838a2324a39dbda6edd751ae357ece94d11932"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/pljava-testing:1.6.10-18-bookworm@sha256:8688ba7f6939f0bbf8d4fd20b2c7c335963718842d3845d248ad6d072de1c3b1"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "dependency_accounting": "pljava/dependency-manifest.json",
+    "evidence": "pljava/evidence.md"
+  },
+  {
+    "candidate": "pljs",
+    "image": "pljs",
+    "package_pattern": "postgresql-{major}-pljs",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/plv8/pljs",
+    "sql_extensions": [
+      "pljs"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-pljs",
+        "version": "1.0.5-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-pljs",
+        "version": "1.0.5-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "LicenseRef-PLJS"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/pljs-testing:1.0.5-18-trixie@sha256:101f9bbab1111fba0c14e5962cb1d9a4997e4c73f08b79b9012d7d28a64c9fb5"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/pljs-testing:1.0.5-18-bookworm@sha256:258da939a04f98dd88ae113f9d8e7d7298b73f2f2410aac7faa113ec0d8f9978"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "dependency_accounting": "pljs/dependency-manifest.json",
+    "evidence": "pljs/evidence.md"
+  },
+  {
+    "candidate": "pllua",
+    "image": "pllua",
+    "package_pattern": "postgresql-{major}-pllua",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/pllua/pllua",
+    "sql_extensions": [
+      "pllua",
+      "plluau",
+      "hstore_pllua",
+      "hstore_plluau"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-pllua",
+        "version": "1:2.0.12-7.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-pllua",
+        "version": "1:2.0.12-7.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "MIT"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/pllua-testing:1-2.0.12-18-trixie@sha256:0225a718d20473d6936685526aeeedb65334db491c69594581e7d700cf27ecc1"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/pllua-testing:1-2.0.12-18-bookworm@sha256:2d7690f37cbc6c972078fd747a4f0fa0b4aae8ab036c50dc1564bfbb5116f88b"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "dependency_accounting": "pllua/dependency-manifest.json",
+    "evidence": "pllua/evidence.md"
+  },
+  {
+    "candidate": "pointcloud",
+    "image": "pointcloud",
+    "package_pattern": "postgresql-{major}-pointcloud",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/pgpointcloud/pointcloud",
+    "sql_extensions": [
+      "pointcloud"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-pointcloud",
+        "version": "1.2.5-4.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-pointcloud",
+        "version": "1.2.5-4.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "BSD-3-Clause"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/pointcloud-testing:1.2.5-18-trixie@sha256:fb5b77bd3540569b5fcf78f8789c50584201bbc59bd0e9782fc821526c75bc64"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/pointcloud-testing:1.2.5-18-bookworm@sha256:e7a6cf09ca7f89329f1ed8a6fd8d0145c3c7ef5b47f2a732aa15658cc7b0ce75"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "evidence": "pointcloud/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "dependency_accounting": "pointcloud/evidence.md",
+    "unsupported_components": [
+      {
+        "name": "pointcloud_postgis",
+        "reason": "Optional PostGIS integration is not included; this image provides the base pointcloud extension."
+      }
+    ]
+  },
+  {
+    "candidate": "rdkit",
+    "image": "rdkit",
+    "package_pattern": "postgresql-{major}-rdkit",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/rdkit/rdkit",
+    "sql_extensions": [
+      "rdkit"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-rdkit",
+        "version": "202503.1-5.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "BSD-3-Clause"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-b:5000/rdkit-testing:202503.1-18-trixie@sha256:a98ba0af53bfef290eb371707e2d7d4ddf955b1bff73949d22411ffc0b83730f"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "rdkit/evidence.md",
+    "dependency_accounting": "rdkit/evidence.md"
+  },
+  {
+    "candidate": "pg_repack",
+    "image": "pg-repack",
+    "package_pattern": "postgresql-{major}-repack",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/reorg/pg_repack",
+    "sql_extensions": [
+      "pg_repack"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-repack",
+        "version": "1.5.3-1.pgdg12+2",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-repack",
+        "version": "1.5.3-1.pgdg13+2",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "BSD-3-Clause"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-repack-testing:1.5.3-18-trixie@sha256:61a0e8de4419922b9295ee7481098e4aa930827b3314117ea0b6741207bc38eb"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-repack-testing:1.5.3-18-bookworm@sha256:520b91e3ef40a184535efcca91fdbbce3c6cc1a40c9fe285bccc5b7f5d05eff3"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "evidence": "pg-repack/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "dependency_accounting": "pg-repack/evidence.md"
+  },
+  {
+    "candidate": "powa",
+    "image": "powa",
+    "package_pattern": "postgresql-{major}-powa",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://powa.readthedocs.io/en/stable/",
+    "sql_extensions": [
+      "powa"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-powa",
+        "version": "5.3.0-1.pgdg12+2",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-powa",
+        "version": "5.3.0-1.pgdg13+2",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [
+      "base-image:pg_stat_statements",
+      "base-image:btree_gist"
+    ],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/powa-testing:5.3.0-18-trixie@sha256:832e275e614634dd09478477a324dd231a94fccbf07310e33ab8346785733e4e"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/powa-testing:5.3.0-18-bookworm@sha256:36ba8ceb0fe7886cbe17c79674011ef2fcdf3852f2b5b38f3780f1368cf9110f"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "powa/evidence.md",
+    "dependency_accounting": "powa/evidence.md"
+  },
+  {
+    "candidate": "pg_statviz",
+    "image": "pg-statviz",
+    "package_pattern": "postgresql-{major}-statviz",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/vyruss/pg_statviz",
+    "sql_extensions": [
+      "pg_statviz"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-statviz",
+        "version": "1.2.1-1.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-statviz",
+        "version": "1.2.1-1.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-statviz-testing:1.2.1-18-trixie@sha256:a8053f58fb6969bb22fedadc7ac1f63a11272b096c6c0e1c9fd21ecdefe5884a"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/pg-statviz-testing:1.2.1-18-bookworm@sha256:cea21303f8d3cbb0a01e36e2547814128683ee73a5a6d4921905eeaf82fa8dad"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "evidence": "pg-statviz/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "dependency_accounting": "pg-statviz/evidence.md"
+  },
+  {
+    "candidate": "mimeo",
+    "image": "mimeo",
+    "package_pattern": "postgresql-{major}-mimeo",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://pgxn.org/dist/mimeo/1.5.1/doc/mimeo.html",
+    "sql_extensions": [
+      "mimeo"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-mimeo",
+        "version": "1.5.1-20.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-mimeo",
+        "version": "1.5.1-20.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [
+      "base-image:dblink"
+    ],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/mimeo-testing:1.5.1-18-trixie@sha256:49fd936d283f818864b7b1b14454e95024c667bde313665c5ed094637fd88612"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/mimeo-testing:1.5.1-18-bookworm@sha256:11ea7362a2d16cebb273ed43ea5832b4037b98da8e9fc039c1b748bba2a46e31"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "mimeo/evidence.md",
+    "dependency_accounting": "mimeo/evidence.md"
+  },
+  {
+    "candidate": "pgq",
+    "image": "pgq",
+    "package_pattern": "postgresql-{major}-pgq3",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/pgq/pgq",
+    "sql_extensions": [
+      "pgq"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-pgq3",
+        "version": "3.5.1-2.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-pgq3",
+        "version": "3.5.1-2.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "ISC"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/pgq-testing:3.5.1-18-trixie@sha256:21d766924e2def629a422d7ec923a6baae055ceee9be836675b5b7c3f78813a6"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/pgq-testing:3.5.1-18-bookworm@sha256:b1afd2a832c01fc1753c62c3fcb3882db157fc16f8a16050ef2c8140476d2ff5"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "pgq/evidence.md",
+    "dependency_accounting": "pgq/evidence.md"
+  },
+  {
+    "candidate": "pgq_node",
+    "image": "pgq-node",
+    "package_pattern": "postgresql-{major}-pgq-node",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/pgq/pgq-node",
+    "sql_extensions": [
+      "pgq_node"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-pgq-node",
+        "version": "3.5-9.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-pgq-node",
+        "version": "3.5-9.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "ISC"
+    ],
+    "dependencies": [
+      "pgq"
+    ],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/pgq-node-testing:3.5-18-trixie@sha256:8fda6119bf0e3443296b6f069a660a2676e321dfaf55d7255c08b702b9cd0dd5"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/pgq-node-testing:3.5-18-bookworm@sha256:13f1de8ec0c872f0af5d8e239a6560f0eb54e932d8c8764c9cd1fb55613f604e"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "pgq-node/evidence.md",
+    "dependency_accounting": "pgq-node/evidence.md"
+  },
+  {
+    "candidate": "londiste SQL components",
+    "image": "londiste",
+    "package_pattern": "postgresql-{major}-londiste-sql",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/pgq/londiste-sql",
+    "sql_extensions": [
+      "londiste"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-londiste-sql",
+        "version": "3.8-9.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-londiste-sql",
+        "version": "3.8-9.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "ISC"
+    ],
+    "dependencies": [
+      "pgq-node"
+    ],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/londiste-testing:3.8-18-trixie@sha256:f68709db3196bd0d12639417545c8d94edfad14430e4a8bf16a4ced45976159e"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/londiste-testing:3.8-18-bookworm@sha256:425b376271c4f42f3a55c39fccf3e3d77eaff6750c8a7a6cc6e26ada2ed9927f"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "londiste/evidence.md",
+    "dependency_accounting": "londiste/evidence.md"
+  },
+  {
+    "candidate": "first_last_agg",
+    "image": "first-last-agg",
+    "package_pattern": "postgresql-{major}-first-last-agg",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/wulczer/first_last_agg",
+    "sql_extensions": [
+      "first_last_agg"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-18-first-last-agg",
+        "version": "0.1.4-4-gd63ea3b-9.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-18-first-last-agg",
+        "version": "0.1.4-4-gd63ea3b-9.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/first-last-agg-testing:0.1.4-18-trixie@sha256:6b112d6982ace041e6b69cce4933c8405582f826e24d6f02835baab8286273a4"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/first-last-agg-testing:0.1.4-18-bookworm@sha256:10020b0e9d4cb9a9f4a8c0296d3de4403bdf85bf503cdf6c7e6bd8f2c55e1df0"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "dependency_accounting": "first-last-agg/dependency-manifest.json",
+    "evidence": "first-last-agg/evidence.md",
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    }
+  },
+  {
+    "candidate": "periods",
+    "image": "periods",
+    "package_pattern": "postgresql-{major}-periods",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/xocolatl/periods",
+    "sql_extensions": [
+      "periods"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-periods",
+        "version": "1.2.3-2.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main",
+        "installed_architecture": "amd64"
+      },
+      "bookworm": {
+        "name": "postgresql-18-periods",
+        "version": "1.2.3-2.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main",
+        "installed_architecture": "amd64"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/periods-testing:1.2.3-18-bookworm@sha256:cbc4b92c14ce40e513480d8dd31992fa7aca51b12878d9bd06fbe84ec4fa60d5"
+      },
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/periods-testing:1.2.3-18-trixie@sha256:b4c9f783073b443d27b647f4a6273e2358dcdd51962deefb21423dbaf316d469"
+      }
+    },
+    "runtime_results": {
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites",
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie",
+        "bookworm"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "periods/evidence.md",
+    "dependency_accounting": "periods/evidence.md"
+  },
+  {
+    "candidate": "prioritize",
+    "image": "prioritize",
+    "package_pattern": "postgresql-{major}-prioritize",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "http://pgxn.org/dist/prioritize/",
+    "sql_extensions": [
+      "prioritize"
+    ],
+    "packages": {
+      "trixie": {
+        "name": "postgresql-18-prioritize",
+        "version": "1.0.4-13.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main",
+        "installed_architecture": "amd64"
+      },
+      "bookworm": {
+        "name": "postgresql-18-prioritize",
+        "version": "1.0.4-13.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main",
+        "installed_architecture": "amd64"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/prioritize-testing:1.0.4-18-trixie@sha256:f8afc142a7ecd4a57469c5e793bd294a72b7afbdf7528fe6d7e8381db30dbbc3"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/prioritize-testing:1.0.4-18-bookworm@sha256:44408b3fed93baf7e466a876a6279cb413ff62806eef9cede68a2606b39e18fb"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "trixie",
+        "bookworm"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "prioritize/evidence.md",
+    "dependency_accounting": "prioritize/evidence.md"
+  },
+  {
+    "candidate": "pg_rage_terminator",
+    "image": "pg-rage-terminator",
+    "package_pattern": "pg-rage-terminator-{major}",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://github.com/disco-stu/pg_rage_terminator",
+    "sql_extensions": [],
+    "packages": {
+      "bookworm": {
+        "name": "pg-rage-terminator-18",
+        "version": "0.1.7-12.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "pg-rage-terminator-18",
+        "version": "0.1.7-12.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/pg-rage-terminator-testing:0.1.7-18-trixie@sha256:ba08293fd57c358965c4531f03e1ec5413a59464a34ccd6a91476c55f325fee1"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/pg-rage-terminator-testing:0.1.7-18-bookworm@sha256:80065b4957fb90dc13976cd3e66f84a48409c8d65e429e783f8b8ea87e8fe74a"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "pg-rage-terminator/evidence.md",
+    "dependency_accounting": "pg-rage-terminator/evidence.md"
+  },
+  {
+    "candidate": "PL/Perl",
+    "image": "plperl",
+    "package_pattern": "postgresql-plperl-{major}",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://www.postgresql.org/docs/18/plperl.html",
+    "sql_extensions": [
+      "plperl",
+      "plperlu",
+      "bool_plperl",
+      "bool_plperlu",
+      "hstore_plperl",
+      "hstore_plperlu",
+      "jsonb_plperl",
+      "jsonb_plperlu"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-plperl-18",
+        "version": "18.6-1.pgdg12+2",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-plperl-18",
+        "version": "18.6-1.pgdg13+2",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL",
+      "Artistic-1.0-Perl"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie/amd64": "PASS direct scratch build",
+      "bookworm/amd64": "PASS direct scratch build",
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/plperl-testing:18.6-18-trixie@sha256:8e591d187f5a07da5408eefc7ec6dfe63b0c4a9fedc107fe694fe53112fa9046"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/plperl-testing:18.6-18-bookworm@sha256:fc35491d08069d04343d927e88bba0e9a7a437ffe2ade914d3d0c569c6cd9ea2"
+      }
+    },
+    "runtime_results": {
+      "standalone/trixie/amd64": "PASS relocated image languages, transforms and driver loading",
+      "standalone/bookworm/amd64": "PASS relocated image languages, transforms and driver loading",
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "plperl/evidence.md",
+    "dependency_accounting": "plperl/evidence.md"
+  },
+  {
+    "candidate": "PL/Python 3",
+    "image": "plpython3",
+    "package_pattern": "postgresql-plpython3-{major}",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://www.postgresql.org/docs/18/plpython.html",
+    "sql_extensions": [
+      "plpython3u",
+      "hstore_plpython3u",
+      "jsonb_plpython3u",
+      "ltree_plpython3u"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-plpython3-18",
+        "version": "18.6-1.pgdg12+2",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-plpython3-18",
+        "version": "18.6-1.pgdg13+2",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL",
+      "Python-2.0"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie/amd64": "PASS direct scratch build",
+      "bookworm/amd64": "PASS direct scratch build",
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/plpython3-testing:18.6-18-trixie@sha256:4fafcbeb004cb9e259324ac7db2c08503a51c9897d0d232316e7be2b7124300e"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.pg-extensions:5000/plpython3-testing:18.6-18-bookworm@sha256:e1fc3d9af10f81935382ade30de95f18216567842a2569211872f77de778e2e9"
+      }
+    },
+    "runtime_results": {
+      "standalone/trixie/amd64": "PASS relocated language, transforms and standard library",
+      "standalone/bookworm/amd64": "PASS relocated language, transforms and standard library",
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "plpython3/evidence.md",
+    "dependency_accounting": "plpython3/evidence.md"
+  },
+  {
+    "candidate": "PL/Tcl",
+    "image": "pltcl",
+    "package_pattern": "postgresql-pltcl-{major}",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://www.postgresql.org/docs/18/pltcl.html",
+    "sql_extensions": [
+      "pltcl",
+      "pltclu"
+    ],
+    "packages": {
+      "bookworm": {
+        "name": "postgresql-pltcl-18",
+        "version": "18.6-1.pgdg12+2",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "postgresql-pltcl-18",
+        "version": "18.6-1.pgdg13+2",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "PostgreSQL",
+      "TCL"
+    ],
+    "dependencies": [],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/pltcl-testing:18.6-18-trixie@sha256:92892f271c728d0e984ad8c1a6dbb28ecf8903de0808c3b6ca75300303926d77"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/pltcl-testing:18.6-18-bookworm@sha256:dbf4669f505e540a40f2af7fd998ee2e63930e32ea76d3d7db08a3f7e24b9f52"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "dependency_accounting": "pltcl/dependency-manifest.json",
+    "evidence": "pltcl/evidence.md"
+  },
+  {
+    "candidate": "Bucardo server SQL",
+    "image": "bucardo",
+    "package_pattern": "bucardo",
+    "owner": "@ardentperf",
+    "status": "implemented; locally validated; final review complete",
+    "upstream": "https://bucardo.org/",
+    "sql_extensions": [],
+    "packages": {
+      "bookworm": {
+        "name": "bucardo",
+        "version": "5.6.0-6.pgdg12+1",
+        "origin": "apt.postgresql.org bookworm-pgdg/main"
+      },
+      "trixie": {
+        "name": "bucardo",
+        "version": "5.6.0-6.pgdg13+1",
+        "origin": "apt.postgresql.org trixie-pgdg/main"
+      }
+    },
+    "licenses": [
+      "BSD-2-Clause"
+    ],
+    "dependencies": [
+      "plperl"
+    ],
+    "build_results": {
+      "trixie": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/bucardo-testing:5.6.0-18-trixie@sha256:79e8f3ba7a222e712fde40bca917b35df2ea489fe85b5e69b013f7e7958d8094"
+      },
+      "bookworm": {
+        "amd64": "PASS",
+        "arm64": "PASS",
+        "image": "registry.approved-batch-c:5000/bucardo-testing:5.6.0-18-bookworm@sha256:a07022d50b23b5aa76e7293486d17ea710bce85d93191596efbbf0187c1f60af"
+      }
+    },
+    "runtime_results": {
+      "trixie/amd64": "PASS: generic and functional Chainsaw suites",
+      "bookworm/amd64": "PASS: generic and functional Chainsaw suites"
+    },
+    "blockers": [],
+    "supported_matrix": {
+      "postgresql": [
+        18
+      ],
+      "distributions": [
+        "bookworm",
+        "trixie"
+      ],
+      "build_architectures": [
+        "amd64",
+        "arm64"
+      ],
+      "runtime_environment": "amd64 Kind; arm64 runtime not available"
+    },
+    "evidence": "bucardo/evidence.md",
+    "dependency_accounting": "bucardo/evidence.md"
+  }
+]

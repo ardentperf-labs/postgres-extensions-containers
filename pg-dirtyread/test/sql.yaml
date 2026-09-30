@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  functional.sql: "\\set ON_ERROR_STOP on\nCREATE TABLE dirty_probe(id integer) WITH\
+    \ (autovacuum_enabled=false);\nINSERT INTO dirty_probe VALUES(42);\nDELETE FROM\
+    \ dirty_probe;\nDO $$ BEGIN\n IF (SELECT count(*) FROM pg_dirtyread('dirty_probe')\
+    \ AS t(id integer) WHERE id=42) IS DISTINCT FROM 1 THEN RAISE EXCEPTION 'dead\
+    \ tuple not recovered'; END IF;\n IF EXISTS (SELECT FROM dirty_probe) THEN RAISE\
+    \ EXCEPTION 'normal scan exposed deleted row'; END IF;\nEND $$;\n"

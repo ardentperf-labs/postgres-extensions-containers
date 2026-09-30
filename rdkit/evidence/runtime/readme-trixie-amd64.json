@@ -1,0 +1,22 @@
+{
+  "target": "rdkit",
+  "readme_sha256": "d16d72ae961a15ce420dc44cf067e10396dc3e64b324c930878cd269ca1b3bd5",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-b:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-rdkit"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-rdkit-app"
+    }
+  ],
+  "images": {
+    "rdkit-testing:202503.1-18-trixie": "sha256:a98ba0af53bfef290eb371707e2d7d4ddf955b1bff73949d22411ffc0b83730f"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:55:33Z"
+}

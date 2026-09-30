@@ -1,0 +1,22 @@
+{
+  "target": "pglogical",
+  "readme_sha256": "b897070df0987b62a6ee7bcd141a6fa184381357965345266b507ccabb8cb695",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pglogical"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pglogical-app"
+    }
+  ],
+  "images": {
+    "pglogical-testing:2.4.8-18-trixie": "sha256:4053dedca7f3201ca2ff2217bf62b09b4c3b615cc7577c7a97ee9cfbee62e444"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:08:48Z"
+}

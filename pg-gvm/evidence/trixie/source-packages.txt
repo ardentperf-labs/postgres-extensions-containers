@@ -1,0 +1,5 @@
+gcc-14 14.2.0-19
+glib2.0 2.84.4-3~deb13u5
+gvm-libs 23.9.3-1.pgdg13+1
+libical3 3.0.20-1
+pg-gvm 22.6.17-1.pgdg13+2

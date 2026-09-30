@@ -1,0 +1,47 @@
+{
+  "command": "task e2e:test:full TARGET=mobilitydb DISTRO=trixie DAGGER_ENGINE_NAME=cnpg-approved-batch-engine",
+  "exit_code": 0,
+  "started_utc": "2026-09-29T23:43:37Z",
+  "duration_seconds": 52,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "mobilitydb/Dockerfile": "2d1ac120b7eba6df8a708bb75b820ebba55abe9e1e4aae7310094d18b1e66f53",
+    "mobilitydb/README.md": "3170aa9603c9ae5afac11af07bf912ece892594624973c32df190f44152fa7cf",
+    "mobilitydb/metadata.hcl": "e3830838a7494691201e4a9b32d1b7aeeb397008e0a45ffe604fc6c5bd2c79e8",
+    "mobilitydb/system-libs/18-bookworm-os-libs.txt": "fe19fc67892eb5b8ccd1cc9109a25098d771b3f3c5c62860e269b937777fa7a1",
+    "mobilitydb/system-libs/18-trixie-os-libs.txt": "f2969e01673af7c6985f141955bacab865ced2ad29080716a39af5df1493df20"
+  },
+  "shared_source_sha256": {
+    "Taskfile.yml": "3476e9ac10e5435935f7165eaf06d0cba0d8a6041a57789d58e3dd8ca6785133",
+    "docker-bake.hcl": "8c8a7228e03135424231bdab3579d020b5db0c0ea8a50bf1343506c1ab11be33",
+    "test/chainsaw-test.yaml": "d6cc9f779526312c7e8f8428caeeece1114eb6cdf02aae2a9b4569a2b3931697",
+    "test/check-extension-assert.yaml": "7a45714b7a37a7d57e71ca5f2d56c0d7e4490d91663001ea91d0da6eefb012a6",
+    "test/check-extension.yaml": "86553efff338d89b79e88c11a90d1649480700c98b9bbe31cb5b6f999a3d6e58",
+    "test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "test/cluster.yaml": "00f1c8fa55567898aba14e6614c7fd87e09196f3d9bab4e2368521d4521eb663",
+    "test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "dagger/maintenance/catalogs.go": "0b625983085112dfe30277e679c7693ee1b8825bbc90066adf0ff60c9183f147",
+    "dagger/maintenance/dagger.gen.go": "7972c1975f4406a86e75d3b637d75a87a9b7c03ad39f5493a659c00d061235ab",
+    "dagger/maintenance/dependencies.go": "a7409ee16cfcd0e32c9198a96cf0b6a2ceda68998d656acbfdfd3cd1d1688e7e",
+    "dagger/maintenance/dependencies_test.go": "ac341cc168f05476f31dab36fdb48d5b37088d36ddfb17cb8605c43bc0084269",
+    "dagger/maintenance/image.go": "0949136bf012e3c2c8e927633e925e4f58894cadb7f958fd9bbb33d421bceb54",
+    "dagger/maintenance/image_test.go": "1c02b920c6c5bcd3803e96c729dac64537d0ce18170cc98d96e60a051a34d657",
+    "dagger/maintenance/main.go": "65fb9e81371554a9dff95e8234e13e5cb48b6eb967715ecbb604af94ad379d31",
+    "dagger/maintenance/parse.go": "f00dde76ea734d5dc53cd373c03ff23ad1523b11cbce7bac942b5dd00f8cadea",
+    "dagger/maintenance/parse_test.go": "f523e839b34508bb1d8f918a0c8cada04b4d7473373dd0f47fcbe72650fd4d6e",
+    "dagger/maintenance/testingvalues.go": "dd61979933fc3af4b2285d838aec08e3d96f64ff46b566e4ae344c08d816a5e6",
+    "dagger/maintenance/updatelibs.go": "e33a49ba8a8f137ad07c6ede8139360fd1832ace45b92ed818733264460e7ef8",
+    "dagger/maintenance/updatelibs_test.go": "56aa65f3d16c414d32c00bf6145d4b6576b20e55107bb411c888e0d718000d10"
+  },
+  "image": "registry.pg-extensions:5000/mobilitydb-testing:1.3.0-18-trixie@sha256:94b3c8eee8c0bc6e289177759dde7f81b5651455ab64c0aefda93cd6f72fc73d",
+  "architecture_manifests": {
+    "amd64": "sha256:a5c9227b0373dfdf615eeaf5c8c56c1970a599b3e783f5f8a46ceb38210231e8",
+    "arm64": "sha256:8de4f59f69b864abf84c6de65d5c23f8542b5b1062bbc4388ac539ecfe2f33c2"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

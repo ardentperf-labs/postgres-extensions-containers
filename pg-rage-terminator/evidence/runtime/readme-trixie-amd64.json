@@ -1,0 +1,22 @@
+{
+  "target": "pg-rage-terminator",
+  "readme_sha256": "b0f44222403cf655d198c0573243a87274831a73c760f3abe3e38ce4ab22f79e",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-c:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pg-rage-terminator"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pg-rage-terminator-app"
+    }
+  ],
+  "images": {
+    "pg-rage-terminator-testing:0.1.7-18-trixie": "sha256:ba08293fd57c358965c4531f03e1ec5413a59464a34ccd6a91476c55f325fee1"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:45:21Z"
+}

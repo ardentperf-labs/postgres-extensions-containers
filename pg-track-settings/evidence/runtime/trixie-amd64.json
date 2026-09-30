@@ -1,0 +1,31 @@
+{
+  "command": "task e2e:test:full TARGET=pg-track-settings DISTRO=trixie DAGGER_ENGINE_NAME=cnpg-approved-batch-engine",
+  "exit_code": 0,
+  "started_utc": "2026-09-29T21:19:49Z",
+  "duration_seconds": 149,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "pg-track-settings/Dockerfile": "65c222432c1306976a6af7dde252317a6afd288d0b56b9a4035bb82ab507a024",
+    "pg-track-settings/README.md": "a9a52269e4402e07f3257e2094a43f04bf58bf0c4fa9868827dbd2f49e40846c",
+    "pg-track-settings/metadata.hcl": "c9ea87b71979fc4dfe4856993809f22b718ea7621d8bcf83387ea4d1ab65555c",
+    "pg-track-settings/test/chainsaw-test.yaml": "57e979433dd8b08170055e36b186b42c87d15e9b2f87bc16212ea02f1fc427a8",
+    "pg-track-settings/test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "pg-track-settings/test/cluster.yaml": "95424e0f209dd9abca0d38a53805dffa74e5993794cdd9598c5dcc10e8bdacc6",
+    "pg-track-settings/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "pg-track-settings/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "pg-track-settings/test/functional.sql": "2cd7af7e1e30fc457115f7a7a4b16655b4d055c37904f9ea97f4c1682de23f76",
+    "pg-track-settings/test/job-assert.yaml": "b657517c8fc5570b9d89b507dc356915df8dbf33380c35b32d528346806de4c6",
+    "pg-track-settings/test/job.yaml": "fb775e738dbd7315eeb55a596e90e43a46e86eabc2ab7911c067d1bf29956b5b",
+    "pg-track-settings/test/sql.yaml": "78dd16a1414c46c43d48075790a64416a46d5113e1d669f622fe855912969d3e"
+  },
+  "image": "registry.pg-extensions:5000/pg-track-settings-testing:2.1.2-18-trixie@sha256:7b2d56d326afbd2abbf34aa69bbe8fe3b2b6cc9f5ef9199cf3708a9616bf0c84",
+  "architecture_manifests": {
+    "amd64": "sha256:52dfc4cb506daeca6864e45c49a54441514ffd81d4f9a4c020063728f1c3d40e",
+    "arm64": "sha256:b58c195cc2cc7610bd46a3d5e8ba24b969d2bc5c6842f6fdca3cadb24de422c4"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

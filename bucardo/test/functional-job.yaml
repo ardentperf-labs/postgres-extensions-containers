@@ -1,0 +1,113 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: functional
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsUser: 0
+      containers:
+      - name: bucardo-replication
+        image: ghcr.io/cloudnative-pg/postgresql:18-minimal-trixie
+        env:
+        - name: PGHOST
+          value: (join('-', [$values.name, 'rw']))
+        - name: PGPORT
+          value: "5432"
+        - name: PGDATABASE
+          value: postgres
+        - name: PGUSER
+          value: postgres
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: (join('-', [$values.name, 'superuser']))
+              key: password
+        - name: PGSSLMODE
+          value: require
+        command:
+        - bash
+        - -euo
+        - pipefail
+        - -c
+        - |
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get update -qq
+          apt-get install -y --no-install-recommends bucardo=5.6.0-6.pgdg13+1
+          mkdir -p /tmp/btest/{run,logs,work} /var/log/bucardo /var/run/bucardo
+          chown -R postgres:postgres /tmp/btest /var/log/bucardo /var/run/bucardo
+          trap 'rc=$?; find /tmp/btest/logs -type f -maxdepth 1 -print -exec cat {} \; 2>/dev/null || true; exit "$rc"' EXIT
+          test -s /bucardo-payload/share/extension/bucardo.schema
+          echo '76c290d02fdb95c1bc6b55c8eac72514c4e9c196747b59a530d420a88aa32af4  /bucardo-payload/share/extension/bucardo.schema' | sha256sum -c -
+          psql -X -v ON_ERROR_STOP=1 -h "$PGHOST" -p "$PGPORT" -U postgres -d postgres -f /bucardo-payload/share/extension/bucardo.schema
+          psql -X -v ON_ERROR_STOP=1 -h "$PGHOST" -p "$PGPORT" -U postgres -d source_data -c "CREATE TABLE public.items(id integer PRIMARY KEY, value text); INSERT INTO public.items VALUES (1, 'initial')"
+          psql -X -v ON_ERROR_STOP=1 -h "$PGHOST" -p "$PGPORT" -U postgres -d target_data -c "CREATE TABLE public.items(id integer PRIMARY KEY, value text)"
+          cd /tmp/btest/work
+          b=(--no-bucardorc --dbhost="$PGHOST" --dbport="$PGPORT" --dbuser=postgres --dbname=bucardo --pid-dir=/tmp/btest/run --log-destination=/tmp/btest/logs --sendmail=0)
+          runuser -u postgres -- env PGPASSWORD="$PGPASSWORD" bucardo "${b[@]}" add db src dbname=source_data dbhost="$PGHOST" dbport="$PGPORT" dbuser=postgres dbpass="$PGPASSWORD"
+          runuser -u postgres -- env PGPASSWORD="$PGPASSWORD" bucardo "${b[@]}" add db dst dbname=target_data dbhost="$PGHOST" dbport="$PGPORT" dbuser=postgres dbpass="$PGPASSWORD"
+          runuser -u postgres -- env PGPASSWORD="$PGPASSWORD" bucardo "${b[@]}" add dbgroup testgroup src:source dst:target
+          runuser -u postgres -- env PGPASSWORD="$PGPASSWORD" bucardo "${b[@]}" add table public.items db=src relgroup=testtables
+          runuser -u postgres -- env PGPASSWORD="$PGPASSWORD" bucardo "${b[@]}" add sync testsync relgroup=testtables dbs=testgroup onetimecopy=1
+          runuser -u postgres -- env PGPASSWORD="$PGPASSWORD" bucardo "${b[@]}" start 'CNPG Bucardo functional test'
+          check() {
+            expected="$1"
+            label="$2"
+            for attempt in $(seq 1 45); do
+              actual=$(psql -X -At -h "$PGHOST" -p "$PGPORT" -U postgres -d target_data -c "SELECT coalesce(string_agg(id || ':' || value, ',' ORDER BY id), '') FROM items")
+              if [ "$actual" = "$expected" ]; then
+                echo "PASS $label: $actual"
+                return 0
+              fi
+              sleep 1
+            done
+            echo "FAIL $label expected=$expected actual=$actual"
+            return 1
+          }
+          check '1:initial' initial-copy
+          psql -X -v ON_ERROR_STOP=1 -h "$PGHOST" -p "$PGPORT" -U postgres -d source_data -c "INSERT INTO items VALUES (2, 'inserted')"
+          check '1:initial,2:inserted' insert
+          psql -X -v ON_ERROR_STOP=1 -h "$PGHOST" -p "$PGPORT" -U postgres -d source_data -c "UPDATE items SET value='updated' WHERE id=1"
+          check '1:updated,2:inserted' update
+          psql -X -v ON_ERROR_STOP=1 -h "$PGHOST" -p "$PGPORT" -U postgres -d source_data -c "DELETE FROM items WHERE id=2"
+          check '1:updated' delete
+          psql -X -v ON_ERROR_STOP=1 -h "$PGHOST" -p "$PGPORT" -U postgres -d source_data -c 'TRUNCATE items'
+          check '' truncate
+          psql -X -v ON_ERROR_STOP=1 -h "$PGHOST" -p "$PGPORT" -U postgres -d source_data -c "INSERT INTO items VALUES (3, 'after-truncate')"
+          check '3:after-truncate' insert-after-truncate
+          runuser -u postgres -- env PGPASSWORD="$PGPASSWORD" bucardo "${b[@]}" stop
+        volumeMounts:
+        - name: bucardo-payload
+          mountPath: /bucardo-payload
+          readOnly: true
+      volumes:
+      - name: bucardo-payload
+        image:
+          reference: ($values.extensions[?name == 'bucardo'] | [0].image.reference)
+          pullPolicy: Always
+      initContainers:
+      - name: wait-for-postgresql
+        image: ghcr.io/cloudnative-pg/postgresql:18-minimal-trixie
+        env:
+        - name: PGHOST
+          value: (join('-', [$values.name, 'rw']))
+        - name: PGPORT
+          value: "5432"
+        - name: PGDATABASE
+          value: postgres
+        - name: PGUSER
+          value: postgres
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: (join('-', [$values.name, 'superuser']))
+              key: password
+        - name: PGSSLMODE
+          value: require
+        command:
+        - sh
+        - -ec
+        - for attempt in $(seq 1 60); do pg_isready -q && exit 0; sleep 1; done; exit 1

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  functional.sql: "\\set ON_ERROR_STOP on\nSELECT plan(2);\nSELECT is(2+2,4,'arithmetic\
+    \ fixture');\nSELECT ok(true,'boolean assertion');\nDO $$ BEGIN\n IF EXISTS (SELECT\
+    \ FROM finish() AS result WHERE result LIKE 'not ok%') THEN RAISE EXCEPTION 'TAP\
+    \ assertions failed'; END IF;\nEND $$;\n"

@@ -1,0 +1,22 @@
+{
+  "target": "pgtt",
+  "readme_sha256": "2f1cd3f7c6b77b10b79684d9934b8989c3cca9ebcf512aae4ee464fefa054543",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pgtt"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pgtt-app"
+    }
+  ],
+  "images": {
+    "pgtt-testing:4.6-18-trixie": "sha256:fe75bdcebb3b12a6fd41af003e98375df03bbc216277a52816ffe8f2a5ad8356"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:05:00Z"
+}

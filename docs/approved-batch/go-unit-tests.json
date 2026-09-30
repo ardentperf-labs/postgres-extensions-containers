@@ -1,0 +1,20 @@
+{
+  "command": "DAGGER_SESSION_PORT=1 DAGGER_SESSION_TOKEN=test go test ./...",
+  "working_directory": "dagger/maintenance",
+  "result": "PASS",
+  "output": "ok  \tdagger/maintenance\t(cached)\n?   \tdagger/maintenance/internal/dagger\t[no test files]\n",
+  "source_sha256": {
+    "dagger/maintenance/updatelibs_test.go": "56aa65f3d16c414d32c00bf6145d4b6576b20e55107bb411c888e0d718000d10",
+    "dagger/maintenance/dependencies.go": "a7409ee16cfcd0e32c9198a96cf0b6a2ceda68998d656acbfdfd3cd1d1688e7e",
+    "dagger/maintenance/parse.go": "f00dde76ea734d5dc53cd373c03ff23ad1523b11cbce7bac942b5dd00f8cadea",
+    "dagger/maintenance/main.go": "65fb9e81371554a9dff95e8234e13e5cb48b6eb967715ecbb604af94ad379d31",
+    "dagger/maintenance/image_test.go": "1c02b920c6c5bcd3803e96c729dac64537d0ce18170cc98d96e60a051a34d657",
+    "dagger/maintenance/parse_test.go": "f523e839b34508bb1d8f918a0c8cada04b4d7473373dd0f47fcbe72650fd4d6e",
+    "dagger/maintenance/image.go": "0949136bf012e3c2c8e927633e925e4f58894cadb7f958fd9bbb33d421bceb54",
+    "dagger/maintenance/updatelibs.go": "e33a49ba8a8f137ad07c6ede8139360fd1832ace45b92ed818733264460e7ef8",
+    "dagger/maintenance/catalogs.go": "0b625983085112dfe30277e679c7693ee1b8825bbc90066adf0ff60c9183f147",
+    "dagger/maintenance/dependencies_test.go": "ac341cc168f05476f31dab36fdb48d5b37088d36ddfb17cb8605c43bc0084269",
+    "dagger/maintenance/testingvalues.go": "dd61979933fc3af4b2285d838aec08e3d96f64ff46b566e4ae344c08d816a5e6"
+  },
+  "exit_code": 0
+}

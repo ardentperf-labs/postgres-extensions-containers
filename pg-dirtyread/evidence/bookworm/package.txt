@@ -1,0 +1,41 @@
+Package: postgresql-18-dirtyread
+Source: pg-dirtyread
+Version: 2.8-1.pgdg12+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 64
+Depends: postgresql-18, libc6 (>= 2.4)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Priority: optional
+Section: database
+Filename: pool/main/p/pg-dirtyread/postgresql-18-dirtyread_2.8-1.pgdg12+1_amd64.deb
+Size: 21656
+SHA512: db53e4a4f7beb2faebe822aa6b61a74cca17cf283c6a45a7c09491aceeb7dacf151f91a734008a7e5fa7dec02128a2344b66b6e5b33e1bf9a2323696b95c9d2b
+SHA256: edff3b8dcee651d071e4c65cb205ec5e4503c4ecc7d1561777df59d336858958
+SHA1: 19a2ce139cda0d97241003661255bdee3dded609
+MD5sum: ff6090737b0f7def5c7cde9041101197
+Description: Read dead but unvacuumed tuples from a PostgreSQL relation
+ The pg_dirtyread extension provides the ability to read dead but unvacuumed
+ rows from a PostgreSQL relation.
+Description-md5: 39ad00b580d7bff9552d041959a7cfe6
+
+Package: postgresql-18-dirtyread
+Source: pg-dirtyread
+Version: 2.7-3.pgdg12+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 63
+Depends: postgresql-18, libc6 (>= 2.4)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Priority: optional
+Section: database
+Filename: pool/main/p/pg-dirtyread/postgresql-18-dirtyread_2.7-3.pgdg12+1_amd64.deb
+Size: 21568
+SHA256: 34aff3fa586ff6cf21be37c72db1e36aaa8a9906e3129e2aab625f4c3da08f27
+SHA1: 3456a3c1028d3b7c4b86863545ffc92a2cb812fe
+MD5sum: 4cbcf5e38dd8e2e9c5539166cb93e32d
+Description: Read dead but unvacuumed tuples from a PostgreSQL relation
+ The pg_dirtyread extension provides the ability to read dead but unvacuumed
+ rows from a PostgreSQL relation.
+Description-md5: 39ad00b580d7bff9552d041959a7cfe6
+

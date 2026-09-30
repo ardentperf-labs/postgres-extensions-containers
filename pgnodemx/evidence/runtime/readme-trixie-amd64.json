@@ -1,0 +1,22 @@
+{
+  "target": "pgnodemx",
+  "readme_sha256": "5c1995f5a6f127a348c9d9d761b875eb5c284c565cd65d8ff461fcd702c68f31",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pgnodemx"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pgnodemx-app"
+    }
+  ],
+  "images": {
+    "pgnodemx-testing:2.0.1-18-trixie": "sha256:5e5782213a56e81ea29d52537f9a687929cc68981ff9dc59e86688a64100db0d"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:03:49Z"
+}

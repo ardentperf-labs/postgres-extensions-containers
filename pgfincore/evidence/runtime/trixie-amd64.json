@@ -1,0 +1,31 @@
+{
+  "command": "task e2e:test:full TARGET=pgfincore DISTRO=trixie DAGGER_ENGINE_NAME=cnpg-approved-batch-engine",
+  "exit_code": 0,
+  "started_utc": "2026-09-29T21:27:06Z",
+  "duration_seconds": 147,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "pgfincore/Dockerfile": "ab2f2c853be6d79242dd712ceb0e61a4c2b1af4888c2256fac7e8a9572d7bfcc",
+    "pgfincore/README.md": "8923515c5625fd6238e3284a99a36e03304a5b3d2dcec2bf63ea5e55b8de0e9f",
+    "pgfincore/metadata.hcl": "a6c2ad5d9317e0890670f7ebb23ebd90af994691e46a19be31b3549e2c9e8993",
+    "pgfincore/test/chainsaw-test.yaml": "57e979433dd8b08170055e36b186b42c87d15e9b2f87bc16212ea02f1fc427a8",
+    "pgfincore/test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "pgfincore/test/cluster.yaml": "95424e0f209dd9abca0d38a53805dffa74e5993794cdd9598c5dcc10e8bdacc6",
+    "pgfincore/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "pgfincore/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "pgfincore/test/functional.sql": "200ec748e310218fe43c3126ad4645583c0f01d5c1649d9258d0a93f22f5fa67",
+    "pgfincore/test/job-assert.yaml": "b657517c8fc5570b9d89b507dc356915df8dbf33380c35b32d528346806de4c6",
+    "pgfincore/test/job.yaml": "fb775e738dbd7315eeb55a596e90e43a46e86eabc2ab7911c067d1bf29956b5b",
+    "pgfincore/test/sql.yaml": "8f97cfead80a26df2a7c4205da89a0144a2f25ee0ab8abbe36762a776afa1ab2"
+  },
+  "image": "registry.pg-extensions:5000/pgfincore-testing:1.4.0-18-trixie@sha256:94dedef3807dffa89ea2267d29b318d7afc709ce872fe5e138d84b0244b0523e",
+  "architecture_manifests": {
+    "amd64": "sha256:39ba4bab401b850bf763c5ac7a263559713000c00f159f5906799949dd04e60c",
+    "arm64": "sha256:13e066d582d62d1f2657484c5c892dd2c1bed9257f33aface4e3cae6b45b1610"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

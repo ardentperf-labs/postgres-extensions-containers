@@ -1,0 +1,31 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: functional
+spec:
+  timeouts:
+    assert: 3m
+  steps:
+  - name: declarative-cluster-and-database
+    try:
+    - apply:
+        file: cluster.yaml
+    - assert:
+        file: cluster-assert.yaml
+    - apply:
+        file: database.yaml
+    - assert:
+        file: database-assert.yaml
+  - name: assert-useful-behavior
+    try:
+    - apply:
+        file: sql.yaml
+    - apply:
+        file: job.yaml
+    - assert:
+        file: job-assert.yaml
+    catch:
+    - podLogs:
+        selector: job-name=functional
+        tail: 60
+    - events: {}

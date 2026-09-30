@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  functional.sql: "\\set ON_ERROR_STOP on\nCREATE TABLE permissions_probe(id integer);\n\
+    GRANT SELECT ON permissions_probe TO app;\nDO $$ BEGIN\n IF NOT EXISTS (SELECT\
+    \ FROM table_permissions WHERE object_name='permissions_probe' AND role_name='app'\
+    \ AND permission='SELECT' AND granted) THEN RAISE EXCEPTION 'grant not visible';\
+    \ END IF;\nEND $$;\n"

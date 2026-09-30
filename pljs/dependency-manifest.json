@@ -1,0 +1,104 @@
+{
+  "image": "pljs",
+  "postgresql_major": 18,
+  "debian_suites": [
+    "bookworm",
+    "trixie"
+  ],
+  "architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "upstream": {
+    "url": "https://github.com/plv8/pljs",
+    "license_spdx": [
+      "LicenseRef-PLJS"
+    ]
+  },
+  "runtime_dependencies": {
+    "bookworm": {
+      "extension_package": {
+        "name": "postgresql-18-pljs",
+        "version": "1.0.5-1.pgdg12+1",
+        "source_package": "pljs",
+        "source_version": "1.0.5-1.pgdg12+1",
+        "origin": "https://apt.postgresql.org/pub/repos/apt bookworm-pgdg/main"
+      },
+      "base_runtime_packages": [
+        {
+          "name": "postgresql-18",
+          "version": "18.6-1.pgdg12+2",
+          "source_package": "postgresql-18",
+          "source_version": "18.6-1.pgdg12+2",
+          "origin": "PGDG CNPG base image"
+        },
+        {
+          "name": "libc6",
+          "version": "2.36-9+deb12u14",
+          "source_package": "glibc",
+          "source_version": "2.36-9+deb12u14",
+          "origin": "Debian base image"
+        }
+      ],
+      "dynamic_libraries_required": [
+        "libc.so.6 (provided by base image)"
+      ]
+    },
+    "trixie": {
+      "extension_package": {
+        "name": "postgresql-18-pljs",
+        "version": "1.0.5-1.pgdg13+1",
+        "source_package": "pljs",
+        "source_version": "1.0.5-1.pgdg13+1",
+        "origin": "https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main"
+      },
+      "base_runtime_packages": [
+        {
+          "name": "postgresql-18",
+          "version": "18.6-1.pgdg13+2",
+          "source_package": "postgresql-18",
+          "source_version": "18.6-1.pgdg13+2",
+          "origin": "PGDG CNPG base image"
+        },
+        {
+          "name": "libc6",
+          "version": "2.41-12+deb13u4",
+          "source_package": "glibc",
+          "source_version": "2.41-12+deb13u4",
+          "origin": "Debian base image"
+        }
+      ],
+      "dynamic_libraries_required": [
+        "libc.so.6 (provided by base image)"
+      ]
+    }
+  },
+  "pgdg_source_package": "pljs",
+  "runtime_manifest_in_image": "/licenses/runtime-packages.tsv",
+  "bundled_or_static_components": [
+    {
+      "name": "QuickJS",
+      "version": "2025-04-26 (vendored by PGDG pljs 1.0.5 source patch)",
+      "license_spdx": "MIT",
+      "linkage": "static source from debian/patches/quickjs.patch compiled into pljs.so; no QuickJS runtime DSO",
+      "update_path": "Inspect the exact PGDG pljs source archive and Debian quickjs.patch when Renovate updates postgresql-18-pljs; refresh the bundled version/license notes and functional JavaScript test."
+    },
+    {
+      "name": "QuickJS fuzz utilities",
+      "version": "source-only files in the same patch; not linked into pljs.so",
+      "license_spdx": "Apache-2.0",
+      "linkage": "not present in the runtime module; attribution retained in Debian copyright",
+      "update_path": "Recheck the package copyright and source patch on each PGDG package update."
+    }
+  ],
+  "source_archives_in_image": {
+    "path": "/source/",
+    "source_package": "pljs",
+    "contents": "Exact PGDG .dsc, upstream orig tarball and Debian packaging patch containing the vendored QuickJS source."
+  },
+  "license_payload": [
+    "/licenses/postgresql-18-pljs/copyright",
+    "/licenses/Apache-2.0"
+  ],
+  "update_and_rebuild_path": "Renovate tracks the PGDG postgresql-18-pljs package in metadata.hcl. Rebuild on updates, review the exact Debian source patch/copyright and run the PL/JS function test."
+}

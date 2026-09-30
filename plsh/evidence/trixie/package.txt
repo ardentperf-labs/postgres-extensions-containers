@@ -1,0 +1,49 @@
+Package: postgresql-18-plsh
+Source: postgresql-plsh
+Version: 1.20220917-4.pgdg13+2
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 74
+Depends: postgresql-18, libc6 (>= 2.38)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/petere/plsh
+Priority: optional
+Section: database
+Filename: pool/main/p/postgresql-plsh/postgresql-18-plsh_1.20220917-4.pgdg13+2_amd64.deb
+Size: 28408
+SHA512: 1512e1b96bc4328b27f121746dd6fde101053ea23dad672d37c8085540794d16a7cfb8d0b4b2a853a801a7a69e34c6912245e067b91e686f528cdd86bf0a15b4
+SHA256: e40d9ebacfb2a9c1fafeb20f1f32d2ef956ffa8d275b23597b05c4aa5033f797
+SHA1: 6e09a4e9b6ce28d1aec9e21101f8c78b08ad560b
+MD5sum: 4b4682afc74bb923e5d52a4a4c220ea9
+Description: PL/sh procedural language for PostgreSQL 18
+ PL/sh enables an SQL developer to write procedural language functions
+ for PostgreSQL 18 in a shell of his choice.  You need this package
+ if you have any PostgreSQL 18 functions that use the language plsh.
+ .
+ PostgreSQL is an object-relational SQL database management system.
+Description-md5: 
+
+Package: postgresql-18-plsh
+Source: postgresql-plsh
+Version: 1.20220917-4.pgdg13+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 74
+Depends: postgresql-18, libc6 (>= 2.38)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/petere/plsh
+Priority: optional
+Section: database
+Filename: pool/main/p/postgresql-plsh/postgresql-18-plsh_1.20220917-4.pgdg13+1_amd64.deb
+Size: 28396
+SHA256: e138b7309fd7144b1d5eedac72341bed604054a22881d396ff675ecdc572de0e
+SHA1: d1ed2a17ff772c132903c287ac4441f14019a087
+MD5sum: 5ff92fa3dc8ca0404adecb305dab3075
+Description: PL/sh procedural language for PostgreSQL 18
+ PL/sh enables an SQL developer to write procedural language functions
+ for PostgreSQL 18 in a shell of his choice.  You need this package
+ if you have any PostgreSQL 18 functions that use the language plsh.
+ .
+ PostgreSQL is an object-relational SQL database management system.
+Description-md5: 
+

@@ -1,0 +1,22 @@
+{
+  "target": "pg-statviz",
+  "readme_sha256": "534bdb408b439c84895d4c568c5739193e6a265063cffa04f4e64164fdf9393f",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pg-statviz"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pg-statviz-app"
+    }
+  ],
+  "images": {
+    "pg-statviz-testing:1.2.1-18-trixie": "sha256:a8053f58fb6969bb22fedadc7ac1f63a11272b096c6c0e1c9fd21ecdefe5884a"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:43:44Z"
+}

@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-fixture
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-fixture
+  template:
+    metadata:
+      labels:
+        app: mongo-fixture
+    spec:
+      containers:
+      - name: mongodb
+        # renovate: datasource=docker depName=mongo versioning=docker
+        image: mongo:8.0.13@sha256:cf340b1e5283843c63eb12999922f20c463ae31285f746d30f05dcc21cd1d47c
+        args: ["mongod", "--bind_ip_all", "--noauth"]
+        ports:
+        - name: mongodb
+          containerPort: 27017
+        readinessProbe:
+          exec:
+            command: ["mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+          initialDelaySeconds: 2
+          periodSeconds: 2
+          timeoutSeconds: 2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-fixture
+spec:
+  selector:
+    app: mongo-fixture
+  ports:
+  - name: mongodb
+    port: 27017
+    targetPort: mongodb

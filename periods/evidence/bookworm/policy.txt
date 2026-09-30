@@ -1,0 +1,6 @@
+postgresql-18-periods:
+  Installed: (none)
+  Candidate: 1.2.3-2.pgdg12+1
+  Version table:
+     1.2.3-2.pgdg12+1 500
+        500 https://apt.postgresql.org/pub/repos/apt bookworm-pgdg/main amd64 Packages

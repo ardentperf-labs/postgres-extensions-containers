@@ -1,0 +1,22 @@
+{
+  "target": "pg-dirtyread",
+  "readme_sha256": "8b1a9a603d993f602978beefe00c7e1fff7357109f44bb4bb949b18ff9a8be93",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pg-dirtyread"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pg-dirtyread-app"
+    }
+  ],
+  "images": {
+    "pg-dirtyread-testing:2.8-18-trixie": "sha256:ec0ee7e11f2f700345d3b1e19560d6cd132f5d1bbfe12f5d3892260c5696b954"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T21:59:48Z"
+}

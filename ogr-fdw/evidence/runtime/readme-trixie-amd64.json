@@ -1,0 +1,22 @@
+{
+  "target": "ogr-fdw",
+  "readme_sha256": "9624b7af973989387b31897ed3a578d404b937628a5b962621452d9125bc6e46",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-b:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-ogr-fdw"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-ogr-fdw-app"
+    }
+  ],
+  "images": {
+    "ogr-fdw-testing:1.1.9-18-trixie": "sha256:7240da16cc21901b60fd001d84f10c944f0d2d6d3382d3be6e80c0d02f0c7198"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-30T00:20:01Z"
+}

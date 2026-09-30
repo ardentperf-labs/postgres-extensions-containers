@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  functional.sql: |
+    \set ON_ERROR_STOP on
+    SELECT regexp('host.example', '^host') IS TRUE
+       AND regexp('guest.example', '^host') IS FALSE
+       AND regexp(NULL, '^host') IS NULL
+       AND next_time_ical(
+             E'BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:20260930T120000Z\nDURATION:PT1H\nRRULE:FREQ=DAILY\nEND:VEVENT\nEND:VCALENDAR',
+             extract(epoch FROM timestamptz '2026-09-30 00:00:00+00')::bigint,
+             'UTC') = extract(epoch FROM timestamptz '2026-09-30 12:00:00+00')::bigint;

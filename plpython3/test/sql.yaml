@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  functional.sql: "\\set ON_ERROR_STOP on\nCREATE EXTENSION hstore;\nCREATE EXTENSION\
+    \ ltree;\nCREATE EXTENSION hstore_plpython3u;\nCREATE EXTENSION jsonb_plpython3u;\n\
+    CREATE EXTENSION ltree_plpython3u;\nCREATE FUNCTION python_runtime() RETURNS jsonb\
+    \ TRANSFORM FOR TYPE jsonb LANGUAGE plpython3u AS $$\nimport gzip\nimport hashlib\n\
+    import sqlite3\nimport ssl\nconnection = sqlite3.connect(':memory:')\nanswer =\
+    \ connection.execute('SELECT 42').fetchone()[0]\nconnection.close()\nvalid = gzip.decompress(gzip.compress(b'abc'))\
+    \ == b'abc'\nvalid = valid and hashlib.sha256(b'abc').hexdigest() == 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad'\n\
+    valid = valid and bool(ssl.OPENSSL_VERSION)\nreturn {'answer': answer, 'valid':\
+    \ valid}\n$$;\nCREATE FUNCTION python_hstore() RETURNS hstore TRANSFORM FOR TYPE\
+    \ hstore LANGUAGE plpython3u AS $$\nreturn {'answer': '42'}\n$$;\nCREATE FUNCTION\
+    \ python_ltree(ltree) RETURNS text TRANSFORM FOR TYPE ltree LANGUAGE plpython3u\
+    \ AS $$\nreturn '.'.join(args[0])\n$$;\nCREATE FUNCTION python_spi() RETURNS integer\
+    \ LANGUAGE plpython3u AS $$\nreturn plpy.execute('SELECT 42 AS answer')[0]['answer']\n\
+    $$;\nDO $$ BEGIN\n IF python_runtime() IS DISTINCT FROM '{\"answer\":42,\"valid\"\
+    :true}'::jsonb\n OR (python_hstore()->'answer') IS DISTINCT FROM '42'\n OR python_ltree('Top.Science'::ltree)\
+    \ IS DISTINCT FROM 'Top.Science'\n OR python_spi() IS DISTINCT FROM 42 THEN\n\
+    \  RAISE EXCEPTION 'Python runtime, SPI or packaged transform result mismatch';\n\
+    \ END IF;\nEND $$;\n"

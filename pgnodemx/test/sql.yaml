@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  functional.sql: "\\set ON_ERROR_STOP on\nDO $$ BEGIN\n IF NOT EXISTS (SELECT FROM\
+    \ proc_meminfo()) THEN RAISE EXCEPTION 'proc memory metrics empty'; END IF;\n\
+    \ IF NOT EXISTS (SELECT FROM proc_pid_stat()) THEN RAISE EXCEPTION 'backend metrics\
+    \ empty'; END IF;\nEND $$;\n"

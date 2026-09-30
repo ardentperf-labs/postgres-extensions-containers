@@ -2,13 +2,13 @@ name: Dagger Module Unit tests
 
 on:
   push:
-    branches:
-      - main
     paths:
       - 'dagger/maintenance/**'
+      - '.github/workflows/test.yml'
   pull_request:
     paths:
       - 'dagger/maintenance/**'
+      - '.github/workflows/test.yml'
   workflow_dispatch:
 
 defaults:

@@ -1,0 +1,22 @@
+{
+  "target": "table-log",
+  "readme_sha256": "328bd78e0994c652d31b9d4121ae5bd315165efaca0356d59fdffc8e18a6d59f",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-table-log"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-table-log-app"
+    }
+  ],
+  "images": {
+    "table-log-testing:0.6.4-18-trixie": "sha256:b4d36e215968f0fdd4092ac3346019114097c6b636481d177ac06d3a97d843f7"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:09:00Z"
+}

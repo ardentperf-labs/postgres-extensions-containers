@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  functional.sql: "\\set ON_ERROR_STOP on\nCREATE EXTENSION plperlu;\nCREATE EXTENSION\
+    \ hstore;\nCREATE EXTENSION bool_plperl;\nCREATE EXTENSION bool_plperlu;\nCREATE\
+    \ EXTENSION hstore_plperl;\nCREATE EXTENSION hstore_plperlu;\nCREATE EXTENSION\
+    \ jsonb_plperl;\nCREATE EXTENSION jsonb_plperlu;\nCREATE FUNCTION perl_upper(text)\
+    \ RETURNS text LANGUAGE plperl AS $$return uc($_[0]);$$;\nCREATE FUNCTION perl_json()\
+    \ RETURNS jsonb TRANSFORM FOR TYPE jsonb LANGUAGE plperl AS $$return { answer\
+    \ => 42 };$$;\nCREATE FUNCTION perl_hstore() RETURNS hstore TRANSFORM FOR TYPE\
+    \ hstore LANGUAGE plperl AS $$return { answer => '42' };$$;\nCREATE FUNCTION perl_bool(boolean)\
+    \ RETURNS boolean TRANSFORM FOR TYPE bool LANGUAGE plperl AS $$return $_[0];$$;\n\
+    CREATE FUNCTION perlu_json() RETURNS jsonb TRANSFORM FOR TYPE jsonb LANGUAGE plperlu\
+    \ AS $$return { answer => 42 };$$;\nCREATE FUNCTION perlu_hstore() RETURNS hstore\
+    \ TRANSFORM FOR TYPE hstore LANGUAGE plperlu AS $$return { answer => '42' };$$;\n\
+    CREATE FUNCTION perlu_bool(boolean) RETURNS boolean TRANSFORM FOR TYPE bool LANGUAGE\
+    \ plperlu AS $$return $_[0];$$;\nCREATE FUNCTION perlu_driver() RETURNS integer\
+    \ LANGUAGE plperlu AS $$\n use DBI;\n use DBD::Pg;\n my $driver = DBI->install_driver('Pg');\n\
+    \ return $driver->{Name} eq 'Pg' ? 42 : 0;\n$$;\nDO $$ BEGIN\n IF perl_upper('hello')\
+    \ IS DISTINCT FROM 'HELLO'\n OR perl_json() IS DISTINCT FROM '{\"answer\":42}'::jsonb\n\
+    \ OR perlu_json() IS DISTINCT FROM '{\"answer\":42}'::jsonb\n OR (perl_hstore()->'answer')\
+    \ IS DISTINCT FROM '42'\n OR (perlu_hstore()->'answer') IS DISTINCT FROM '42'\n\
+    \ OR perl_bool(false) IS DISTINCT FROM false\n OR perl_bool(true) IS DISTINCT\
+    \ FROM true\n OR perlu_bool(false) IS DISTINCT FROM false\n OR perlu_bool(true)\
+    \ IS DISTINCT FROM true THEN\n  RAISE EXCEPTION 'Perl language or transform result\
+    \ mismatch';\n END IF;\nEND $$;\nSELECT perlu_driver() = 42 AS passed \\gset\n\
+    \\if :passed\n\\else\n \\quit 1\n\\endif\n"

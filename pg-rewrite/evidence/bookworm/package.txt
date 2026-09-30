@@ -1,0 +1,77 @@
+Package: postgresql-18-pg-rewrite
+Source: pg-rewrite
+Version: 2.2-2.pgdg12+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 191
+Depends: postgresql-18, libc6 (>= 2.14)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/cybertec-postgresql/pg_rewrite
+Priority: optional
+Section: database
+Filename: pool/main/p/pg-rewrite/postgresql-18-pg-rewrite_2.2-2.pgdg12+1_amd64.deb
+Size: 78476
+SHA512: 8d8a234250eb171670957f99169d9fcc989e670725a4b89e883d54952f3c1ae1b9b6f1ab94d571bd5a911abc3d351f009a6a1d5406645e5fbf296d901e4f8252
+SHA256: f94d597df3573ae23f9d9b59ecafb10d82e2107a08ef2a0827e834ac3755fd2a
+SHA1: fc5d9c4435078543b779f0f60cda1a1ba2b181b4
+MD5sum: d17e5aa89517440f1f418fa4c37f699d
+Description: Rewrite PostgreSQL tables with less locking
+ pg_rewrite is a tool to rewrite table (i.e. to copy its data to a new file).
+ It allows both read and write access to the table during the rewriting.
+ .
+  * Change data type of column(s)
+  * Partition the table
+  * Change order of columns
+Description-md5: 3ae2443f5b9b37100d58b843eb8f3b90
+
+Package: postgresql-18-pg-rewrite
+Source: pg-rewrite
+Version: 2.2-1.pgdg12+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 191
+Depends: postgresql-18, libc6 (>= 2.14)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/cybertec-postgresql/pg_rewrite
+Priority: optional
+Section: database
+Filename: pool/main/p/pg-rewrite/postgresql-18-pg-rewrite_2.2-1.pgdg12+1_amd64.deb
+Size: 78340
+SHA512: a3d199fc475e20584a9631b419b349828ec5c70fab478da1eb6562d8331b672b01acd452746d7d30e7015637d57e7f665892f363ad1ce5f05b82ebe5904fc8b8
+SHA256: cdf707ca13af2077d10bc025fa88b5a76d5b92e15ddccba88d793ef471382ac0
+SHA1: 59e6520dcb18adce3399b2a12a6475078fefa2bd
+MD5sum: 53fb82e917ebc4a65f7b821071170a1e
+Description: Rewrite PostgreSQL tables with less locking
+ pg_rewrite is a tool to rewrite table (i.e. to copy its data to a new file).
+ It allows both read and write access to the table during the rewriting.
+ .
+  * Change data type of column(s)
+  * Partition the table
+  * Change order of columns
+Description-md5: 3ae2443f5b9b37100d58b843eb8f3b90
+
+Package: postgresql-18-pg-rewrite
+Source: pg-rewrite
+Version: 2.1.0-1.pgdg12+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 190
+Depends: postgresql-18, libc6 (>= 2.14)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/cybertec-postgresql/pg_rewrite
+Priority: optional
+Section: database
+Filename: pool/main/p/pg-rewrite/postgresql-18-pg-rewrite_2.1.0-1.pgdg12+1_amd64.deb
+Size: 78448
+SHA256: bf8b08edd6adfa1a05fa752b2b2630884ef64db7d618d83296c11194309b6bab
+SHA1: b46e03227f463ece4173eea1924869b23cd343d7
+MD5sum: cafb19e377ceae9356df795bf65dd43b
+Description: Rewrite PostgreSQL tables with less locking
+ pg_rewrite is a tool to rewrite table (i.e. to copy its data to a new file).
+ It allows both read and write access to the table during the rewriting.
+ .
+  * Change data type of column(s)
+  * Partition the table
+  * Change order of columns
+Description-md5: 3ae2443f5b9b37100d58b843eb8f3b90
+

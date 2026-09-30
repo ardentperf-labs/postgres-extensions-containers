@@ -1,0 +1,22 @@
+{
+  "target": "ip4r",
+  "readme_sha256": "40e2f6e3afb04a6dc518af6139a13d57ad9fa06a7f6dd668664af03afa03f3a3",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-ip4r"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-ip4r-app"
+    }
+  ],
+  "images": {
+    "ip4r-testing:2.4.3-18-trixie": "sha256:21c6d32d6b7c436752c213c53125a8e1c0f7de41c4b55273513a7eaddc42d3df"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:31:34Z"
+}

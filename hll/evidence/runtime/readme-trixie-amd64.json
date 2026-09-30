@@ -1,0 +1,22 @@
+{
+  "target": "hll",
+  "readme_sha256": "63f2662dc9e556df2fc0cae01c64103b82c68f364d0623fa021893bf55740a93",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-hll"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-hll-app"
+    }
+  ],
+  "images": {
+    "hll-testing:2.21-18-trixie": "sha256:f3a1864fd02a415cedecd6aa0698b69cff5d8a730786054ab7ffb7f870cdeb02"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:29:29Z"
+}

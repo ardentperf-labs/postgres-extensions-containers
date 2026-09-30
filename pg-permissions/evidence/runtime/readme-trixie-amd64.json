@@ -1,0 +1,22 @@
+{
+  "target": "pg-permissions",
+  "readme_sha256": "d99b9e8efb546e1bac44b8b8aa3aafbb69f113ef536da4d3ccd170a4e229e604",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pg-permissions"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pg-permissions-app"
+    }
+  ],
+  "images": {
+    "pg-permissions-testing:1.4.1-18-trixie": "sha256:a73796ac77115be8010c6151b1d8e239d6d3011928590677eb99ff1742838c30"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:23:23Z"
+}

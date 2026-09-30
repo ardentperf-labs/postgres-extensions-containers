@@ -1,0 +1,8 @@
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Sorting...
+Full Text Search...
+postgresql-18-pgfincore/trixie-pgdg 1.4.0-1.pgdg13+1 amd64
+  set of PostgreSQL functions to manage blocks in memory
+

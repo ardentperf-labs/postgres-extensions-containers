@@ -1,0 +1,58 @@
+Package: postgresql-18-pg-csv
+Source: pg-csv
+Version: 1.0.2-1.pgdg12+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 59
+Depends: postgresql-18, libc6 (>= 2.4)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/PostgREST/pg_csv/
+Priority: optional
+Section: database
+Filename: pool/main/p/pg-csv/postgresql-18-pg-csv_1.0.2-1.pgdg12+1_amd64.deb
+Size: 17848
+SHA512: 993d6335e6faca9b6caee334d083b058733dd0a5d5ef182ecb426b99e61e689a64dcb362ecaaa4ea6c5f894bed456d13bc35e05c6f07cb019500d416bb77fbfc
+SHA256: 75281b993e1199498251f8888d4c5ffdb82bbb379e832ca2188e300dbf6e158f
+SHA1: 27df1861a45f93764c621e847092477a849480fc
+MD5sum: ecbdadffdb768a921317b4af0807e6ed
+Description: Flexible CSV processing for Postgres
+ Postgres has CSV support on the COPY command, but COPY has problems:
+  * It uses a special protocol, so it doesn't work with other standard features
+    like prepared statements, pipeline mode or pgbench.
+  * Is not composable. You can't use COPY inside CTEs, subqueries, view
+    definitions or as function arguments.
+ .
+ pg_csv offers flexible CSV processing as a solution.
+  * Includes a CSV aggregate csv_agg() that composes with SQL expressions.
+  * Native C extension, x2 times faster than SQL queries that try to output CSV
+Description-md5: 7531db8cd2bd8beb81b4b162e7b7572b
+
+Package: postgresql-18-pg-csv
+Source: pg-csv
+Version: 1.0.1-1.pgdg12+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 59
+Depends: postgresql-18, libc6 (>= 2.4)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/PostgREST/pg_csv/
+Priority: optional
+Section: database
+Filename: pool/main/p/pg-csv/postgresql-18-pg-csv_1.0.1-1.pgdg12+1_amd64.deb
+Size: 17784
+SHA512: b9ffe39d228630e59a5c34b96b6d374adce618dfb5589966e0b0c510e731e1889369899d3cf66081c92bc6c52506d88dc432f0ff5b91c5f2829da6548a6750e1
+SHA256: 010fb61f14ad55a24681d855442aaaf4ae3f3377679b152004c3956dc447ede9
+SHA1: 46f60863e05d165048901579f976cc5cf39b05e8
+MD5sum: d00d05182f60c66913e2166936d098b7
+Description: Flexible CSV processing for Postgres
+ Postgres has CSV support on the COPY command, but COPY has problems:
+  * It uses a special protocol, so it doesn't work with other standard features
+    like prepared statements, pipeline mode or pgbench.
+  * Is not composable. You can't use COPY inside CTEs, subqueries, view
+    definitions or as function arguments.
+ .
+ pg_csv offers flexible CSV processing as a solution.
+  * Includes a CSV aggregate csv_agg() that composes with SQL expressions.
+  * Native C extension, x2 times faster than SQL queries that try to output CSV
+Description-md5: 7531db8cd2bd8beb81b4b162e7b7572b
+

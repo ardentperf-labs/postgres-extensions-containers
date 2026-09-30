@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  functional.sql: "\\set ON_ERROR_STOP on\n\\getenv proxy_host PGHOST\n\\getenv proxy_database\
+    \ PGDATABASE\n\\getenv proxy_sslmode PGSSLMODE\n-- Public credentials used only\
+    \ inside this disposable fixture cluster.\nCREATE ROLE plproxy_fixture LOGIN PASSWORD\
+    \ 'Plproxy-fixture-2026!';\nSELECT format('CREATE FUNCTION proxy_probe() RETURNS\
+    \ integer AS %L LANGUAGE plproxy',\n  format('CONNECT %L; SELECT 42;',\n    format('host=%s\
+    \ dbname=%s user=plproxy_fixture password=Plproxy-fixture-2026! sslmode=%s', :'proxy_host',\
+    \ :'proxy_database', :'proxy_sslmode'))) \\gexec\nDO $$ BEGIN IF proxy_probe()\
+    \ IS DISTINCT FROM 42 THEN RAISE EXCEPTION 'proxy query failed'; END IF; END $$;\n\
+    DROP FUNCTION proxy_probe();\nDROP ROLE plproxy_fixture;\n"

@@ -1,0 +1,22 @@
+{
+  "target": "pointcloud",
+  "readme_sha256": "f5788b0038b7991fa83efb3d33220cb6124a7100ca8da75bf065ebea442819c4",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-b:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pointcloud"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pointcloud-app"
+    }
+  ],
+  "images": {
+    "pointcloud-testing:1.2.5-18-trixie": "sha256:fb5b77bd3540569b5fcf78f8789c50584201bbc59bd0e9782fc821526c75bc64"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:13:38Z"
+}

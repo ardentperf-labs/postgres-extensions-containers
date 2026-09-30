@@ -1,0 +1,22 @@
+{
+  "target": "pltcl",
+  "readme_sha256": "ef88b900729d3ab7bcdd56696abc0fb1c1c82578271a500665a864baf407aef0",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-c:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pltcl"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pltcl-app"
+    }
+  ],
+  "images": {
+    "pltcl-testing:18.6-18-trixie": "sha256:6d536201875ccd26214941fed4e33b192b882dd623a3c8b5dfc2ec64bfcbf750"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:24:41Z"
+}

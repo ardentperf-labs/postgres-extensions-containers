@@ -1,0 +1,31 @@
+{
+  "command": "task e2e:test:full TARGET=pg-permissions DISTRO=trixie DAGGER_ENGINE_NAME=cnpg-approved-batch-engine",
+  "exit_code": 0,
+  "started_utc": "2026-09-29T21:08:59Z",
+  "duration_seconds": 145,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "pg-permissions/Dockerfile": "1bce9263f358e3bc4fe8b4ada45634eb59c23c4f82777cb15721768039dcfe92",
+    "pg-permissions/README.md": "755a7b729bab3fed9c0b379078b6c903f93c9412ad9e8f6f4549be18ccb52ea9",
+    "pg-permissions/metadata.hcl": "5f5d1d704fd792d054204c2d42607bfe18fbc1bc2abce2d240c4281651c96852",
+    "pg-permissions/test/chainsaw-test.yaml": "57e979433dd8b08170055e36b186b42c87d15e9b2f87bc16212ea02f1fc427a8",
+    "pg-permissions/test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "pg-permissions/test/cluster.yaml": "95424e0f209dd9abca0d38a53805dffa74e5993794cdd9598c5dcc10e8bdacc6",
+    "pg-permissions/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "pg-permissions/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "pg-permissions/test/functional.sql": "aede6be56ec5ac01aafa82c54f6b546dec589ee25937a9f3330071dbe3ad9e58",
+    "pg-permissions/test/job-assert.yaml": "b657517c8fc5570b9d89b507dc356915df8dbf33380c35b32d528346806de4c6",
+    "pg-permissions/test/job.yaml": "fb775e738dbd7315eeb55a596e90e43a46e86eabc2ab7911c067d1bf29956b5b",
+    "pg-permissions/test/sql.yaml": "edc49019371edd4183868812e23ac5989a2ec3523c3686b518ddcb7e4c81b67c"
+  },
+  "image": "registry.pg-extensions:5000/pg-permissions-testing:1.4.1-18-trixie@sha256:7c5d946cb4d3ea98c8918b42ba827f6eef739c26716746c20b58c3d63fece333",
+  "architecture_manifests": {
+    "amd64": "sha256:e63ba03dd9875857adc43ad1e86701d69be17643212bf28db791f0fd6e398fe4",
+    "arm64": "sha256:41c6e12501faa0ebc271a5bed731c73e633de508b438f498081ac3eff0c6335e"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

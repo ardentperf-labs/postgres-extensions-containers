@@ -1,0 +1,57 @@
+{
+  "command": "task e2e:test:full TARGET=powa DISTRO=bookworm DAGGER_ENGINE_NAME=cnpg-approved-batch-c E2E_NETWORK=approved-batch-c KIND_CLUSTER_NAME=approved-batch-c-1.37.0 REGISTRY_NAME=registry.approved-batch-c REGISTRY_HOST_PORT=5002",
+  "working_directory": "isolated checkout with matching source hashes",
+  "registry_host_port": 5002,
+  "registry_name": "registry.approved-batch-c",
+  "exit_code": 0,
+  "started_utc": "2026-09-29T23:42:19Z",
+  "duration_seconds": 78,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "powa/Dockerfile": "0e38142e332d6b82c9b32c14f65f87b4cd78198dec086622f7483ce91c51caa8",
+    "powa/README.md": "8b10fa9dc1a2d8a840e8eaaec0a2c655e3d49352d79b5c9490e8d93c0c2577f6",
+    "powa/metadata.hcl": "04e59823f4e5fee6b1fc199f256a67dff7e35bdbe753739e1efe7a8fd2c5867a",
+    "powa/test/chainsaw-test.yaml": "4b1b4820df25b4928154642c129178b8993f3d0ecdfb2e2133af93fc0aac7b69",
+    "powa/test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "powa/test/cluster.yaml": "95424e0f209dd9abca0d38a53805dffa74e5993794cdd9598c5dcc10e8bdacc6",
+    "powa/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "powa/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "powa/test/functional-job-assert.yaml": "b657517c8fc5570b9d89b507dc356915df8dbf33380c35b32d528346806de4c6",
+    "powa/test/functional-job.yaml": "2363351bdb9c9e9a096f81715aef9da8b757b3d3b41706b8dc5dab36a4077136",
+    "powa/test/functional-sql.yaml": "19f2f065ec32a9240eb881fd3c3172507c97522114563b88c8bd79714f0823af",
+    "powa/test/functional.sql": "0923dc79bfd75ca17c5034abaf288529f88adb5854b6956cbea2f76f6aad1b6b"
+  },
+  "shared_source_sha256": {
+    "Taskfile.yml": "3476e9ac10e5435935f7165eaf06d0cba0d8a6041a57789d58e3dd8ca6785133",
+    "docker-bake.hcl": "8c8a7228e03135424231bdab3579d020b5db0c0ea8a50bf1343506c1ab11be33",
+    "test/chainsaw-test.yaml": "d6cc9f779526312c7e8f8428caeeece1114eb6cdf02aae2a9b4569a2b3931697",
+    "test/check-extension-assert.yaml": "7a45714b7a37a7d57e71ca5f2d56c0d7e4490d91663001ea91d0da6eefb012a6",
+    "test/check-extension.yaml": "86553efff338d89b79e88c11a90d1649480700c98b9bbe31cb5b6f999a3d6e58",
+    "test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "test/cluster.yaml": "00f1c8fa55567898aba14e6614c7fd87e09196f3d9bab4e2368521d4521eb663",
+    "test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "dagger/maintenance/catalogs.go": "0b625983085112dfe30277e679c7693ee1b8825bbc90066adf0ff60c9183f147",
+    "dagger/maintenance/dagger.gen.go": "7972c1975f4406a86e75d3b637d75a87a9b7c03ad39f5493a659c00d061235ab",
+    "dagger/maintenance/dependencies.go": "a7409ee16cfcd0e32c9198a96cf0b6a2ceda68998d656acbfdfd3cd1d1688e7e",
+    "dagger/maintenance/dependencies_test.go": "ac341cc168f05476f31dab36fdb48d5b37088d36ddfb17cb8605c43bc0084269",
+    "dagger/maintenance/image.go": "0949136bf012e3c2c8e927633e925e4f58894cadb7f958fd9bbb33d421bceb54",
+    "dagger/maintenance/image_test.go": "1c02b920c6c5bcd3803e96c729dac64537d0ce18170cc98d96e60a051a34d657",
+    "dagger/maintenance/main.go": "65fb9e81371554a9dff95e8234e13e5cb48b6eb967715ecbb604af94ad379d31",
+    "dagger/maintenance/parse.go": "f00dde76ea734d5dc53cd373c03ff23ad1523b11cbce7bac942b5dd00f8cadea",
+    "dagger/maintenance/parse_test.go": "f523e839b34508bb1d8f918a0c8cada04b4d7473373dd0f47fcbe72650fd4d6e",
+    "dagger/maintenance/testingvalues.go": "dd61979933fc3af4b2285d838aec08e3d96f64ff46b566e4ae344c08d816a5e6",
+    "dagger/maintenance/updatelibs.go": "e33a49ba8a8f137ad07c6ede8139360fd1832ace45b92ed818733264460e7ef8",
+    "dagger/maintenance/updatelibs_test.go": "56aa65f3d16c414d32c00bf6145d4b6576b20e55107bb411c888e0d718000d10"
+  },
+  "image": "registry.approved-batch-c:5000/powa-testing:5.3.0-18-bookworm@sha256:36ba8ceb0fe7886cbe17c79674011ef2fcdf3852f2b5b38f3780f1368cf9110f",
+  "architecture_manifests": {
+    "amd64": "sha256:b2a255df1d747c780571d1325f89f49c921c98a34f5f1a5a43602b37fad77dd9",
+    "arm64": "sha256:9c576b97dc13dd9de15295958a9ccd221c6944bbe9f83d7cee2be90a9b0133ec"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

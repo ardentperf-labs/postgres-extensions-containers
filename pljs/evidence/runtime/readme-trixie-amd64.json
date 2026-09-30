@@ -1,0 +1,22 @@
+{
+  "target": "pljs",
+  "readme_sha256": "3bed598e96714d6e3979eb24830af9bc16c198f6599729f99db5f928ca504951",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-c:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pljs"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pljs-app"
+    }
+  ],
+  "images": {
+    "pljs-testing:1.0.5-18-trixie": "sha256:aba2869cddaf78911f9ef2c902a4f7b7ae8c8a0470e99d2e7d41bea0b2b20a5e"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:14:25Z"
+}

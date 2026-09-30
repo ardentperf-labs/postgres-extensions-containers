@@ -1,0 +1,22 @@
+{
+  "target": "pllua",
+  "readme_sha256": "fad00bee1782db959b35f8928a6956f4317901b400cc2a48f5e6e3fcd8554eb5",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-c:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pllua"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pllua-app"
+    }
+  ],
+  "images": {
+    "pllua-testing:1-2.0.12-18-trixie": "sha256:fa0f49251b519d08d4ec2b4d9003027bb3e63913e3b83339908339eb4834c960"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:19:23Z"
+}

@@ -1,0 +1,53 @@
+{
+  "command": "task e2e:test:full TARGET=asn1oid DISTRO=bookworm DAGGER_ENGINE_NAME=cnpg-approved-batch-engine",
+  "exit_code": 0,
+  "started_utc": "2026-09-29T22:17:26Z",
+  "duration_seconds": 72,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "asn1oid/Dockerfile": "cb53bf9b8ef77cbce5bb7574cd10e2e7fabade3aa69ac533415529b3bc221818",
+    "asn1oid/README.md": "81957b2c84c169bba2d5b2d19f8bb122e2cbf1a9430b56cb767da8ba26893826",
+    "asn1oid/dependency-manifest.json": "d617e37dd2e1e51612d6fb845e71ab55c4c805eb10a7c69ae91b0e4f2f243fd2",
+    "asn1oid/metadata.hcl": "c73d55447bdbfdc04c4a9650d78157fdea1ca6db2ef9f12402195581ed229a21",
+    "asn1oid/test/chainsaw-test.yaml": "b6fa9a95bcbc10babea0b8558f0c886cfa5e00d451d85a00b584487207b5fe95",
+    "asn1oid/test/cluster-assert.yaml": "643c3e27f90c7fdbf645c94522918a87f55335854921cdb29845736abfa4a7dc",
+    "asn1oid/test/cluster.yaml": "bfefee8fab69abd6b0c91426fbf1fa0192271dcbe7fcb729d7857f55ef17f156",
+    "asn1oid/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "asn1oid/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "asn1oid/test/functional-assert.yaml": "f71387127f5ddfe372896132e16463c5594956d1d1554b288afa5a722b66fbbe",
+    "asn1oid/test/functional.yaml": "e19b45be44a4ac4a3f676d85ef8c90e92b1ce1c9837a8b818d43a7cb487c7fbf"
+  },
+  "shared_source_sha256": {
+    "Taskfile.yml": "3476e9ac10e5435935f7165eaf06d0cba0d8a6041a57789d58e3dd8ca6785133",
+    "docker-bake.hcl": "8c8a7228e03135424231bdab3579d020b5db0c0ea8a50bf1343506c1ab11be33",
+    "test/chainsaw-test.yaml": "0174a85c78c9ad3fa462fa532e0de6bcce6052a24f5d11bfeea82ecd397f1b19",
+    "test/check-extension-assert.yaml": "7a45714b7a37a7d57e71ca5f2d56c0d7e4490d91663001ea91d0da6eefb012a6",
+    "test/check-extension.yaml": "8113908a6612bde54f32de89b42b5183b1518021f57bbea50822dedf0fd4a9c3",
+    "test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "test/cluster.yaml": "5a27b229c6047734ced8e8af2d8f6449946197e29192e978ff874a9c7893d388",
+    "test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "dagger/maintenance/catalogs.go": "0b625983085112dfe30277e679c7693ee1b8825bbc90066adf0ff60c9183f147",
+    "dagger/maintenance/dagger.gen.go": "7972c1975f4406a86e75d3b637d75a87a9b7c03ad39f5493a659c00d061235ab",
+    "dagger/maintenance/dependencies.go": "a7409ee16cfcd0e32c9198a96cf0b6a2ceda68998d656acbfdfd3cd1d1688e7e",
+    "dagger/maintenance/dependencies_test.go": "ac341cc168f05476f31dab36fdb48d5b37088d36ddfb17cb8605c43bc0084269",
+    "dagger/maintenance/image.go": "0949136bf012e3c2c8e927633e925e4f58894cadb7f958fd9bbb33d421bceb54",
+    "dagger/maintenance/image_test.go": "1c02b920c6c5bcd3803e96c729dac64537d0ce18170cc98d96e60a051a34d657",
+    "dagger/maintenance/main.go": "65fb9e81371554a9dff95e8234e13e5cb48b6eb967715ecbb604af94ad379d31",
+    "dagger/maintenance/parse.go": "f00dde76ea734d5dc53cd373c03ff23ad1523b11cbce7bac942b5dd00f8cadea",
+    "dagger/maintenance/parse_test.go": "f523e839b34508bb1d8f918a0c8cada04b4d7473373dd0f47fcbe72650fd4d6e",
+    "dagger/maintenance/testingvalues.go": "dd61979933fc3af4b2285d838aec08e3d96f64ff46b566e4ae344c08d816a5e6",
+    "dagger/maintenance/updatelibs.go": "e33a49ba8a8f137ad07c6ede8139360fd1832ace45b92ed818733264460e7ef8",
+    "dagger/maintenance/updatelibs_test.go": "56aa65f3d16c414d32c00bf6145d4b6576b20e55107bb411c888e0d718000d10"
+  },
+  "image": "registry.pg-extensions:5000/asn1oid-testing:1.6-18-bookworm@sha256:e08d061c17a20f8159f81ee021b9c9bcda01340265c42ccdd7a00afbc22dfa85",
+  "architecture_manifests": {
+    "amd64": "sha256:5f6e418cb988fe72b3ef9a08f0bcf2b0168db9b75b61858bf1f4a365c43058a3",
+    "arm64": "sha256:cf8b80f69425bfe76cf32895fde11156f730db3327dfcbfa1c2da81dee156dec"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

@@ -1,0 +1,22 @@
+{
+  "target": "pg-similarity",
+  "readme_sha256": "3611f229336f2d202f7d14ad41525df274bb624c3154fdce3a8c911cacd6c83e",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pg-similarity"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pg-similarity-app"
+    }
+  ],
+  "images": {
+    "pg-similarity-testing:1.0-18-trixie": "sha256:5ae1f21116e19a941b266c3b088c9cb244bae0aa39cebc073f5aa4c2763d26fa"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:01:31Z"
+}

@@ -1,0 +1,36 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: functional-extension-test
+spec:
+  timeouts:
+    apply: 5s
+    assert: 3m
+    delete: 30s
+  description: Creates a fresh CNPG cluster and validates useful extension behavior through the managed PostgreSQL endpoint.
+  steps:
+  - name: Provision PostgreSQL Cluster
+    try:
+    - apply:
+        file: cluster.yaml
+    - assert:
+        file: cluster-assert.yaml
+  - name: Install extension in app database
+    try:
+    - apply:
+        file: database.yaml
+    - assert:
+        timeout: 30s
+        file: database-assert.yaml
+  - name: Verify extension behavior through PostgreSQL
+    try:
+    - apply:
+        file: functional.yaml
+    - assert:
+        timeout: 3m
+        file: functional-assert.yaml
+    catch:
+    - podLogs:
+        selector: job-name=extension-functional-check
+        tail: 60
+    - events: {}

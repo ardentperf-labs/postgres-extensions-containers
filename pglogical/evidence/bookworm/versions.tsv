@@ -1,0 +1,3 @@
+libc6:amd64	2.36-9+deb12u14	amd64	glibc	2.36-9+deb12u14
+libpq5:amd64	18.6-1.pgdg12+2	amd64	postgresql-18	18.6-1.pgdg12+2
+postgresql-18-pglogical	2.4.8-1.pgdg12+1	amd64	pglogical	2.4.8-1.pgdg12+1

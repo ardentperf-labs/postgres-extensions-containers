@@ -1,0 +1,22 @@
+{
+  "target": "numeral",
+  "readme_sha256": "457bd225303333401be0b950e58b8ce912442fdea78a89638b0ccd9ab5242707",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-b:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-numeral"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-numeral-app"
+    }
+  ],
+  "images": {
+    "numeral-testing:1.3-18-trixie": "sha256:57909f86bd8a13590c2a716563f9c666242a01120c85c2f2187d0a0f24c2edb6"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:15:47Z"
+}

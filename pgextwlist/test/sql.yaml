@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  functional.sql: "\\set ON_ERROR_STOP on\n\\getenv target_uri APP_URI\nSET ROLE app;\n\
+    CREATE EXTENSION dblink;\nSELECT result = 42 AS passed FROM dblink(replace(:'target_uri',\
+    \ '/*', '/'), 'SELECT 42') AS remote_result(result integer) \\gset\n\\if :passed\n\
+    \\else\n  \\quit 1\n\\endif\nDO $$ BEGIN\n BEGIN\n  EXECUTE 'CREATE EXTENSION\
+    \ file_fdw';\n  RAISE EXCEPTION 'non-allowlisted privileged extension accepted';\n\
+    \ EXCEPTION WHEN insufficient_privilege THEN NULL;\n END;\nEND $$;\n"

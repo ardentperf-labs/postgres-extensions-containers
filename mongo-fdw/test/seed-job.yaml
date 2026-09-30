@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: seed-mongo
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: seed
+        # renovate: datasource=docker depName=mongo versioning=docker
+        image: mongo:8.0.13@sha256:cf340b1e5283843c63eb12999922f20c463ae31285f746d30f05dcc21cd1d47c
+        command: ["mongosh"]
+        args:
+        - mongodb://mongo-fixture:27017/warehouse
+        - --quiet
+        - --eval
+        - 'db.items.insertOne({_id: ObjectId("65a123456789abcdef012345"), item: "copper wire", qty: 7})'

@@ -1,0 +1,79 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: functional
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: sql
+        image: ghcr.io/cloudnative-pg/postgresql:18-minimal-trixie
+        env:
+        - name: PGHOST
+          value: (join('-', [$values.name, 'rw']))
+        - name: PGPORT
+          value: "5432"
+        - name: PGDATABASE
+          value: app
+        - name: PGUSER
+          value: postgres
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: (join('-', [$values.name, 'superuser']))
+              key: password
+        - name: PGSSLMODE
+          value: require
+        - name: PGAPPNAME
+          value: pg_rage_terminator_fixture
+        command:
+        - sh
+        - -ec
+        # This job contains the only TCP client in the isolated test Cluster.
+        # A successful query would mean the worker did not terminate it.
+        # (The shell wrapper below interprets the expected server termination.)
+        - |
+          output=/tmp/pg-rage-terminator-client.log
+          if psql -X -v ON_ERROR_STOP=1 -f /sql/functional.sql >"$output" 2>&1; then
+            cat "$output"
+            echo "pg_rage_terminator did not terminate the fixture session" >&2
+            exit 1
+          fi
+          cat "$output"
+          if ! grep -Fq 'terminating connection due to administrator command' "$output"; then
+            echo "fixture session failed for a reason other than pg_rage_terminator" >&2
+            exit 1
+          fi
+        volumeMounts:
+        - name: sql
+          mountPath: /sql
+          readOnly: true
+      volumes:
+      - name: sql
+        configMap:
+          name: functional-sql
+      initContainers:
+      - name: wait-for-postgresql
+        image: ghcr.io/cloudnative-pg/postgresql:18-minimal-trixie
+        env:
+        - name: PGHOST
+          value: (join('-', [$values.name, 'rw']))
+        - name: PGPORT
+          value: "5432"
+        - name: PGDATABASE
+          value: app
+        - name: PGUSER
+          value: postgres
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: (join('-', [$values.name, 'superuser']))
+              key: password
+        - name: PGSSLMODE
+          value: require
+        command:
+        - sh
+        - -ec
+        - for attempt in $(seq 1 60); do pg_isready -q && exit 0; sleep 1; done; exit 1

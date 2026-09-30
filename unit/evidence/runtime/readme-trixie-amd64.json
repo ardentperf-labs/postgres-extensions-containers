@@ -1,0 +1,22 @@
+{
+  "target": "unit",
+  "readme_sha256": "bf3b5da7919cf534f0e57f7eb4ce29fa41f4ffd45f4f948defe3f9f571d3557a",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-b:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-unit"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-unit-app"
+    }
+  ],
+  "images": {
+    "unit-testing:7.10-18-trixie": "sha256:f36ab1dcba61d92843c40f3ef0fdcd2b5556c14f065b3af06228510d61bd10ff"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:25:58Z"
+}

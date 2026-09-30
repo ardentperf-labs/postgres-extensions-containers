@@ -1,0 +1,22 @@
+{
+  "target": "pg-track-settings",
+  "readme_sha256": "a9a52269e4402e07f3257e2094a43f04bf58bf0c4fa9868827dbd2f49e40846c",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pg-track-settings"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pg-track-settings-app"
+    }
+  ],
+  "images": {
+    "pg-track-settings-testing:2.1.2-18-trixie": "sha256:e42c74b2d483d2f97aed619a4d8cd39584183b265a701f6ea454e910f283cacf"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:02:07Z"
+}

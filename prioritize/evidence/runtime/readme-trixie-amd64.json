@@ -1,0 +1,22 @@
+{
+  "target": "prioritize",
+  "readme_sha256": "755186980b10eb8651600e20dd6788da46f5319f3a083dd2e032e673082e0b45",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-prioritize"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-prioritize-app"
+    }
+  ],
+  "images": {
+    "prioritize-testing:1.0.4-18-trixie": "sha256:b426dfe68a72790cdbdc32dbe2f3e3ad4e39bab36d7293a875f6d787a12c2337"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:06:40Z"
+}

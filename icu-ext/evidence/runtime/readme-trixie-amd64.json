@@ -1,0 +1,22 @@
+{
+  "target": "icu-ext",
+  "readme_sha256": "04004f5ca134acfc5257cdac976a508a67e5f4b71c1154f0cd68769624a8b5d5",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-b:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-icu-ext"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-icu-ext-app"
+    }
+  ],
+  "images": {
+    "icu-ext-testing:1.11.0-18-trixie": "sha256:b1e0f8a78512bd36639e53565abdfd12b4662606cc3d9371fe40ed13918124ce"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:21:14Z"
+}

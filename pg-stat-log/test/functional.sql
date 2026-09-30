@@ -1,0 +1,30 @@
+SELECT pg_stat_log_reset();
+DO $$
+BEGIN
+    RAISE WARNING USING ERRCODE = '01000', MESSAGE = 'cnpg pg_stat_log functional test';
+END
+$$;
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT FROM pg_stat_log
+        WHERE database_name = current_database()
+          AND sqlerrcode = '01000'
+          AND count > 0
+    ) THEN
+        RAISE EXCEPTION 'pg_stat_log did not count the warning just emitted';
+    END IF;
+END
+$$;
+SELECT pg_stat_log_reset();
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT FROM pg_stat_log
+        WHERE database_name = current_database()
+          AND sqlerrcode = '01000'
+    ) THEN
+        RAISE EXCEPTION 'pg_stat_log_reset did not clear the tracked counters';
+    END IF;
+END
+$$;

@@ -1,0 +1,10 @@
+postgresql-18-decoderbufs:
+  Installed: (none)
+  Candidate: 3.6.1-1.pgdg12+1
+  Version table:
+     3.6.1-1.pgdg12+1 500
+        500 https://apt.postgresql.org/pub/repos/apt bookworm-pgdg/main amd64 Packages
+     3.6.0-2.pgdg12+1 500
+        500 https://apt.postgresql.org/pub/repos/apt bookworm-pgdg/main amd64 Packages
+     3.6.0-1.pgdg12+1 500
+        500 https://apt.postgresql.org/pub/repos/apt bookworm-pgdg/main amd64 Packages

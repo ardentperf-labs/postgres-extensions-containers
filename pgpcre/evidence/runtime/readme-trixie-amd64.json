@@ -1,0 +1,22 @@
+{
+  "target": "pgpcre",
+  "readme_sha256": "e48dbf6a1dcbe8f779630249efc91b37b278ce31c25bcdbcfc622d26ce95c1dd",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-b:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pgpcre"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pgpcre-app"
+    }
+  ],
+  "images": {
+    "pgpcre-testing:0.20190509-18-trixie": "sha256:883f3365c984428a08456d72e529e909c10e7cb81c9171874f917ffb1b944d43"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:03:10Z"
+}

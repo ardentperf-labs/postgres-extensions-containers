@@ -1,0 +1,22 @@
+{
+  "target": "first-last-agg",
+  "readme_sha256": "3e771ddd711c8dbf9b61381546dce299d3f921bc6aaf1b67ce14f106bf86270e",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-first-last-agg"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-first-last-agg-app"
+    }
+  ],
+  "images": {
+    "first-last-agg-testing:0.1.4-18-trixie": "sha256:66a7db6f933292659eddd37cce7a6b95cb7856a651138c7aad62112b5280e0c2"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:34:15Z"
+}

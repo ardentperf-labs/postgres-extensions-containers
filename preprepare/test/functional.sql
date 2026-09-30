@@ -1,0 +1,6 @@
+\set ON_ERROR_STOP on
+CREATE TABLE statements_probe(name text PRIMARY KEY, statement text);
+INSERT INTO statements_probe VALUES ('prepared_probe','PREPARE prepared_probe AS SELECT 42 AS answer');
+SELECT prepare_all('public.statements_probe');
+EXECUTE prepared_probe;
+DO $$ BEGIN IF NOT EXISTS (SELECT FROM pg_prepared_statements WHERE name='prepared_probe') THEN RAISE EXCEPTION 'statement not prepared'; END IF; END $$;

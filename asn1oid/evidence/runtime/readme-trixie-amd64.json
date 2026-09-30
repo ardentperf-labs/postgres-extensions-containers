@@ -1,0 +1,22 @@
+{
+  "target": "asn1oid",
+  "readme_sha256": "81957b2c84c169bba2d5b2d19f8bb122e2cbf1a9430b56cb767da8ba26893826",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-asn1oid"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-asn1oid-app"
+    }
+  ],
+  "images": {
+    "asn1oid-testing:1.6-18-trixie": "sha256:749ae785461083d13fb53252d4241da85ebce660c00b80d6a6f47f904c2fec44"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:17:27Z"
+}

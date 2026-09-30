@@ -1,0 +1,45 @@
+Package: postgresql-18-tablelog
+Source: tablelog
+Version: 0.6.4-4.pgdg13+2
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 127
+Depends: postgresql-18, libc6 (>= 2.38)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/df7cb/table_log
+Priority: optional
+Section: database
+Filename: pool/main/t/tablelog/postgresql-18-tablelog_0.6.4-4.pgdg13+2_amd64.deb
+Size: 46356
+SHA512: 53eee6602b08e05de93971827cbbe9f803de89586c7726a0f0d54fd69c350aff8aa9fe8396516b9a5c8a6bf425c8b3c3bbe79bfb6fa138927bb6650d5c442a85
+SHA256: 113d6becde487825c4e3e0377dda0093eb73fb26946ebc2ab4b6559729f126f9
+SHA1: f13a60c076be85c068a6eea310cb725298ae044d
+MD5sum: eb04c0a5af0baf9ba304f46fa101f30f
+Description: log changes on tables and restore tables to point in time
+ table_log is a PostgreSQL extension with a set of functions to log changes on
+ a table and to restore the state of the table or a specific row on any time in
+ the past.
+Description-md5: 
+
+Package: postgresql-18-tablelog
+Source: tablelog
+Version: 0.6.4-4.pgdg13+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 127
+Depends: postgresql-18, libc6 (>= 2.38)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/df7cb/table_log
+Priority: optional
+Section: database
+Filename: pool/main/t/tablelog/postgresql-18-tablelog_0.6.4-4.pgdg13+1_amd64.deb
+Size: 46288
+SHA256: 8aba6d20c6f693994496105db6ee0825d674adf059755a85a95561b049859e35
+SHA1: a4a855fe0b3d551da361c9ae31291b50f1daefd0
+MD5sum: 03236a4cdb1eee82caaab9e6f494d27d
+Description: log changes on tables and restore tables to point in time
+ table_log is a PostgreSQL extension with a set of functions to log changes on
+ a table and to restore the state of the table or a specific row on any time in
+ the past.
+Description-md5: 
+

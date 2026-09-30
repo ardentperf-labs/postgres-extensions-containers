@@ -1,0 +1,14 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: (join('-', [$values.name, 'bucardo']))
+spec:
+  name: bucardo
+  owner: bucardo
+  cluster:
+    name: ($values.name)
+  extensions:
+  - name: plperl
+    version: '1.0'
+  - name: plperlu
+    version: '1.0'

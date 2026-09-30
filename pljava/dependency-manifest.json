@@ -1,0 +1,408 @@
+{
+  "image": "pljava",
+  "postgresql_major": 18,
+  "debian_suites": [
+    "bookworm",
+    "trixie"
+  ],
+  "architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "upstream": {
+    "url": "https://tada.github.io/pljava/",
+    "license_spdx": [
+      "BSD-3-Clause"
+    ]
+  },
+  "runtime_dependencies": {
+    "bookworm": {
+      "extension_package": {
+        "name": "postgresql-18-pljava",
+        "version": "1.6.10-1.pgdg12+1",
+        "source_package": "postgresql-pljava",
+        "source_version": "1.6.10-1.pgdg12+1",
+        "origin": "https://apt.postgresql.org/pub/repos/apt bookworm-pgdg/main"
+      },
+      "additional_runtime_packages": [
+        {
+          "name": "postgresql-pljava-common",
+          "version": "1.6.10-1.pgdg12+1",
+          "source_package": "postgresql-pljava",
+          "source_version": "1.6.10-1.pgdg12+1",
+          "origin": "https://apt.postgresql.org/pub/repos/apt bookworm-pgdg/main"
+        },
+        {
+          "name": "openjdk-17-jre-headless",
+          "version": "17.0.20.1+1-1~deb12u1",
+          "source_package": "openjdk-17",
+          "source_version": "17.0.20.1+1-1~deb12u1",
+          "origin": "Debian bookworm-security/main"
+        }
+      ],
+      "base_runtime_packages": [
+        {
+          "name": "postgresql-18",
+          "version": "18.6-1.pgdg12+2",
+          "source_package": "postgresql-18",
+          "source_version": "18.6-1.pgdg12+2",
+          "origin": "PGDG CNPG base image"
+        },
+        {
+          "name": "libc6",
+          "version": "2.36-9+deb12u14",
+          "source_package": "glibc",
+          "source_version": "2.36-9+deb12u14",
+          "origin": "Debian base image"
+        },
+        {
+          "name": "libstdc++6",
+          "version": "12.2.0-14+deb12u1",
+          "source_package": "gcc-12",
+          "source_version": "12.2.0-14+deb12u1",
+          "origin": "Debian base image"
+        },
+        {
+          "name": "libgcc-s1",
+          "version": "12.2.0-14+deb12u1",
+          "source_package": "gcc-12",
+          "source_version": "12.2.0-14+deb12u1",
+          "origin": "Debian base image"
+        }
+      ],
+      "dynamic_libraries_required": [
+        "libjvm.so (bundled under /jvm)",
+        "libstdc++.so.6 (provided by base image)",
+        "libgcc_s.so.1 (provided by base image)",
+        "libm.so.6 and libc.so.6 (provided by base image)"
+      ],
+      "redistributed_runtime_packages": [
+        {
+          "binary_package": "libasound2",
+          "binary_version": "1.2.8-1+b1",
+          "source_package": "alsa-lib",
+          "source_version": "1.2.8-1"
+        },
+        {
+          "binary_package": "libbrotli1",
+          "binary_version": "1.0.9-2+b6",
+          "source_package": "brotli",
+          "source_version": "1.0.9-2"
+        },
+        {
+          "binary_package": "libfreetype6",
+          "binary_version": "2.12.1+dfsg-5+deb12u4",
+          "source_package": "freetype",
+          "source_version": "2.12.1+dfsg-5+deb12u4"
+        },
+        {
+          "binary_package": "libglib2.0-0",
+          "binary_version": "2.74.6-2+deb12u9",
+          "source_package": "glib2.0",
+          "source_version": "2.74.6-2+deb12u9"
+        },
+        {
+          "binary_package": "libgraphite2-3",
+          "binary_version": "1.3.14-1+deb12u1",
+          "source_package": "graphite2",
+          "source_version": "1.3.14-1+deb12u1"
+        },
+        {
+          "binary_package": "libharfbuzz0b",
+          "binary_version": "6.0.0+dfsg-3",
+          "source_package": "harfbuzz",
+          "source_version": "6.0.0+dfsg-3"
+        },
+        {
+          "binary_package": "libjpeg62-turbo",
+          "binary_version": "1:2.1.5-2",
+          "source_package": "libjpeg-turbo",
+          "source_version": "1:2.1.5-2"
+        },
+        {
+          "binary_package": "liblcms2-2",
+          "binary_version": "2.14-2+deb12u1",
+          "source_package": "lcms2",
+          "source_version": "2.14-2+deb12u1"
+        },
+        {
+          "binary_package": "libpcsclite1",
+          "binary_version": "1.9.9-2",
+          "source_package": "pcsc-lite",
+          "source_version": "1.9.9-2"
+        },
+        {
+          "binary_package": "libpng16-16",
+          "binary_version": "1.6.39-2+deb12u5",
+          "source_package": "libpng1.6",
+          "source_version": "1.6.39-2+deb12u5"
+        },
+        {
+          "binary_package": "openjdk-17-jre-headless",
+          "binary_version": "17.0.20.1+1-1~deb12u1",
+          "source_package": "openjdk-17",
+          "source_version": "17.0.20.1+1-1~deb12u1"
+        },
+        {
+          "binary_package": "postgresql-18-pljava",
+          "binary_version": "1.6.10-1.pgdg12+1",
+          "source_package": "postgresql-pljava",
+          "source_version": "1.6.10-1.pgdg12+1"
+        },
+        {
+          "binary_package": "postgresql-pljava-common",
+          "binary_version": "1.6.10-1.pgdg12+1",
+          "source_package": "postgresql-pljava",
+          "source_version": "1.6.10-1.pgdg12+1"
+        }
+      ],
+      "native_closure": {
+        "inspection": "ldd on libpljava-so-1.6.10.so, java, and every JRE shared-object module; owner resolution uses original and resolved paths",
+        "copied_libraries": "All non-JRE native libraries absent from the matching CNPG base image are copied into /lib; JRE-owned modules and their libraries are copied under /jvm.",
+        "copied_source_packages": {
+          "alsa-lib": "1.2.8-1",
+          "brotli": "1.0.9-2",
+          "freetype": "2.12.1+dfsg-5+deb12u4",
+          "glib2.0": "2.74.6-2+deb12u9",
+          "graphite2": "1.3.14-1+deb12u1",
+          "harfbuzz": "6.0.0+dfsg-3",
+          "libjpeg-turbo": "1:2.1.5-2",
+          "lcms2": "2.14-2+deb12u1",
+          "pcsc-lite": "1.9.9-2",
+          "libpng1.6": "1.6.39-2+deb12u5",
+          "openjdk-17": "17.0.20.1+1-1~deb12u1",
+          "postgresql-pljava": "1.6.10-1.pgdg12+1"
+        },
+        "runtime_packages_tsv": "/licenses/runtime-packages.tsv in the image records exact versions for the full closure, including base-provided libraries."
+      }
+    },
+    "trixie": {
+      "extension_package": {
+        "name": "postgresql-18-pljava",
+        "version": "1.6.10-1.pgdg13+1",
+        "source_package": "postgresql-pljava",
+        "source_version": "1.6.10-1.pgdg13+1",
+        "origin": "https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main"
+      },
+      "additional_runtime_packages": [
+        {
+          "name": "postgresql-pljava-common",
+          "version": "1.6.10-1.pgdg13+1",
+          "source_package": "postgresql-pljava",
+          "source_version": "1.6.10-1.pgdg13+1",
+          "origin": "https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main"
+        },
+        {
+          "name": "openjdk-21-jre-headless",
+          "version": "21.0.12.1+1-1~deb13u1",
+          "source_package": "openjdk-21",
+          "source_version": "21.0.12.1+1-1~deb13u1",
+          "origin": "Debian trixie/main"
+        }
+      ],
+      "base_runtime_packages": [
+        {
+          "name": "postgresql-18",
+          "version": "18.6-1.pgdg13+2",
+          "source_package": "postgresql-18",
+          "source_version": "18.6-1.pgdg13+2",
+          "origin": "PGDG CNPG base image"
+        },
+        {
+          "name": "libc6",
+          "version": "2.41-12+deb13u4",
+          "source_package": "glibc",
+          "source_version": "2.41-12+deb13u4",
+          "origin": "Debian base image"
+        },
+        {
+          "name": "libstdc++6",
+          "version": "14.2.0-19",
+          "source_package": "gcc-14",
+          "source_version": "14.2.0-19",
+          "origin": "Debian base image"
+        },
+        {
+          "name": "libgcc-s1",
+          "version": "14.2.0-19",
+          "source_package": "gcc-14",
+          "source_version": "14.2.0-19",
+          "origin": "Debian base image"
+        }
+      ],
+      "dynamic_libraries_required": [
+        "libjvm.so (bundled under /jvm)",
+        "libstdc++.so.6 (provided by base image)",
+        "libgcc_s.so.1 (provided by base image)",
+        "libm.so.6 and libc.so.6 (provided by base image)"
+      ],
+      "redistributed_runtime_packages": [
+        {
+          "binary_package": "libasound2t64",
+          "binary_version": "1.2.14-1+deb13u1",
+          "source_package": "alsa-lib",
+          "source_version": "1.2.14-1+deb13u1"
+        },
+        {
+          "binary_package": "libatomic1",
+          "binary_version": "14.2.0-19",
+          "source_package": "gcc-14",
+          "source_version": "14.2.0-19"
+        },
+        {
+          "binary_package": "libbrotli1",
+          "binary_version": "1.1.0-2+b7",
+          "source_package": "brotli",
+          "source_version": "1.1.0-2"
+        },
+        {
+          "binary_package": "libfreetype6",
+          "binary_version": "2.13.3+dfsg-1+deb13u1",
+          "source_package": "freetype",
+          "source_version": "2.13.3+dfsg-1+deb13u1"
+        },
+        {
+          "binary_package": "libglib2.0-0t64",
+          "binary_version": "2.84.4-3~deb13u5",
+          "source_package": "glib2.0",
+          "source_version": "2.84.4-3~deb13u5"
+        },
+        {
+          "binary_package": "libgraphite2-3",
+          "binary_version": "1.3.14-2+deb13u1",
+          "source_package": "graphite2",
+          "source_version": "1.3.14-2+deb13u1"
+        },
+        {
+          "binary_package": "libharfbuzz0b",
+          "binary_version": "10.2.0-1+deb13u1",
+          "source_package": "harfbuzz",
+          "source_version": "10.2.0-1+deb13u1"
+        },
+        {
+          "binary_package": "libjpeg62-turbo",
+          "binary_version": "1:2.1.5-4",
+          "source_package": "libjpeg-turbo",
+          "source_version": "1:2.1.5-4"
+        },
+        {
+          "binary_package": "liblcms2-2",
+          "binary_version": "2.16-2+deb13u2",
+          "source_package": "lcms2",
+          "source_version": "2.16-2+deb13u2"
+        },
+        {
+          "binary_package": "libpcsclite1",
+          "binary_version": "2.3.3-1",
+          "source_package": "pcsc-lite",
+          "source_version": "2.3.3-1"
+        },
+        {
+          "binary_package": "libpng16-16t64",
+          "binary_version": "1.6.48-1+deb13u5",
+          "source_package": "libpng1.6",
+          "source_version": "1.6.48-1+deb13u5"
+        },
+        {
+          "binary_package": "openjdk-21-jre-headless",
+          "binary_version": "21.0.12.1+1-1~deb13u1",
+          "source_package": "openjdk-21",
+          "source_version": "21.0.12.1+1-1~deb13u1"
+        },
+        {
+          "binary_package": "postgresql-18-pljava",
+          "binary_version": "1.6.10-1.pgdg13+1",
+          "source_package": "postgresql-pljava",
+          "source_version": "1.6.10-1.pgdg13+1"
+        },
+        {
+          "binary_package": "postgresql-pljava-common",
+          "binary_version": "1.6.10-1.pgdg13+1",
+          "source_package": "postgresql-pljava",
+          "source_version": "1.6.10-1.pgdg13+1"
+        }
+      ],
+      "native_closure": {
+        "inspection": "ldd on libpljava-so-1.6.10.so, java, and every JRE shared-object module; owner resolution uses original and resolved paths",
+        "copied_libraries": "All non-JRE native libraries absent from the matching CNPG base image are copied into /lib; JRE-owned modules and their libraries are copied under /jvm.",
+        "copied_source_packages": {
+          "alsa-lib": "1.2.14-1+deb13u1",
+          "gcc-14": "14.2.0-19",
+          "brotli": "1.1.0-2",
+          "freetype": "2.13.3+dfsg-1+deb13u1",
+          "glib2.0": "2.84.4-3~deb13u5",
+          "graphite2": "1.3.14-2+deb13u1",
+          "harfbuzz": "10.2.0-1+deb13u1",
+          "libjpeg-turbo": "1:2.1.5-4",
+          "lcms2": "2.16-2+deb13u2",
+          "pcsc-lite": "2.3.3-1",
+          "libpng1.6": "1.6.48-1+deb13u5",
+          "openjdk-21": "21.0.12.1+1-1~deb13u1",
+          "postgresql-pljava": "1.6.10-1.pgdg13+1"
+        },
+        "runtime_packages_tsv": "/licenses/runtime-packages.tsv in the image records exact versions for the full closure, including base-provided libraries."
+      }
+    }
+  },
+  "bundled_or_static_components": [
+    {
+      "name": "OpenJDK headless runtime",
+      "version_by_suite": {
+        "bookworm": "17.0.20.1+1-1~deb12u1",
+        "trixie": "21.0.12.1+1-1~deb13u1"
+      },
+      "license_spdx": "GPL-2.0-only WITH Classpath-exception-2.0",
+      "linkage": "the complete Debian-selected JRE is shipped under /jvm; PostgreSQL loads libjvm.so through PL/Java JNI",
+      "update_path": "The Dockerfile selects the suite-specific Debian JRE, copies its complete runtime, inspects every JVM native module and libjvm for ELF dependencies, copies missing native libraries, and downloads exact source:Version artifacts for every redistributed package. Review runtime-packages.tsv and rebuild/rerun Java tests after PL/Java, JRE, native-library, or base-image updates."
+    }
+  ],
+  "pgdg_source_package": "postgresql-pljava",
+  "runtime_manifest_in_image": "/licenses/runtime-packages.tsv",
+  "source_archives_in_image": {
+    "path": "/source/",
+    "source_packages": {
+      "pljava": "postgresql-pljava; exact source:Version queried from installed PGDG binary packages",
+      "jre": "openjdk-17 or openjdk-21; exact source:Version queried from the selected Debian JRE package",
+      "copied_native_libraries_by_suite": {
+        "bookworm": {
+          "alsa-lib": "1.2.8-1",
+          "brotli": "1.0.9-2",
+          "freetype": "2.12.1+dfsg-5+deb12u4",
+          "glib2.0": "2.74.6-2+deb12u9",
+          "graphite2": "1.3.14-1+deb12u1",
+          "harfbuzz": "6.0.0+dfsg-3",
+          "libjpeg-turbo": "1:2.1.5-2",
+          "lcms2": "2.14-2+deb12u1",
+          "pcsc-lite": "1.9.9-2",
+          "libpng1.6": "1.6.39-2+deb12u5",
+          "openjdk-17": "17.0.20.1+1-1~deb12u1",
+          "postgresql-pljava": "1.6.10-1.pgdg12+1"
+        },
+        "trixie": {
+          "alsa-lib": "1.2.14-1+deb13u1",
+          "gcc-14": "14.2.0-19",
+          "brotli": "1.1.0-2",
+          "freetype": "2.13.3+dfsg-1+deb13u1",
+          "glib2.0": "2.84.4-3~deb13u5",
+          "graphite2": "1.3.14-2+deb13u1",
+          "harfbuzz": "10.2.0-1+deb13u1",
+          "libjpeg-turbo": "1:2.1.5-4",
+          "lcms2": "2.16-2+deb13u2",
+          "pcsc-lite": "2.3.3-1",
+          "libpng1.6": "1.6.48-1+deb13u5",
+          "openjdk-21": "21.0.12.1+1-1~deb13u1",
+          "postgresql-pljava": "1.6.10-1.pgdg13+1"
+        }
+      }
+    },
+    "contents": "For PL/Java, the selected JRE, and every copied native-library package: matching Debian source .dsc, upstream orig archive(s), and Debian packaging archive(s)."
+  },
+  "license_payload": [
+    "/licenses/packages/<binary-package>/copyright for each redistributed package",
+    "/licenses/openjdk/copyright",
+    "/licenses/common-licenses/ (complete Debian common license texts)",
+    "/jvm/legal/ (OpenJDK runtime legal notices)",
+    "/licenses/runtime-packages.tsv (installed binary/source versions for the full ELF closure)"
+  ],
+  "update_and_rebuild_path": "Renovate tracks the PGDG postgresql-18-pljava package in metadata.hcl. Debian supplies the suite-specific JRE and native dependencies. On package/base updates, rebuild the image, inspect the full runtime closure and corresponding source/license payload, then rerun the Java test."
+}

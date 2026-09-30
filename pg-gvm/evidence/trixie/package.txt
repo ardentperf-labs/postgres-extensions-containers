@@ -1,0 +1,25 @@
+Package: postgresql-18-pg-gvm
+Status: install ok installed
+Priority: optional
+Section: libs
+Installed-Size: 81
+Maintainer: Debian Security Tools <team+pkg-security@tracker.debian.org>
+Architecture: amd64
+Source: pg-gvm
+Version: 22.6.17-1.pgdg13+2
+Replaces: pg-gvm (<< 22.6.2-1~)
+Provides: pg-gvm
+Depends: postgresql-18, libc6 (>= 2.14), libgvm23 (>= 23.9.3), libical3t64 (>= 3.0.0)
+Conflicts: pg-gvm (<< 22.6.2-1~)
+Description: PostgreSQL extension for ical object manipulation
+ The Greenbone Vulnerability Manager is the central management service between
+ security scanners and the user clients.
+ .
+ It manages the storage of any vulnerability management configurations and of
+ the scan results. Access to data, control commands and workflows is offered
+ via the XML-based Greenbone Management Protocol (GMP). The primary scanner,
+ openVAS Scanner is controlled directly via protocol OTP while any other remote
+ scanner is coupled with the Open Scanner Protocol (OSP).
+ .
+ pg-gvm contains functionality for ical object manipulation for PostgreSQL.
+Homepage: https://github.com/greenbone/pg-gvm

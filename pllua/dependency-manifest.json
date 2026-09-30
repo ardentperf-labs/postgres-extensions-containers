@@ -1,0 +1,120 @@
+{
+  "image": "pllua",
+  "postgresql_major": 18,
+  "debian_suites": [
+    "bookworm",
+    "trixie"
+  ],
+  "architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "upstream": {
+    "url": "https://github.com/pllua/pllua",
+    "license_spdx": [
+      "MIT"
+    ]
+  },
+  "runtime_dependencies": {
+    "bookworm": {
+      "extension_package": {
+        "name": "postgresql-18-pllua",
+        "version": "1:2.0.12-7.pgdg12+1",
+        "source_package": "postgresql-pllua",
+        "source_version": "1:2.0.12-7.pgdg12+1",
+        "origin": "https://apt.postgresql.org/pub/repos/apt bookworm-pgdg/main"
+      },
+      "additional_runtime_packages": [
+        {
+          "name": "liblua5.3-0",
+          "version": "5.3.6-2",
+          "source_package": "lua5.3",
+          "source_version": "5.3.6-2",
+          "origin": "Debian main"
+        }
+      ],
+      "base_runtime_packages": [
+        {
+          "name": "postgresql-18",
+          "version": "18.6-1.pgdg12+2",
+          "source_package": "postgresql-18",
+          "source_version": "18.6-1.pgdg12+2",
+          "origin": "PGDG CNPG base image"
+        },
+        {
+          "name": "libc6",
+          "version": "2.36-9+deb12u14",
+          "source_package": "glibc",
+          "source_version": "2.36-9+deb12u14",
+          "origin": "Debian base image"
+        }
+      ],
+      "dynamic_libraries_required": [
+        "liblua5.3.so.0 (bundled from Debian liblua5.3-0)",
+        "libm.so.6 and libc.so.6 (provided by base image)"
+      ]
+    },
+    "trixie": {
+      "extension_package": {
+        "name": "postgresql-18-pllua",
+        "version": "1:2.0.12-7.pgdg13+1",
+        "source_package": "postgresql-pllua",
+        "source_version": "1:2.0.12-7.pgdg13+1",
+        "origin": "https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main"
+      },
+      "additional_runtime_packages": [
+        {
+          "name": "liblua5.3-0",
+          "version": "5.3.6-2+b4",
+          "source_package": "lua5.3",
+          "source_version": "5.3.6-2",
+          "origin": "Debian main"
+        }
+      ],
+      "base_runtime_packages": [
+        {
+          "name": "postgresql-18",
+          "version": "18.6-1.pgdg13+2",
+          "source_package": "postgresql-18",
+          "source_version": "18.6-1.pgdg13+2",
+          "origin": "PGDG CNPG base image"
+        },
+        {
+          "name": "libc6",
+          "version": "2.41-12+deb13u4",
+          "source_package": "glibc",
+          "source_version": "2.41-12+deb13u4",
+          "origin": "Debian base image"
+        }
+      ],
+      "dynamic_libraries_required": [
+        "liblua5.3.so.0 (bundled from Debian liblua5.3-0)",
+        "libm.so.6 and libc.so.6 (provided by base image)"
+      ]
+    }
+  },
+  "pgdg_source_package": "postgresql-pllua",
+  "runtime_manifest_in_image": "/licenses/runtime-packages.tsv",
+  "bundled_or_static_components": [
+    {
+      "name": "Lua runtime",
+      "version": "5.3.6",
+      "license_spdx": "MIT (Expat)",
+      "linkage": "dynamic liblua5.3.so.0 copied into /lib; trusted pllua and untrusted plluau share pllua.so; optional hstore transforms use hstore_pllua.so",
+      "update_path": "Debian packages liblua5.3-0 separately; review its exact Debian source package/version and copyright with the extension update, and rerun trusted/untrusted language tests."
+    }
+  ],
+  "source_archives_in_image": {
+    "path": "/source/",
+    "source_packages": {
+      "extension": "postgresql-pllua, exact installed source:Version",
+      "lua": "lua5.3, exact installed source:Version"
+    },
+    "contents": "Exact extension and interpreter source .dsc, upstream archives and Debian packaging archives."
+  },
+  "license_payload": [
+    "/licenses/postgresql-18-pllua/copyright",
+    "/licenses/liblua5.3-0/copyright"
+  ],
+  "update_and_rebuild_path": "Renovate tracks the PGDG postgresql-18-pllua package. Debian packages Lua runtime updates separately. Rebuild when either changes, review both source archives/copyrights and rerun PL/Lua tests."
+}

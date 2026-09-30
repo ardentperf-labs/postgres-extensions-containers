@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  functional.sql: '\set ON_ERROR_STOP on
+
+    CREATE TABLE log_probe(id integer PRIMARY KEY, value text);
+
+    SELECT table_log_init(5, ''log_probe'');
+
+    INSERT INTO log_probe VALUES(1,''created'');
+
+    UPDATE log_probe SET value=''updated'' WHERE id=1;
+
+    DELETE FROM log_probe WHERE id=1;
+
+    DO $$ BEGIN IF (SELECT count(*) FROM log_probe_log) < 3 THEN RAISE EXCEPTION ''row
+    changes not logged''; END IF; END $$;
+
+    '

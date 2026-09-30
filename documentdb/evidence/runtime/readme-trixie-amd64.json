@@ -1,0 +1,24 @@
+{
+  "target": "documentdb",
+  "readme_sha256": "51b360add7baee3f8ef6d637a353958cb5396fdc34ca2e85b81429f5d05fb07c",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-c:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-documentdb"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-documentdb-app"
+    }
+  ],
+  "images": {
+    "pg-cron-testing:1.6.8-18-trixie": "sha256:51b61fbd9316c04db02546ac6d1cf406c6bdb99d6d90d06171d864718f935240",
+    "rum-testing:1.3.15-18-trixie": "sha256:93aa5a656c85987b2fd22451b46e66b4eb4bcdfac11c1c0dbfe87217bc60bbe2",
+    "documentdb-testing:1.0-18-trixie": "sha256:65f85c741efc21a7d058589740389c7894b5ba04a73fc8d947a45f3ba328cfa6"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-30T00:02:30Z"
+}

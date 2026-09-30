@@ -1,0 +1,8 @@
+postgresql-18-pgnodemx:
+  Installed: (none)
+  Candidate: 2.0.1-1.pgdg13+1
+  Version table:
+     2.0.1-1.pgdg13+1 500
+        500 https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main amd64 Packages
+     1.7-2.pgdg13+1 500
+        500 https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main amd64 Packages

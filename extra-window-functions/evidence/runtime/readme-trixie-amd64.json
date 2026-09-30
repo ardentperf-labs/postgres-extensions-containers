@@ -1,0 +1,22 @@
+{
+  "target": "extra-window-functions",
+  "readme_sha256": "9df337a88e4200ed2c60ac99e9b886e48a3aeeb0f6463c7b1fb7427995ed8ea9",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-extra-window-functions"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-extra-window-functions-app"
+    }
+  ],
+  "images": {
+    "extra-window-functions-testing:2.0-18-trixie": "sha256:31d4f4689553e2adf52903979a5c58ed296890cc5d4f29c08c6c428f2bb731d1"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:26:42Z"
+}

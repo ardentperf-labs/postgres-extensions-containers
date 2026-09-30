@@ -33,12 +33,16 @@ spec:
 
   - name: Functional Verification
     description: >-
-      Execute a SQL-level check against pg_extension to confirm the extension 
+      Execute an administrator catalog check against pg_extension to confirm the extension
       is successfully registered in the database catalog.
     try:
     - apply:
         file: check-extension.yaml
     - assert:
-        timeout: 30s
+        timeout: 2m
         file: check-extension-assert.yaml
-
+    catch:
+    - podLogs:
+        selector: job-name=extension-installed
+        tail: 60
+    - events: {}

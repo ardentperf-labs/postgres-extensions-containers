@@ -1,0 +1,22 @@
+{
+  "target": "pg-wait-sampling",
+  "readme_sha256": "72f51e65024dabd63dab25d0ba31b7d957106a4a7485b465026f42b1b4b2d729",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pg-wait-sampling"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pg-wait-sampling-app"
+    }
+  ],
+  "images": {
+    "pg-wait-sampling-testing:1.1.11-18-trixie": "sha256:d00d7955bd7cca9313ba61fd68c3b7567c92a8c9f3c7228392784bb0ce68c0f6"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:31:42Z"
+}

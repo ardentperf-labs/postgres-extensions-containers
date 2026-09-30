@@ -1,0 +1,8 @@
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Sorting...
+Full Text Search...
+postgresql-18-pgfaceting/bookworm-pgdg 0.2.0-6.pgdg12+1 all
+  Faceted query acceleration for PostgreSQL using roaring bitmaps
+

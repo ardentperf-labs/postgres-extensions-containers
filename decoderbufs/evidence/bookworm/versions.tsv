@@ -1,0 +1,3 @@
+libc6:amd64	2.36-9+deb12u14	amd64	glibc	2.36-9+deb12u14
+libprotobuf-c1:amd64	1.4.1-1+b1	amd64	protobuf-c	1.4.1-1
+postgresql-18-decoderbufs	3.6.1-1.pgdg12+1	amd64	postgres-decoderbufs	3.6.1-1.pgdg12+1

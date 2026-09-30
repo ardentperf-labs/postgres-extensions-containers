@@ -1,0 +1,31 @@
+{
+  "command": "task e2e:test:full TARGET=preprepare DISTRO=bookworm DAGGER_ENGINE_NAME=cnpg-approved-batch-engine",
+  "exit_code": 0,
+  "started_utc": "2026-09-29T21:53:35Z",
+  "duration_seconds": 72,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "preprepare/Dockerfile": "f9d23474536045a6f19e56703bc7e7d15c0eb78ba43f264d3ba9b5fc942c0c11",
+    "preprepare/README.md": "fe398ffb7a0cc185d03173b714e592f27d7227276547d15b7cb49f57dd3f8b8d",
+    "preprepare/metadata.hcl": "7bf8f311b4fe76929aa37b289f06c4d84d4f36d01e52016e938b66f583f2f0fe",
+    "preprepare/test/chainsaw-test.yaml": "57e979433dd8b08170055e36b186b42c87d15e9b2f87bc16212ea02f1fc427a8",
+    "preprepare/test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "preprepare/test/cluster.yaml": "95424e0f209dd9abca0d38a53805dffa74e5993794cdd9598c5dcc10e8bdacc6",
+    "preprepare/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "preprepare/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "preprepare/test/functional.sql": "3e5ce69d801ca8045a041a8143e65ac76dcce0887e5b2b3e217448ef4df1742c",
+    "preprepare/test/job-assert.yaml": "b657517c8fc5570b9d89b507dc356915df8dbf33380c35b32d528346806de4c6",
+    "preprepare/test/job.yaml": "fb775e738dbd7315eeb55a596e90e43a46e86eabc2ab7911c067d1bf29956b5b",
+    "preprepare/test/sql.yaml": "71dde11aea5cf0f0eb4dab393440c675240681d236ed0123699833c4e24b7b5d"
+  },
+  "image": "registry.pg-extensions:5000/preprepare-testing:0.9-18-bookworm@sha256:27be83e7ec9436f1af592520ec0d59b79c5547d82c09fa82ac556cec7479afe1",
+  "architecture_manifests": {
+    "amd64": "sha256:ae2e27b0cee6198b20d6c6e9a3f9746c524d1f240b14c71dedeb1f5c20a5206a",
+    "arm64": "sha256:2062a78619a2981bf64ddb1071ae50acfebc87d33f7c847dca18c8d638341755"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

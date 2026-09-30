@@ -1,0 +1,18 @@
+{
+  "target": "decoderbufs",
+  "readme_sha256": "4a810f14f66dec215158546e4031aeb98972427603f2cb482b76f38ae5e8ba3c",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-decoderbufs"
+    }
+  ],
+  "images": {
+    "decoderbufs-testing:3.6.1-18-trixie": "sha256:814aa5cf03c6be65f526d79869ca6faa461e1ff01e1a9158bdfd707ced6d69d8"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:04:46Z"
+}

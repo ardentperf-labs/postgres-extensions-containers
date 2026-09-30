@@ -1,0 +1,22 @@
+{
+  "target": "jsquery",
+  "readme_sha256": "cbcb15e0bc4e384d123368956ff514e08a7d5b1ec6bb55562de5eb35bc96239a",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-b:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-jsquery"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-jsquery-app"
+    }
+  ],
+  "images": {
+    "jsquery-testing:1.2-18-trixie": "sha256:d8352762efded668e54cd7b519640b219f4c7c38b127dab7905e08056dec0d99"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:11:50Z"
+}

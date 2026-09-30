@@ -1,0 +1,31 @@
+{
+  "command": "task e2e:test:full TARGET=pg-similarity DISTRO=bookworm DAGGER_ENGINE_NAME=cnpg-approved-batch-engine",
+  "exit_code": 0,
+  "started_utc": "2026-09-29T21:18:36Z",
+  "duration_seconds": 72,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "pg-similarity/Dockerfile": "f2a9be97e30a85fe0865d49a9e7aa19645ef01ef79ddc1802de8656f0a18ec18",
+    "pg-similarity/README.md": "3611f229336f2d202f7d14ad41525df274bb624c3154fdce3a8c911cacd6c83e",
+    "pg-similarity/metadata.hcl": "6ae15daebc684099adbeab4b01a81a37c93a6f5769d447c588ce2e9edf396a95",
+    "pg-similarity/test/chainsaw-test.yaml": "57e979433dd8b08170055e36b186b42c87d15e9b2f87bc16212ea02f1fc427a8",
+    "pg-similarity/test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "pg-similarity/test/cluster.yaml": "95424e0f209dd9abca0d38a53805dffa74e5993794cdd9598c5dcc10e8bdacc6",
+    "pg-similarity/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "pg-similarity/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "pg-similarity/test/functional.sql": "31fde3db0a0289772c2826d79f3ef9f0c3b662323551d2e2b41bb724b8cb5ebf",
+    "pg-similarity/test/job-assert.yaml": "b657517c8fc5570b9d89b507dc356915df8dbf33380c35b32d528346806de4c6",
+    "pg-similarity/test/job.yaml": "fb775e738dbd7315eeb55a596e90e43a46e86eabc2ab7911c067d1bf29956b5b",
+    "pg-similarity/test/sql.yaml": "c4cb533d96ba981d865d330429bc9b6f9601287181fd44186687518dac569b7e"
+  },
+  "image": "registry.pg-extensions:5000/pg-similarity-testing:1.0-18-bookworm@sha256:b4595a98580d3839adfe35417cab799a964f6024ad6aa8ff94f2790950e259ea",
+  "architecture_manifests": {
+    "amd64": "sha256:1b792c42b66b56672e10ff96a2b5fcd67dcaa0ac44f385bad64314c40acb67b3",
+    "arm64": "sha256:c1e418914314be5fd6a27e1646c88db7c2b8d0920d4ed822fcdc4f08c0e89aae"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

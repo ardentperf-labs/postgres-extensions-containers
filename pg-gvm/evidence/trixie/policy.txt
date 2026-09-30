@@ -1,0 +1,6 @@
+postgresql-18-pg-gvm:
+  Installed: 22.6.17-1.pgdg13+2
+  Candidate: 22.6.17-1.pgdg13+2
+  Version table:
+ *** 22.6.17-1.pgdg13+2 100
+        100 /var/lib/dpkg/status

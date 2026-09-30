@@ -1,0 +1,19 @@
+{
+  "approved_candidates": 67,
+  "baseline_images": 29,
+  "total_images": 96,
+  "runtime_combinations_passed": 130,
+  "architecture_builds_passed": 260,
+  "readme_deployments_passed": 67,
+  "runtime_architecture": "amd64",
+  "unavailable_runtime_architectures": [
+    "arm64"
+  ],
+  "issues": [],
+  "completed_utc": "2026-09-30T00:22:30.643862+00:00",
+  "result": "PASS",
+  "repository_checks": "PASS for all 96 targets",
+  "go_unit_tests": "PASS",
+  "existing_target_regressions": "PASS: HypoPG, pg_stat_kcache and MobilityDB on Trixie and Bookworm",
+  "readme_schema_blocks_passed": 123
+}

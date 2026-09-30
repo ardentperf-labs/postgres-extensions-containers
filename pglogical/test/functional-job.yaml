@@ -1,0 +1,63 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: functional
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: sql
+        image: ghcr.io/cloudnative-pg/postgresql:18-minimal-trixie
+        env:
+        - name: PGHOST
+          value: (join('-', [$values.name, 'rw']))
+        - name: PGPORT
+          value: '5432'
+        - name: PGDATABASE
+          value: app
+        - name: PGUSER
+          value: postgres
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: (join('-', [$values.name, 'superuser']))
+              key: password
+        - name: PGSSLMODE
+          value: require
+        command:
+        - sh
+        - /sql/verify.sh
+        volumeMounts:
+        - name: sql
+          mountPath: /sql
+          readOnly: true
+      volumes:
+      - name: sql
+        configMap:
+          name: functional-sql
+      initContainers:
+      - name: wait-for-postgresql
+        image: ghcr.io/cloudnative-pg/postgresql:18-minimal-trixie
+        env:
+        - name: PGHOST
+          value: (join('-', [$values.name, 'rw']))
+        - name: PGPORT
+          value: '5432'
+        - name: PGDATABASE
+          value: app
+        - name: PGUSER
+          value: postgres
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: (join('-', [$values.name, 'superuser']))
+              key: password
+        - name: PGSSLMODE
+          value: require
+        command:
+        - sh
+        - -ec
+        - for attempt in $(seq 1 60); do pg_isready -q && exit 0; sleep 1; done; exit
+          1

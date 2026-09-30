@@ -1,0 +1,22 @@
+{
+  "target": "pg-gvm",
+  "readme_sha256": "93ace71f349cdd3c9bcfe4614043c5c55cf96d6ac1f678914206af98bb15fdf5",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-b:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pg-gvm"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pg-gvm-app"
+    }
+  ],
+  "images": {
+    "pg-gvm-testing:22.6.17-18-trixie": "sha256:de631dcd06a795f2410d642dc9d0726e211e3842c842c83015645c66d0909bea"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:32:54Z"
+}

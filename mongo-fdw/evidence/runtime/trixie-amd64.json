@@ -1,0 +1,57 @@
+{
+  "command": "task e2e:test:full TARGET=mongo-fdw DISTRO=trixie DAGGER_ENGINE_NAME=cnpg-approved-batch-engine",
+  "exit_code": 0,
+  "started_utc": "2026-09-29T23:48:38Z",
+  "duration_seconds": 1503,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "mongo-fdw/Dockerfile": "853edd9a75de4bddeee9be9ce75caf2ecb193d02a4cdbadda8f144d3fe41bdc5",
+    "mongo-fdw/README.md": "78321b2010ab9212d958cf9d5a85739a38606cf01f05bc1033de9cef7033e799",
+    "mongo-fdw/metadata.hcl": "b18e6e546df7866ea0672369adaef5b410fa8c8460517501643a7431a94321fc",
+    "mongo-fdw/patches/mongoc-aggregate-db-order.patch": "8421b623ceb1f7ea93eba624a38734af83781a91d7f0cb0fcda9a2dff93d3771",
+    "mongo-fdw/test/chainsaw-test.yaml": "dc141a93c5b7ca5c8f126ec1fb46362f01e5ba84bfc8014341ec5174c0b16591",
+    "mongo-fdw/test/cluster-assert.yaml": "643c3e27f90c7fdbf645c94522918a87f55335854921cdb29845736abfa4a7dc",
+    "mongo-fdw/test/cluster.yaml": "8161fb1900a35632c986caa6086c9b7edb3f1bdd82aa6fe82fd066484d5363c8",
+    "mongo-fdw/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "mongo-fdw/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "mongo-fdw/test/fixture-assert.yaml": "0b4b17fc3450911d88cf03e9d3fc575fdbc69e5dd96a3cc7efa196c463723426",
+    "mongo-fdw/test/fixture.yaml": "3df636390008df549d4421dcef33cac5eb27fa7705fbc901c73f33deee959341",
+    "mongo-fdw/test/functional-job-assert.yaml": "afa3daaa75332d64e8b39a0640f9069ea5c74d53bf66e2d9bfe5a6db62d6289a",
+    "mongo-fdw/test/functional-job.yaml": "bcc1cc4b337daad2131469b2d02dba33c67bf80ed1f863adacb38df10c047f8e",
+    "mongo-fdw/test/seed-job-assert.yaml": "6d2b28c01fb88286e8159ba092a3e3b7cf114b6922eaeb75f014f182075a915f",
+    "mongo-fdw/test/seed-job.yaml": "b2c15a47a009298178748a7f13d6e39c4fc1f231c7e9175a75340544faef7a57"
+  },
+  "shared_source_sha256": {
+    "Taskfile.yml": "3476e9ac10e5435935f7165eaf06d0cba0d8a6041a57789d58e3dd8ca6785133",
+    "docker-bake.hcl": "8c8a7228e03135424231bdab3579d020b5db0c0ea8a50bf1343506c1ab11be33",
+    "test/chainsaw-test.yaml": "d6cc9f779526312c7e8f8428caeeece1114eb6cdf02aae2a9b4569a2b3931697",
+    "test/check-extension-assert.yaml": "7a45714b7a37a7d57e71ca5f2d56c0d7e4490d91663001ea91d0da6eefb012a6",
+    "test/check-extension.yaml": "86553efff338d89b79e88c11a90d1649480700c98b9bbe31cb5b6f999a3d6e58",
+    "test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "test/cluster.yaml": "00f1c8fa55567898aba14e6614c7fd87e09196f3d9bab4e2368521d4521eb663",
+    "test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "dagger/maintenance/catalogs.go": "0b625983085112dfe30277e679c7693ee1b8825bbc90066adf0ff60c9183f147",
+    "dagger/maintenance/dagger.gen.go": "7972c1975f4406a86e75d3b637d75a87a9b7c03ad39f5493a659c00d061235ab",
+    "dagger/maintenance/dependencies.go": "a7409ee16cfcd0e32c9198a96cf0b6a2ceda68998d656acbfdfd3cd1d1688e7e",
+    "dagger/maintenance/dependencies_test.go": "ac341cc168f05476f31dab36fdb48d5b37088d36ddfb17cb8605c43bc0084269",
+    "dagger/maintenance/image.go": "0949136bf012e3c2c8e927633e925e4f58894cadb7f958fd9bbb33d421bceb54",
+    "dagger/maintenance/image_test.go": "1c02b920c6c5bcd3803e96c729dac64537d0ce18170cc98d96e60a051a34d657",
+    "dagger/maintenance/main.go": "65fb9e81371554a9dff95e8234e13e5cb48b6eb967715ecbb604af94ad379d31",
+    "dagger/maintenance/parse.go": "f00dde76ea734d5dc53cd373c03ff23ad1523b11cbce7bac942b5dd00f8cadea",
+    "dagger/maintenance/parse_test.go": "f523e839b34508bb1d8f918a0c8cada04b4d7473373dd0f47fcbe72650fd4d6e",
+    "dagger/maintenance/testingvalues.go": "dd61979933fc3af4b2285d838aec08e3d96f64ff46b566e4ae344c08d816a5e6",
+    "dagger/maintenance/updatelibs.go": "e33a49ba8a8f137ad07c6ede8139360fd1832ace45b92ed818733264460e7ef8",
+    "dagger/maintenance/updatelibs_test.go": "56aa65f3d16c414d32c00bf6145d4b6576b20e55107bb411c888e0d718000d10"
+  },
+  "image": "registry.pg-extensions:5000/mongo-fdw-testing:5.5.3-18-trixie@sha256:27bcb02750b10fbabd6eba5c3e85e6c03fca02d7e85881ddf2d4482602433f3b",
+  "architecture_manifests": {
+    "amd64": "sha256:493400251c65971caefa4f7d580ebc55920a9f492ee56b1faae84cc5a8d51d19",
+    "arm64": "sha256:098832dff1801d39ffe19723071b4b9be22767ab62ed566fbbc1999496b1f4b6"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

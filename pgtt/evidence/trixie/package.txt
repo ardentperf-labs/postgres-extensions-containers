@@ -1,0 +1,81 @@
+Package: postgresql-18-pgtt
+Source: pgtt
+Version: 4.6-1.pgdg13+2
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 191
+Depends: postgresql-18, libc6 (>= 2.38)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/darold/pgtt/
+Priority: optional
+Section: database
+Filename: pool/main/p/pgtt/postgresql-18-pgtt_4.6-1.pgdg13+2_amd64.deb
+Size: 67352
+SHA512: 3b808ea226fd6aa58271aa012cdc948b9b17ccfcb5f76d616344de513a1838752cc08c1e4d1f90c17dd8dabe4f6e4a6b2fd343f50152e2cc13fd039ea414ab6e
+SHA256: 20580b406a244e9f9440ac167a86656e62a9abfe57d67a09c0afb6f1037bcd8b
+SHA1: 0ea8bc05b79d63820c6f425caeef9fbf3b6af6a5
+MD5sum: 70a11617318907f1326ca267881b41a3
+Description: PostgreSQL Global Temporary Tables
+ pgtt is a PostgreSQL extension to create, manage and use Oracle-style Global
+ Temporary Tables.
+ .
+ The objective of this extension is to provide Global Temporary Tables to
+ PostgreSQL waiting for an in-core implementation. The main interest of this
+ extension is to mimic the Oracle behavior with GTT when you can not or do not
+ want to rewrite the application code when migrating to PostgreSQL.
+Description-md5: 
+
+Package: postgresql-18-pgtt
+Source: pgtt
+Version: 4.6-1.pgdg13+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 191
+Depends: postgresql-18, libc6 (>= 2.38)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/darold/pgtt/
+Priority: optional
+Section: database
+Filename: pool/main/p/pgtt/postgresql-18-pgtt_4.6-1.pgdg13+1_amd64.deb
+Size: 67280
+SHA512: 583024af22fa0c7324028deaf7fddbbe2e753334eb76c928ab144f70a4f44fdd18a12e4423a8032c589f01be9da9575747ba5241eb30d6a921755def045e749e
+SHA256: 12ed89c14f4cc9461578519dcd8ec9ee7f547371b9248d140229cc00f8ca393b
+SHA1: 69ddf3121b0dd6e11231f614e5816dfaddebdef5
+MD5sum: 80bfe19518373c499caf56867d073e8e
+Description: PostgreSQL Global Temporary Tables
+ pgtt is a PostgreSQL extension to create, manage and use Oracle-style Global
+ Temporary Tables.
+ .
+ The objective of this extension is to provide Global Temporary Tables to
+ PostgreSQL waiting for an in-core implementation. The main interest of this
+ extension is to mimic the Oracle behavior with GTT when you can not or do not
+ want to rewrite the application code when migrating to PostgreSQL.
+Description-md5: 
+
+Package: postgresql-18-pgtt
+Source: pgtt
+Version: 4.5-1.pgdg13+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 172
+Depends: postgresql-18, libc6 (>= 2.4)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/darold/pgtt/
+Priority: optional
+Section: database
+Filename: pool/main/p/pgtt/postgresql-18-pgtt_4.5-1.pgdg13+1_amd64.deb
+Size: 59452
+SHA512: 8499490cfa98e7902df765323bd6175e8a015169be6973c7a3ed2e9beeb75f482869de6c9ae073444eb0ab714ec3c8f88a3af848de42799ea31e474b9ff11485
+SHA256: 37ec2620e952d83b1b5e3554ca0ecdb32a951b9daaba7f2333f2949919204682
+SHA1: e556b7792065388eb817ad57f3536b1a56b1020c
+MD5sum: 3afbc74af0d04d00a20cd749a47c5ea5
+Description: PostgreSQL Global Temporary Tables
+ pgtt is a PostgreSQL extension to create, manage and use Oracle-style Global
+ Temporary Tables.
+ .
+ The objective of this extension is to provide Global Temporary Tables to
+ PostgreSQL waiting for an in-core implementation. The main interest of this
+ extension is to mimic the Oracle behavior with GTT when you can not or do not
+ want to rewrite the application code when migrating to PostgreSQL.
+Description-md5: 
+

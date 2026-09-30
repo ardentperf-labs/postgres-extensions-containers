@@ -1,0 +1,57 @@
+{
+  "command": "task e2e:test:full TARGET=ogr-fdw DISTRO=bookworm DAGGER_ENGINE_NAME=cnpg-approved-batch-b E2E_NETWORK=approved-batch-b KIND_CLUSTER_NAME=approved-batch-b-1.37.0 REGISTRY_NAME=registry.approved-batch-b REGISTRY_HOST_PORT=5001",
+  "working_directory": "isolated checkout with matching source hashes",
+  "registry_host_port": 5001,
+  "registry_name": "registry.approved-batch-b",
+  "exit_code": 0,
+  "started_utc": "2026-09-30T00:20:00Z",
+  "duration_seconds": 75,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "ogr-fdw/Dockerfile": "6e74e73adce3f7cf100a2d3018f11ea868b6f6befeda997ba7defdb573a4c532",
+    "ogr-fdw/README.md": "9624b7af973989387b31897ed3a578d404b937628a5b962621452d9125bc6e46",
+    "ogr-fdw/metadata.hcl": "d84cdf909e03bf331c2c3cdab97ee34c1f6583ec5a0effa8e7aaeed777037bb7",
+    "ogr-fdw/test/chainsaw-test.yaml": "910409771fae0c754eacc8a84c764d57f3360e1b8693c3809a5dd4717e73885e",
+    "ogr-fdw/test/cluster-assert.yaml": "643c3e27f90c7fdbf645c94522918a87f55335854921cdb29845736abfa4a7dc",
+    "ogr-fdw/test/cluster.yaml": "8161fb1900a35632c986caa6086c9b7edb3f1bdd82aa6fe82fd066484d5363c8",
+    "ogr-fdw/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "ogr-fdw/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "ogr-fdw/test/fixture-assert.yaml": "b6421e0bc143e9493e179a8a771d027eab82b645e439046745cd9335acaeab28",
+    "ogr-fdw/test/fixture.yaml": "bb54291e010ce7891591099586b4f2956f5af285cbabdacd6e15e4eaa6c79edb",
+    "ogr-fdw/test/functional-job-assert.yaml": "afa3daaa75332d64e8b39a0640f9069ea5c74d53bf66e2d9bfe5a6db62d6289a",
+    "ogr-fdw/test/functional-job.yaml": "c92398e60337f2ecb04fdd1ce10de6da94c20bd3a015f641ba1740455fbad283"
+  },
+  "shared_source_sha256": {
+    "Taskfile.yml": "3476e9ac10e5435935f7165eaf06d0cba0d8a6041a57789d58e3dd8ca6785133",
+    "docker-bake.hcl": "8c8a7228e03135424231bdab3579d020b5db0c0ea8a50bf1343506c1ab11be33",
+    "test/chainsaw-test.yaml": "50709e6fca9630121b55ff25b4cfed27240d2c142149bb56b5ca1c1e474dc216",
+    "test/check-extension-assert.yaml": "7a45714b7a37a7d57e71ca5f2d56c0d7e4490d91663001ea91d0da6eefb012a6",
+    "test/check-extension.yaml": "86553efff338d89b79e88c11a90d1649480700c98b9bbe31cb5b6f999a3d6e58",
+    "test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "test/cluster.yaml": "00f1c8fa55567898aba14e6614c7fd87e09196f3d9bab4e2368521d4521eb663",
+    "test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "dagger/maintenance/catalogs.go": "0b625983085112dfe30277e679c7693ee1b8825bbc90066adf0ff60c9183f147",
+    "dagger/maintenance/dagger.gen.go": "7972c1975f4406a86e75d3b637d75a87a9b7c03ad39f5493a659c00d061235ab",
+    "dagger/maintenance/dependencies.go": "a7409ee16cfcd0e32c9198a96cf0b6a2ceda68998d656acbfdfd3cd1d1688e7e",
+    "dagger/maintenance/dependencies_test.go": "ac341cc168f05476f31dab36fdb48d5b37088d36ddfb17cb8605c43bc0084269",
+    "dagger/maintenance/image.go": "0949136bf012e3c2c8e927633e925e4f58894cadb7f958fd9bbb33d421bceb54",
+    "dagger/maintenance/image_test.go": "1c02b920c6c5bcd3803e96c729dac64537d0ce18170cc98d96e60a051a34d657",
+    "dagger/maintenance/main.go": "65fb9e81371554a9dff95e8234e13e5cb48b6eb967715ecbb604af94ad379d31",
+    "dagger/maintenance/parse.go": "f00dde76ea734d5dc53cd373c03ff23ad1523b11cbce7bac942b5dd00f8cadea",
+    "dagger/maintenance/parse_test.go": "f523e839b34508bb1d8f918a0c8cada04b4d7473373dd0f47fcbe72650fd4d6e",
+    "dagger/maintenance/testingvalues.go": "dd61979933fc3af4b2285d838aec08e3d96f64ff46b566e4ae344c08d816a5e6",
+    "dagger/maintenance/updatelibs.go": "e33a49ba8a8f137ad07c6ede8139360fd1832ace45b92ed818733264460e7ef8",
+    "dagger/maintenance/updatelibs_test.go": "56aa65f3d16c414d32c00bf6145d4b6576b20e55107bb411c888e0d718000d10"
+  },
+  "image": "registry.approved-batch-b:5000/ogr-fdw-testing:1.1.9-18-bookworm@sha256:ab27ba1a5fa463a1b559428f6197a615f64002fd0c41a24f25eba36480901b9e",
+  "architecture_manifests": {
+    "amd64": "sha256:1e6dd7f86a39949e52491e0897b25cdc7b0fc3c9c5fb40eebba69191eb68000d",
+    "arm64": "sha256:78c700df20e56840388eee60cb7d67342dadd997da2358372f5a24441d1c8689"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

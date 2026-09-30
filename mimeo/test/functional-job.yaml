@@ -1,0 +1,69 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: functional
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: sql
+        image: ghcr.io/cloudnative-pg/postgresql:18-minimal-trixie
+        env:
+        - name: PGHOST
+          value: (join('-', [$values.name, 'rw']))
+        - name: PGPORT
+          value: "5432"
+        - name: PGDATABASE
+          value: app
+        - name: PGUSER
+          value: postgres
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: (join('-', [$values.name, 'superuser']))
+              key: password
+        - name: PGSSLMODE
+          value: require
+        command:
+        - sh
+        - -ec
+        - |
+          
+          psql -X -v ON_ERROR_STOP=1 -d mimeo_source -f /sql/source.sql
+          psql -X -v ON_ERROR_STOP=1 -v source_host="$PGHOST" -v source_port="$PGPORT" -v source_password="$PGPASSWORD" -f /sql/functional.sql
+          psql -X -v ON_ERROR_STOP=1 -d mimeo_source -c "INSERT INTO public.mimeo_source VALUES (3, 'refreshed')"
+          psql -X -v ON_ERROR_STOP=1 -d app -c "SELECT public.refresh_table('public.mimeo_copy', p_jobmon := false)"
+          psql -X -v ON_ERROR_STOP=1 -d app -c "DO \$\$ BEGIN IF (SELECT count(*) FROM public.mimeo_copy) <> 3 OR NOT EXISTS (SELECT FROM public.mimeo_copy WHERE id=3 AND payload='refreshed') THEN RAISE EXCEPTION 'Mimeo refresh did not copy source data'; END IF; END \$\$"
+        volumeMounts:
+        - name: sql
+          mountPath: /sql
+          readOnly: true
+      volumes:
+      - name: sql
+        configMap:
+          name: functional-sql
+      initContainers:
+      - name: wait-for-postgresql
+        image: ghcr.io/cloudnative-pg/postgresql:18-minimal-trixie
+        env:
+        - name: PGHOST
+          value: (join('-', [$values.name, 'rw']))
+        - name: PGPORT
+          value: "5432"
+        - name: PGDATABASE
+          value: app
+        - name: PGUSER
+          value: postgres
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: (join('-', [$values.name, 'superuser']))
+              key: password
+        - name: PGSSLMODE
+          value: require
+        command:
+        - sh
+        - -ec
+        - for attempt in $(seq 1 60); do pg_isready -q && exit 0; sleep 1; done; exit 1

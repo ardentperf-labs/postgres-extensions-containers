@@ -1,0 +1,22 @@
+{
+  "target": "mongo-fdw",
+  "readme_sha256": "78321b2010ab9212d958cf9d5a85739a38606cf01f05bc1033de9cef7033e799",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-mongo-fdw"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-mongo-fdw-app"
+    }
+  ],
+  "images": {
+    "mongo-fdw-testing:5.5.3-18-trixie": "sha256:27bcb02750b10fbabd6eba5c3e85e6c03fca02d7e85881ddf2d4482602433f3b"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-30T00:13:50Z"
+}

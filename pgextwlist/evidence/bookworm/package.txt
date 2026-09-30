@@ -1,0 +1,74 @@
+Package: postgresql-18-pgextwlist
+Source: pgextwlist
+Version: 1.20-1.pgdg12+2
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 92
+Depends: postgresql-18, libc6 (>= 2.33)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/dimitri/pgextwlist
+Priority: optional
+Section: libs
+Filename: pool/main/p/pgextwlist/postgresql-18-pgextwlist_1.20-1.pgdg12+2_amd64.deb
+Size: 35420
+SHA512: cb4e70b94601e3aad47ae4404dda49b5d664290510d400d73115921654894b64da63ee2aa87131730cad7bf58a6a9fae2a8e73b4a575b234978e03e414d1d999
+SHA256: b1cce5792d931d38c9febccfb1d8f008ef12876e7765f9413c71d2676b6bc1bc
+SHA1: 5e356fbe2d992a5f00cc63750dbe2af20e842bc7
+MD5sum: ce10c122a8d070fa50142bd8ba9fdacb
+Description: PostgreSQL Extension Whitelisting
+ This extension implements extension whitelisting, and will actively prevent
+ users from installing extensions not in the provided list. Also, this
+ extension implements a form of sudo facility in that the whitelisted
+ extensions will get installed as if superuser. Privileges are dropped before
+ handing the control back to the user.
+Description-md5: f58aff65967bfc3eddc04bdae86e695b
+
+Package: postgresql-18-pgextwlist
+Source: pgextwlist
+Version: 1.20-1.pgdg12+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 92
+Depends: postgresql-18, libc6 (>= 2.33)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/dimitri/pgextwlist
+Priority: optional
+Section: libs
+Filename: pool/main/p/pgextwlist/postgresql-18-pgextwlist_1.20-1.pgdg12+1_amd64.deb
+Size: 35404
+SHA512: 4872e611c1b2986a6f597cae51b5e15ef99e66dc6e93d9ea1558a81bf24b159fcfa68efde5db638f9276767f5d2e7ef172a39db8ab3bd4713c3461501ffdc513
+SHA256: 0a82d81f290f90b9fbea1cc2054b0ffe754fbf99e016055ca869381678cc602e
+SHA1: d42e4958c3dad5aa99795613441e68a3be691d44
+MD5sum: d130a27f2d5d168aceffecea1e67ed1f
+Description: PostgreSQL Extension Whitelisting
+ This extension implements extension whitelisting, and will actively prevent
+ users from installing extensions not in the provided list. Also, this
+ extension implements a form of sudo facility in that the whitelisted
+ extensions will get installed as if superuser. Privileges are dropped before
+ handing the control back to the user.
+Description-md5: f58aff65967bfc3eddc04bdae86e695b
+
+Package: postgresql-18-pgextwlist
+Source: pgextwlist
+Version: 1.19-2.pgdg12+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 75
+Depends: postgresql-18, libc6 (>= 2.33)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/dimitri/pgextwlist
+Priority: optional
+Section: libs
+Filename: pool/main/p/pgextwlist/postgresql-18-pgextwlist_1.19-2.pgdg12+1_amd64.deb
+Size: 29752
+SHA256: e33d8e084fd587e364530914276a00f7ff589bcc6abfc70e52a49ea4513391c4
+SHA1: c54b3ab858bfb608d0c19abd382f2b9add0c55ab
+MD5sum: 7a532e73e4df34b79edd0a99c942af07
+Description: PostgreSQL Extension Whitelisting
+ This extension implements extension whitelisting, and will actively prevent
+ users from installing extensions not in the provided list. Also, this
+ extension implements a form of sudo facility in that the whitelisted
+ extensions will get installed as if superuser. Privileges are dropped before
+ handing the control back to the user.
+Description-md5: f58aff65967bfc3eddc04bdae86e695b
+

@@ -1,0 +1,6 @@
+{
+  "check": "task bake:dependencies TARGET=pgfaceting DRY_RUN=true with injected dependency resolver exit 42",
+  "expected": "Task fails before any dependent build",
+  "exit_code": 1,
+  "result": "PASS"
+}

@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  functional.sql: |
+    \set ON_ERROR_STOP on
+    CREATE EXTENSION plluau;
+    CREATE FUNCTION lua_add(a integer, b integer)
+      RETURNS integer LANGUAGE pllua AS $$ return a + b $$;
+    CREATE FUNCTION lua_trusted_hides_exec()
+      RETURNS boolean LANGUAGE pllua AS $$ return os.execute == nil $$;
+    CREATE FUNCTION lua_untrusted_exposes_exec()
+      RETURNS boolean LANGUAGE plluau AS $$ return type(os.execute) == 'function' $$;
+    DO $$
+    BEGIN
+      IF lua_add(19, 23) IS DISTINCT FROM 42
+         OR lua_trusted_hides_exec() IS DISTINCT FROM true
+         OR lua_untrusted_exposes_exec() IS DISTINCT FROM true THEN
+        RAISE EXCEPTION 'PL/Lua arithmetic or trusted/untrusted behavior mismatch';
+      END IF;
+    END
+    $$;

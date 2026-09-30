@@ -1,0 +1,85 @@
+{
+  "image": "prefix",
+  "postgresql_major": 18,
+  "debian_suites": [
+    "bookworm",
+    "trixie"
+  ],
+  "architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "upstream": {
+    "url": "https://github.com/dimitri/prefix",
+    "license_spdx": [
+      "BSD-2-Clause"
+    ]
+  },
+  "pgdg_source_package": "prefix",
+  "runtime_dependencies": [
+    {
+      "suite": "bookworm",
+      "base_image": "ghcr.io/cloudnative-pg/postgresql:18-minimal-bookworm",
+      "extension_package": {
+        "name": "postgresql-18-prefix",
+        "version": "1.2.11-1.pgdg12+1",
+        "origin": "https://apt.postgresql.org/pub/repos/apt bookworm-pgdg/main"
+      },
+      "base_runtime_packages": [
+        {
+          "name": "postgresql-18",
+          "version": "18.6-1.pgdg12+2",
+          "license": "PostgreSQL"
+        },
+        {
+          "name": "libc6",
+          "version": "2.36-9+deb12u14",
+          "license": "LGPL-2.1-or-later; see the base image package copyright"
+        }
+      ],
+      "dynamic_libraries_required": [
+        "libc.so.6"
+      ]
+    },
+    {
+      "suite": "trixie",
+      "base_image": "ghcr.io/cloudnative-pg/postgresql:18-minimal-trixie",
+      "extension_package": {
+        "name": "postgresql-18-prefix",
+        "version": "1.2.11-1.pgdg13+1",
+        "origin": "https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main"
+      },
+      "base_runtime_packages": [
+        {
+          "name": "postgresql-18",
+          "version": "18.6-1.pgdg13+2",
+          "license": "PostgreSQL"
+        },
+        {
+          "name": "libc6",
+          "version": "2.41-12+deb13u4",
+          "license": "LGPL-2.1-or-later; see the base image package copyright"
+        }
+      ],
+      "dynamic_libraries_required": [
+        "libc.so.6"
+      ]
+    }
+  ],
+  "bundled_or_static_components": [],
+  "source_archives_in_image": null,
+  "update_and_rebuild_path": "Renovate tracks the version-pinned PGDG binary package in metadata.hcl. Rebuild the image on package updates; review the matching package source, dependency versions, control and copyright. No runtime package installation is required.",
+  "license_payload": [
+    "/licenses/postgresql-18-prefix/copyright"
+  ],
+  "runtime_manifest_in_image": {
+    "path": "/licenses/runtime-packages.tsv",
+    "generated_from": "dpkg-query for the installed extension package, postgresql-${PG_MAJOR}, and Debian packages that own every resolved ldd library path",
+    "fields": [
+      "binary_package",
+      "version",
+      "source_package",
+      "source_version"
+    ]
+  }
+}

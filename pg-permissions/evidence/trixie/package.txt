@@ -1,0 +1,41 @@
+Package: postgresql-18-pg-permissions
+Source: pg-permissions
+Version: 1.4.1-1.pgdg13+1
+Architecture: all
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 97
+Depends: postgresql-18
+Homepage: https://github.com/cybertec-postgresql/pg_permissions
+Priority: optional
+Section: database
+Filename: pool/main/p/pg-permissions/postgresql-18-pg-permissions_1.4.1-1.pgdg13+1_all.deb
+Size: 12160
+SHA512: d963e8f2d659c7fd2765b1a99d89394be7d7e976ec83df66ee6508e3e3f425bab5983ca7e38b7aca1b55ca09d02111a3258ae5aa8a920e77f0d7971efd4cc311
+SHA256: d0fc317a2f94a5cfe10a617dbc3199d9921789d0795e9dba9151203b2e3c872d
+SHA1: e79af98cdecdf149fefe1956566a24b8ed25abbd
+MD5sum: 2bc1c0b247433eedc513b3a31ec160c8
+Description: see all permissions in a PostgreSQL database
+ pg_permissions is a simple set of views to see all permissions in a PostgreSQL
+ database.
+Description-md5: 
+
+Package: postgresql-18-pg-permissions
+Source: pg-permissions
+Version: 1.4-2.pgdg13+1
+Architecture: all
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 93
+Depends: postgresql-18
+Homepage: https://github.com/cybertec-postgresql/pg_permissions
+Priority: optional
+Section: database
+Filename: pool/main/p/pg-permissions/postgresql-18-pg-permissions_1.4-2.pgdg13+1_all.deb
+Size: 8656
+SHA256: 3a9f718fd9d9253fc48bc9261a4bcb40329b535ad700a4484de1cf00c2424901
+SHA1: ebc56aa271c5c67c10cd558e6ae4cb001322b1e4
+MD5sum: 9b91a98646061b7e4db3cb30591fbee5
+Description: see all permissions in a PostgreSQL database
+ pg_permissions is a simple set of views to see all permissions in a PostgreSQL
+ database.
+Description-md5: 
+

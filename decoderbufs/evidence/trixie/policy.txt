@@ -1,0 +1,11 @@
+postgresql-18-decoderbufs:
+  Installed: 3.6.1-1.pgdg13+1
+  Candidate: 3.6.1-1.pgdg13+1
+  Version table:
+ *** 3.6.1-1.pgdg13+1 500
+        500 https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main amd64 Packages
+        100 /var/lib/dpkg/status
+     3.6.0-2.pgdg13+1 500
+        500 https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main amd64 Packages
+     3.6.0-1.pgdg13+1 500
+        500 https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main amd64 Packages

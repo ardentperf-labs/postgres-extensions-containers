@@ -1,0 +1,31 @@
+{
+  "command": "task e2e:test:full TARGET=pgnodemx DISTRO=trixie DAGGER_ENGINE_NAME=cnpg-approved-batch-engine",
+  "exit_code": 0,
+  "started_utc": "2026-09-29T21:30:46Z",
+  "duration_seconds": 145,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "pgnodemx/Dockerfile": "8ef122130514a729b8468e5894e5a5aefdc9710c3cf2f5613579777f236f52ee",
+    "pgnodemx/README.md": "5c1995f5a6f127a348c9d9d761b875eb5c284c565cd65d8ff461fcd702c68f31",
+    "pgnodemx/metadata.hcl": "c9465cb3c0137a5f4a028073e73a40db997b463ff80b68292c7b11666a938ffd",
+    "pgnodemx/test/chainsaw-test.yaml": "57e979433dd8b08170055e36b186b42c87d15e9b2f87bc16212ea02f1fc427a8",
+    "pgnodemx/test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "pgnodemx/test/cluster.yaml": "95424e0f209dd9abca0d38a53805dffa74e5993794cdd9598c5dcc10e8bdacc6",
+    "pgnodemx/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "pgnodemx/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "pgnodemx/test/functional.sql": "f6e24b4663d31ac4f9bcd8fd95a72e990d7334f809a393a489db3c88a2f71ed0",
+    "pgnodemx/test/job-assert.yaml": "b657517c8fc5570b9d89b507dc356915df8dbf33380c35b32d528346806de4c6",
+    "pgnodemx/test/job.yaml": "fb775e738dbd7315eeb55a596e90e43a46e86eabc2ab7911c067d1bf29956b5b",
+    "pgnodemx/test/sql.yaml": "30f688aab6200bc6098e68e0f9786e9069ef65a449b3814957a60aaff902f94e"
+  },
+  "image": "registry.pg-extensions:5000/pgnodemx-testing:2.0.1-18-trixie@sha256:f02085de6cd8ff28f993fbb4fd99e2494a6179cd9041fa6fa96c76ff17fe3353",
+  "architecture_manifests": {
+    "amd64": "sha256:3810a85d46a2eff8d0a4650406746f098217ef9f16b4a3e3f2def7aceef6ca01",
+    "arm64": "sha256:c47f90440c9652c4595b7c1c55ecab6a2cda5ce4b7a7d5e4740601d084f401f3"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

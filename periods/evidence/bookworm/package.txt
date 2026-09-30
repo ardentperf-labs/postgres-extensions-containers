@@ -1,0 +1,24 @@
+Package: postgresql-18-periods
+Source: postgresql-periods
+Version: 1.2.3-2.pgdg12+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 547
+Depends: postgresql-contrib-18, postgresql-18, libc6 (>= 2.4)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/xocolatl/periods
+Priority: optional
+Section: database
+Filename: pool/main/p/postgresql-periods/postgresql-18-periods_1.2.3-2.pgdg12+1_amd64.deb
+Size: 48092
+SHA256: c609968d453ee61aba3c1213483271c27828ace6f31f363b51dd03e4fa13ad57
+SHA1: 2e6e27960aa897c893d250441849194bb87e90df
+MD5sum: a08a31abb7ff300a3f86f7634ba27bae
+Description: PERIODs and SYSTEM VERSIONING for PostgreSQL
+ This extension attempts to recreate the behavior defined in SQL:2016
+ (originally SQL:2011) around periods and tables with SYSTEM VERSIONING. The
+ idea is to figure out all the rules that PostgreSQL would like to adopt (there
+ are some details missing in the standard) and to allow earlier versions of
+ PostgreSQL to simulate the behavior once the feature is finally integrated.
+Description-md5: e63c84484b236c5241205542b9c562d3
+

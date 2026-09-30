@@ -1,0 +1,18 @@
+postgresql-18-pg-gvm:
+  Installed: (none)
+  Candidate: 22.6.17-1.pgdg13+2
+  Version table:
+     22.6.17-1.pgdg13+2 500
+        500 https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main amd64 Packages
+     22.6.17-1.pgdg13+1 500
+        500 https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main amd64 Packages
+     22.6.15-1.pgdg13+1 500
+        500 https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main amd64 Packages
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Sorting...
+Full Text Search...
+postgresql-18-pg-gvm/trixie-pgdg 22.6.17-1.pgdg13+2 amd64
+  PostgreSQL extension for ical object manipulation
+

@@ -281,3 +281,46 @@ To clean up all the resources created by the `e2e:setup-env` task, run:
 ```bash
 task e2e:cleanup
 ```
+
+### Testing images with local dependencies
+
+The full E2E task builds local `required_extensions` dependencies first, in
+recursive dependency order, then builds and tests the requested image. CI does
+the same before testing each target. Base-image dependencies and extensions
+supplied by an installed image catalog do not require a local build.
+
+When the image under test uses the `-testing` suffix, sibling dependencies use
+the same testing registry, including the internal local registry
+`registry.pg-extensions:5000`. Dependency SQL extensions are installed before
+consumers. Required preload libraries and PostgreSQL parameters are combined;
+conflicting parameter values and dependency cycles fail explicitly.
+
+Dependency entries support three explicit forms in addition to local target names:
+
+- `base-image:tsm_system_rows` installs a SQL extension supplied by PostgreSQL.
+- `image-sql:documentdb_core` installs an additional SQL extension from the target's own image before its main SQL extension.
+- `catalog:pgvector:vector` mounts the catalog's `pgvector` image and installs its differently named `vector` SQL extension.
+
+Plain external catalog names such as `postgis` remain supported when their image
+and SQL names match. Testing configurations use `pullPolicy: Always` for locally
+built images so rebuilding a reused testing tag cannot reuse stale node content.
+
+For the step-by-step workflow, build the dependencies before the target:
+
+```sh
+task bake:dependencies TARGET="<extension>" PUSH=true
+task bake TARGET="<extension>" PUSH=true
+```
+
+On systems running other Dagger sessions, an isolated runner name may be supplied
+consistently to E2E commands, for example
+`DAGGER_ENGINE_NAME=cnpg-approved-batch-engine`. Export
+`_EXPERIMENTAL_DAGGER_RUNNER_HOST=container://cnpg-approved-batch-engine` for
+maintenance commands that should use that runner. Keep test inputs readable by
+the unprivileged Chainsaw container; store exported kubeconfigs in a private
+host directory and never commit them.
+
+Non-main CI builds use `ghcr.io/<owner>/<repository>/<image>-testing` so
+review branches can create their own testing packages without depending on
+organization-wide package access. The dependency build and target build use the
+same namespace, and generated test values retain it for local prerequisites.

@@ -1,0 +1,46 @@
+{
+  "workflow_sha256": "654edb88e51005bc69e5e2e475ba182432d567a7850b0f42f1cefdbe384b26a8",
+  "test": "execute actual dependency step with recording docker stub; malformed output must fail before any build",
+  "cases": [
+    {
+      "input": "[]",
+      "exit_code": 0,
+      "docker_calls": [],
+      "result": "PASS"
+    },
+    {
+      "input": "[\"plperl\",\"pgq\"]",
+      "exit_code": 0,
+      "docker_calls": [
+        "buildx bake -f docker-bake.hcl -f plperl/metadata.hcl --push",
+        "buildx bake -f docker-bake.hcl -f pgq/metadata.hcl --push"
+      ],
+      "result": "PASS"
+    },
+    {
+      "input": "",
+      "exit_code": 4,
+      "docker_calls": [],
+      "result": "PASS"
+    },
+    {
+      "input": "not json",
+      "exit_code": 5,
+      "docker_calls": [],
+      "result": "PASS"
+    },
+    {
+      "input": "null",
+      "exit_code": 5,
+      "docker_calls": [],
+      "result": "PASS"
+    },
+    {
+      "input": "[42]",
+      "exit_code": 5,
+      "docker_calls": [],
+      "result": "PASS"
+    }
+  ],
+  "result": "PASS"
+}

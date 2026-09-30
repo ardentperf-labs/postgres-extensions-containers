@@ -1,0 +1,18 @@
+{
+  "target": "pgextwlist",
+  "readme_sha256": "be97962bdd3d549372ea642374aa5d54cb4150881559dea2c9340e4edc4dd795",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pgextwlist"
+    }
+  ],
+  "images": {
+    "pgextwlist-testing:1.20-18-trixie": "sha256:bdaf2add117387e6af9d1aa7324846b698dc3205de44f65897d5d03b3c40e04c"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:02:42Z"
+}

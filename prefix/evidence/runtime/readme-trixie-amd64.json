@@ -1,0 +1,22 @@
+{
+  "target": "prefix",
+  "readme_sha256": "cdd2c4c382242a51d34c275a63c0b7b3bd432b2f9012fdcfd5d3c197e3614720",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-b:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-prefix"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-prefix-app"
+    }
+  ],
+  "images": {
+    "prefix-testing:1.2.11-18-trixie": "sha256:b10201adac6fde32ae45de1453e1677140604b159f7cade84ef8619003316e67"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:50:04Z"
+}

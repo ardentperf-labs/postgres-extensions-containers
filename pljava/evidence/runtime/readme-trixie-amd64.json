@@ -1,0 +1,22 @@
+{
+  "target": "pljava",
+  "readme_sha256": "30f95e9fb43fe6a01667c4bf1fc114ef70b6bfbe80902bbd2eea4e6e6e68db2d",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-c:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pljava"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pljava-app"
+    }
+  ],
+  "images": {
+    "pljava-testing:1.6.10-18-trixie": "sha256:d23f77782584377ac308cdabba64ba2d6ca7ec7d3bfb640aa35ef87cf2e5cd37"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:09:34Z"
+}

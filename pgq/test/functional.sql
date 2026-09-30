@@ -1,0 +1,17 @@
+
+DO $$
+DECLARE event_id bigint;
+BEGIN
+    PERFORM pgq.create_queue('cnpg_functional_events');
+    event_id := pgq.insert_event('cnpg_functional_events', 'cnpg.smoke', '{"id": 42}');
+    IF event_id IS NULL OR event_id <= 0 THEN
+        RAISE EXCEPTION 'PgQ did not allocate an event identifier';
+    END IF;
+    IF NOT EXISTS (
+        SELECT FROM pgq.get_queue_info('cnpg_functional_events')
+        WHERE queue_name = 'cnpg_functional_events'
+    ) THEN
+        RAISE EXCEPTION 'PgQ did not expose the created queue';
+    END IF;
+END
+$$;

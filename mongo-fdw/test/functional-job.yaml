@@ -1,0 +1,56 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: functional-check
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: psql
+        # renovate: datasource=docker depName=alpine/psql versioning=docker
+        image: alpine/psql:18.6@sha256:794901afa39b7f80d8245a6d8fa9aaf987380e4b7a6d0be22d404194352e8c17
+        env:
+        - name: PGSSLROOTCERT
+        - name: DB_URI
+          valueFrom:
+            secretKeyRef:
+              name: (join('-', [$values.name, 'superuser']))
+              key: uri
+        command: ['sh', '-c']
+        args:
+        - |
+          set -eu
+          DB_URI=$(printf '%s' "$DB_URI" | sed 's|/\*|/app|')
+          ready=false
+          attempt=0
+          while [ "$attempt" -lt 60 ]; do
+            if [ "$(psql "$DB_URI" -XqAt -v ON_ERROR_STOP=1 -c "SELECT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'mongo_fdw')" 2>/dev/null || true)" = t ]; then
+              ready=true
+              break
+            fi
+            attempt=$((attempt + 1))
+            sleep 2
+          done
+          test "$ready" = true
+          result=$(psql "$DB_URI" -XqAt -v ON_ERROR_STOP=1 <<'SQL'
+          GRANT USAGE ON FOREIGN DATA WRAPPER mongo_fdw TO app;
+          SET ROLE app;
+          CREATE SERVER mongo_fixture
+          FOREIGN DATA WRAPPER mongo_fdw
+          OPTIONS (address 'mongo-fixture', port '27017');
+          CREATE USER MAPPING FOR CURRENT_USER SERVER mongo_fixture;
+          CREATE FOREIGN TABLE mongo_items (
+          _id name,
+          item text,
+          qty integer
+          )
+          SERVER mongo_fixture
+          OPTIONS (database 'warehouse', collection 'items');
+          SELECT _id::text = '65a123456789abcdef012345'
+            AND item = 'copper wire' AND qty = 7
+          FROM mongo_items WHERE _id = '65a123456789abcdef012345';
+          SQL
+          )
+          test "$result" = t

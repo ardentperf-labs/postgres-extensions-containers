@@ -1,0 +1,57 @@
+{
+  "command": "task e2e:test:full TARGET=pgq DISTRO=trixie DAGGER_ENGINE_NAME=cnpg-approved-batch-c E2E_NETWORK=approved-batch-c KIND_CLUSTER_NAME=approved-batch-c-1.37.0 REGISTRY_NAME=registry.approved-batch-c REGISTRY_HOST_PORT=5002",
+  "working_directory": "isolated checkout with matching source hashes",
+  "registry_host_port": 5002,
+  "registry_name": "registry.approved-batch-c",
+  "exit_code": 0,
+  "started_utc": "2026-09-29T22:25:55Z",
+  "duration_seconds": 162,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "pgq/Dockerfile": "526936afc8b06594f69102fbbbb529f1826ffa74e64efb6943cb53fe32c250c3",
+    "pgq/README.md": "4e1f6060aecf061cb7c3bf5579a2c611203e946d610c0829a03fed41de6be07a",
+    "pgq/metadata.hcl": "eb9e06c0308e922437d7cefd3b02dfc28872acaf9799ade4b162dcd11b9cd0dd",
+    "pgq/test/chainsaw-test.yaml": "4b1b4820df25b4928154642c129178b8993f3d0ecdfb2e2133af93fc0aac7b69",
+    "pgq/test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "pgq/test/cluster.yaml": "95424e0f209dd9abca0d38a53805dffa74e5993794cdd9598c5dcc10e8bdacc6",
+    "pgq/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "pgq/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "pgq/test/functional-job-assert.yaml": "b657517c8fc5570b9d89b507dc356915df8dbf33380c35b32d528346806de4c6",
+    "pgq/test/functional-job.yaml": "2363351bdb9c9e9a096f81715aef9da8b757b3d3b41706b8dc5dab36a4077136",
+    "pgq/test/functional-sql.yaml": "452469791d8b3aca7fb3e6b1732e7dd50f7e21eed67e1492e254754533a0d6db",
+    "pgq/test/functional.sql": "5dbd2774ff8264fbe545fb6c14f79aae1457a4ce98ade34ac4fe7a5d1bef5623"
+  },
+  "shared_source_sha256": {
+    "Taskfile.yml": "3476e9ac10e5435935f7165eaf06d0cba0d8a6041a57789d58e3dd8ca6785133",
+    "docker-bake.hcl": "8c8a7228e03135424231bdab3579d020b5db0c0ea8a50bf1343506c1ab11be33",
+    "test/chainsaw-test.yaml": "0174a85c78c9ad3fa462fa532e0de6bcce6052a24f5d11bfeea82ecd397f1b19",
+    "test/check-extension-assert.yaml": "7a45714b7a37a7d57e71ca5f2d56c0d7e4490d91663001ea91d0da6eefb012a6",
+    "test/check-extension.yaml": "8113908a6612bde54f32de89b42b5183b1518021f57bbea50822dedf0fd4a9c3",
+    "test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "test/cluster.yaml": "5a27b229c6047734ced8e8af2d8f6449946197e29192e978ff874a9c7893d388",
+    "test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "dagger/maintenance/catalogs.go": "0b625983085112dfe30277e679c7693ee1b8825bbc90066adf0ff60c9183f147",
+    "dagger/maintenance/dagger.gen.go": "7972c1975f4406a86e75d3b637d75a87a9b7c03ad39f5493a659c00d061235ab",
+    "dagger/maintenance/dependencies.go": "a7409ee16cfcd0e32c9198a96cf0b6a2ceda68998d656acbfdfd3cd1d1688e7e",
+    "dagger/maintenance/dependencies_test.go": "ac341cc168f05476f31dab36fdb48d5b37088d36ddfb17cb8605c43bc0084269",
+    "dagger/maintenance/image.go": "0949136bf012e3c2c8e927633e925e4f58894cadb7f958fd9bbb33d421bceb54",
+    "dagger/maintenance/image_test.go": "1c02b920c6c5bcd3803e96c729dac64537d0ce18170cc98d96e60a051a34d657",
+    "dagger/maintenance/main.go": "65fb9e81371554a9dff95e8234e13e5cb48b6eb967715ecbb604af94ad379d31",
+    "dagger/maintenance/parse.go": "f00dde76ea734d5dc53cd373c03ff23ad1523b11cbce7bac942b5dd00f8cadea",
+    "dagger/maintenance/parse_test.go": "f523e839b34508bb1d8f918a0c8cada04b4d7473373dd0f47fcbe72650fd4d6e",
+    "dagger/maintenance/testingvalues.go": "dd61979933fc3af4b2285d838aec08e3d96f64ff46b566e4ae344c08d816a5e6",
+    "dagger/maintenance/updatelibs.go": "e33a49ba8a8f137ad07c6ede8139360fd1832ace45b92ed818733264460e7ef8",
+    "dagger/maintenance/updatelibs_test.go": "56aa65f3d16c414d32c00bf6145d4b6576b20e55107bb411c888e0d718000d10"
+  },
+  "image": "registry.approved-batch-c:5000/pgq-testing:3.5.1-18-trixie@sha256:21d766924e2def629a422d7ec923a6baae055ceee9be836675b5b7c3f78813a6",
+  "architecture_manifests": {
+    "amd64": "sha256:01578879a963151e01d588cef9d55a3b6216952f658a49570d4dc30007834077",
+    "arm64": "sha256:0a5e17f7e2e2c67d16ea6079a600e70b8f8144c31f8577b98cecfb4fc923736c"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

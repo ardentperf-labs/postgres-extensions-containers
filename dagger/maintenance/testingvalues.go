@@ -32,10 +32,12 @@ type TestingValues struct {
 }
 
 type testingExtensionInfo struct {
-	Configuration   *ExtensionConfiguration
-	SQLName         string
-	Version         string
-	CreateExtension bool
+	SharedPreloadLibraries []string
+	PostgreSQLParameters   map[string]string
+	Configuration          *ExtensionConfiguration
+	SQLName                string
+	Version                string
+	CreateExtension        bool
 }
 
 const baseImageDependencyPrefix = "base-image:"
@@ -55,87 +57,80 @@ func generateTestingValuesExtensions(
 	registryUsername string,
 	registryPassword *dagger.Secret,
 ) ([]*testingExtensionInfo, error) {
-	var out []*testingExtensionInfo
-	configuration, err := generateExtensionConfiguration(metadata, locator.ExtensionImage)
+	lookup := dependencyLookup(ctx, source)
+	ordered, err := dependencyOrder(metadata.Name, lookup)
 	if err != nil {
 		return nil, err
 	}
-	out = append(out, &testingExtensionInfo{
-		Configuration:   configuration,
-		SQLName:         metadata.SQLName,
-		Version:         locator.SQLVersion,
-		CreateExtension: metadata.CreateExtension,
-	})
-
-	for _, requiredDependency := range metadata.RequiredExtensions {
-		dep, isBaseImageDependency, err := parseRequiredDependency(requiredDependency)
+	var out []*testingExtensionInfo
+	for _, name := range ordered {
+		image, sql, catalog, err := parseCatalogDependency(name)
 		if err != nil {
 			return nil, err
 		}
-		if isBaseImageDependency {
-			out = append(out, &testingExtensionInfo{
-				SQLName:         dep,
-				CreateExtension: true,
-			})
+		if catalog {
+			out = append(out, &testingExtensionInfo{Configuration: &ExtensionConfiguration{Name: image}, SQLName: sql, CreateExtension: true})
 			continue
 		}
-
-		depExists, err := source.Exists(ctx, dep)
+		dep, base, err := parseRequiredDependency(name)
 		if err != nil {
 			return nil, err
 		}
-		if !depExists {
-			out = append(out, &testingExtensionInfo{
-				Configuration:   &ExtensionConfiguration{Name: dep},
-				SQLName:         dep,
-				CreateExtension: true,
-			})
+		if base {
+			out = append(out, &testingExtensionInfo{SQLName: dep, CreateExtension: true})
 			continue
 		}
-
-		depMetadata, err := parseExtensionMetadata(ctx, source.Directory(dep))
-		if err != nil {
-			return nil, fmt.Errorf("failed to parse dependency metadata %q: %w", dep, err)
-		}
-		requiredExtensionImage, err := getExtensionImage(depMetadata, locator.Distribution, locator.PgMajor)
+		depMetadata, err := lookup(dep)
 		if err != nil {
 			return nil, err
 		}
-		depConfiguration, err := generateExtensionConfiguration(depMetadata, requiredExtensionImage)
+		if depMetadata == nil {
+			out = append(out, &testingExtensionInfo{Configuration: &ExtensionConfiguration{Name: dep}, SQLName: dep, CreateExtension: true})
+			continue
+		}
+		image, version := locator.ExtensionImage, locator.SQLVersion
+		if dep != metadata.Name {
+			image, err = getExtensionImage(depMetadata, locator.Distribution, locator.PgMajor)
+			if err != nil {
+				return nil, err
+			}
+			image = dependencyImageReference(locator.ExtensionImage, image)
+			annotations, err := getImageAnnotations(ctx, image, registryUsername, registryPassword)
+			if err != nil {
+				return nil, err
+			}
+			version = annotations[AnnotationImageSQLVersion]
+			if version == "" && depMetadata.CreateExtension {
+				return nil, fmt.Errorf("extension image %s lacks SQL version annotation", image)
+			}
+		}
+		configuration, err := generateExtensionConfiguration(depMetadata, image)
 		if err != nil {
 			return nil, err
 		}
-
-		depAnnotations, err := getImageAnnotations(ctx, depConfiguration.ImageVolumeSource.Reference, registryUsername, registryPassword)
-		if err != nil {
-			return nil, err
-		}
-		depVersion := depAnnotations[AnnotationImageSQLVersion]
-		if depVersion == "" {
-			return nil, fmt.Errorf(
-				"extension image %s doesn't have an %q annotation or its value is empty",
-				depConfiguration.ImageVolumeSource.Reference, AnnotationImageSQLVersion)
-		}
-
-		out = append(out, &testingExtensionInfo{
-			Configuration:   depConfiguration,
-			SQLName:         depMetadata.SQLName,
-			Version:         depVersion,
-			CreateExtension: depMetadata.CreateExtension,
-		})
+		// Local testing tags are reused after rebuilds. Resolve them on each pod
+		// creation so an older cached image cannot make a changed build pass.
+		configuration.ImageVolumeSource.PullPolicy = "Always"
+		out = append(out, &testingExtensionInfo{Configuration: configuration,
+			SQLName: depMetadata.SQLName, Version: version, CreateExtension: depMetadata.CreateExtension,
+			SharedPreloadLibraries: depMetadata.SharedPreloadLibraries, PostgreSQLParameters: depMetadata.PostgresqlParameters})
 	}
 
 	return out, nil
 }
 
 func parseRequiredDependency(dependency string) (string, bool, error) {
-	if !strings.HasPrefix(dependency, baseImageDependencyPrefix) {
+	prefix := baseImageDependencyPrefix
+	if strings.HasPrefix(dependency, "image-sql:") {
+		prefix = "image-sql:"
+	}
+	if !strings.HasPrefix(dependency, prefix) {
 		return dependency, false, nil
 	}
 
-	name := strings.TrimPrefix(dependency, baseImageDependencyPrefix)
+	name := strings.TrimPrefix(dependency, prefix)
 	if name == "" {
-		return "", false, fmt.Errorf("base-image dependency %q has no extension name", dependency)
+		return "", false, fmt.Errorf("SQL dependency %q has no extension name", dependency)
 	}
 
 	return name, true, nil
@@ -191,7 +186,7 @@ func generateDatabaseAssertStatus(extensionInfos []*testingExtensionInfo) map[st
 	// local dependency images. Keep this fork-local relaxation when syncing
 	// changes from upstream; it is not an upstream CNPG behavior change.
 	status := map[string]any{
-		"applied":            true,
+		"applied": true,
 	}
 
 	var extensions []map[string]any
@@ -209,4 +204,27 @@ func generateDatabaseAssertStatus(extensionInfos []*testingExtensionInfo) map[st
 	}
 
 	return status
+}
+
+// Dependency settings must agree; silently replacing a preload requirement can
+// make a healthy cluster hide a nonfunctional dependency.
+func mergeTestingSettings(infos []*testingExtensionInfo) ([]string, map[string]string, error) {
+	preloads := []string{}
+	seen := map[string]bool{}
+	parameters := map[string]string{}
+	for _, info := range infos {
+		for _, lib := range info.SharedPreloadLibraries {
+			if !seen[lib] {
+				preloads = append(preloads, lib)
+				seen[lib] = true
+			}
+		}
+		for key, value := range info.PostgreSQLParameters {
+			if previous, found := parameters[key]; found && previous != value {
+				return nil, nil, fmt.Errorf("conflicting dependency parameter %s: %q and %q", key, previous, value)
+			}
+			parameters[key] = value
+		}
+	}
+	return preloads, parameters, nil
 }

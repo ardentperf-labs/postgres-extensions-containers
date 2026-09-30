@@ -1,0 +1,22 @@
+{
+  "target": "tdigest",
+  "readme_sha256": "9bf1c9ece087c0af570bf72f5f512a9f184e98c3aeaf28ff499816a4ea3f143e",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-b:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-tdigest"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-tdigest-app"
+    }
+  ],
+  "images": {
+    "tdigest-testing:1.4.7-18-trixie": "sha256:76654f96bfafe5d56864a788534ad945e35675e62dadc173e4ada0c0849c8c42"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:38:31Z"
+}

@@ -1,0 +1,22 @@
+{
+  "target": "preprepare",
+  "readme_sha256": "c7ef8f5416ad4ff5bca01ccd316b037aec2dacba6c34b26c252c37632c7f3981",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-preprepare"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-preprepare-app"
+    }
+  ],
+  "images": {
+    "preprepare-testing:0.9-18-trixie": "sha256:a5d926dd15aaae134aae2c6fafe240d7283ad08ed5c7046208df871de23dff70"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:24:29Z"
+}

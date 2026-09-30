@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  functional.sql: |
+    \set ON_ERROR_STOP on
+    CREATE FUNCTION js_double(a integer)
+      RETURNS integer LANGUAGE pljs AS $$ return a * 2; $$;
+    DO $$
+    BEGIN
+      IF js_double(21) IS DISTINCT FROM 42 THEN
+        RAISE EXCEPTION 'PL/JS function returned the wrong result';
+      END IF;
+    END
+    $$;

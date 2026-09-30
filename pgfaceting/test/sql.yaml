@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  functional.sql: "\\set ON_ERROR_STOP on\nCREATE TABLE facets_probe(id bigint PRIMARY\
+    \ KEY, category text);\nINSERT INTO facets_probe VALUES (1,'red'),(2,'red'),(3,'blue');\n\
+    SELECT faceting.add_faceting_to_table('facets_probe', key=>'id', facets=>ARRAY[faceting.plain_facet('category')]);\n\
+    DO $$ BEGIN\n IF (SELECT sum(cardinality) FROM faceting.top_values('facets_probe'::regclass,\
+    \ n=>10)) IS DISTINCT FROM 3 THEN RAISE EXCEPTION 'facet count mismatch'; END\
+    \ IF;\nEND $$;\n"

@@ -1,0 +1,8 @@
+postgresql-18-dirtyread:
+  Installed: (none)
+  Candidate: 2.8-1.pgdg13+1
+  Version table:
+     2.8-1.pgdg13+1 500
+        500 https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main amd64 Packages
+     2.7-3.pgdg13+1 500
+        500 https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main amd64 Packages

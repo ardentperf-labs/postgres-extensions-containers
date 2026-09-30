@@ -1,0 +1,22 @@
+{
+  "target": "pg-pwhash",
+  "readme_sha256": "28d1e2ff68062f020b4fd7136e25f324037050c09873d24a26effcace10400bf",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-b:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pg-pwhash"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pg-pwhash-app"
+    }
+  ],
+  "images": {
+    "pg-pwhash-testing:1.0-18-trixie": "sha256:4d515d0aee5439584df5375029d117b9073a13916c0e518fd3a11f62612da13d"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:58:57Z"
+}

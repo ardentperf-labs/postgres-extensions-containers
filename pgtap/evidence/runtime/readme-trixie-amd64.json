@@ -1,0 +1,22 @@
+{
+  "target": "pgtap",
+  "readme_sha256": "0d7ef2935119f61c4d2c55d4e90d3a002014aa0bacd0cbe890e09bca9743c20d",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pgtap"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pgtap-app"
+    }
+  ],
+  "images": {
+    "pgtap-testing:1.3.4-18-trixie": "sha256:f2bcf0f8c5f06a3d3c9911e3840cde4fb50eabe3295d000b31f04cc58b49ee5a"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:04:24Z"
+}

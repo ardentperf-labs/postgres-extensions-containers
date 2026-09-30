@@ -1,0 +1,29 @@
+Package: postgresql-18-similarity
+Source: pg-similarity
+Version: 1.0-9.pgdg13+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 318
+Depends: postgresql-18, libc6 (>= 2.14)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/eulerto/pg_similarity
+Priority: optional
+Section: database
+Filename: pool/main/p/pg-similarity/postgresql-18-similarity_1.0-9.pgdg13+1_amd64.deb
+Size: 100884
+SHA256: e0c9a500d32ea23a8c373d85f7971c8cc6c1ae32d656a9de244b9cd0de82f9c6
+SHA1: 7bfa37c89a23aeb0d99fd38c1b9cfee7f4a92875
+MD5sum: 1aeb89fa470eacf01151d14c563010c0
+Description: PostgreSQL similarity functions extension
+ pg_similarity is an extension to support similarity queries on PostgreSQL.
+ The extension consists of:
+ .
+  * Functions implementing similarity algorithms available in the literature.
+    These functions can be used as UDFs and are the base for implementing
+    the similarity operators;
+  * Operators defined on top of the similarity functions. They use similarity
+    functions to obtain the similarity threshold and compare its value to a
+    user-defined threshold to decide if it is a match or not;
+  * Session variables storing similarity function parameters.
+Description-md5: 
+

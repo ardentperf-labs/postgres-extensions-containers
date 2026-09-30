@@ -1,0 +1,96 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: functional-check
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: psql
+        # renovate: datasource=docker depName=alpine/psql versioning=docker
+        image: alpine/psql:18.6@sha256:794901afa39b7f80d8245a6d8fa9aaf987380e4b7a6d0be22d404194352e8c17
+        env:
+        - name: PGSSLROOTCERT
+        - name: DB_URI
+          valueFrom:
+            secretKeyRef:
+              name: (join('-', [$values.name, 'superuser']))
+              key: uri
+        command: ['sh', '-c']
+        args:
+        - |
+          set -eu
+          DB_URI=$(printf '%s' "$DB_URI" | sed 's|/\*|/app|')
+          ready=false
+          attempt=0
+          while [ "$attempt" -lt 60 ]; do
+            if [ "$(psql "$DB_URI" -XqAt -v ON_ERROR_STOP=1 -c "SELECT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'documentdb')" 2>/dev/null || true)" = t ]; then
+              ready=true
+              break
+            fi
+            attempt=$((attempt + 1))
+            sleep 2
+          done
+          test "$ready" = true
+          psql "$DB_URI" -XqAt -v ON_ERROR_STOP=1 <<'SQL'
+          DO $connection_test$
+          BEGIN
+            IF current_setting('documentdb.localhost_connection_string') <> 'host=/controller/run' THEN
+              RAISE EXCEPTION 'DocumentDB self-connections are not configured for the CNPG Unix socket';
+            END IF;
+          END
+          $connection_test$;
+          CREATE EXTENSION IF NOT EXISTS documentdb_extended_rum;
+          DO $rum_test$
+          BEGIN
+            CREATE TABLE documentdb_rum_probe (document documentdb_core.bson);
+            INSERT INTO documentdb_rum_probe
+            VALUES (documentdb_core.bson_json_to_bson('{"_id":"rum-1","rank":7}'));
+            CREATE INDEX documentdb_rum_probe_idx
+              ON documentdb_rum_probe USING documentdb_extended_rum (document);
+            IF NOT EXISTS (
+              SELECT 1 FROM pg_class c JOIN pg_am am ON am.oid = c.relam
+              WHERE c.relname = 'documentdb_rum_probe_idx'
+                AND am.amname = 'documentdb_extended_rum'
+            ) THEN
+              RAISE EXCEPTION 'DocumentDB extended RUM index was not created';
+            END IF;
+          END
+          $rum_test$;
+          GRANT documentdb_admin_role TO app;
+          SET ROLE app;
+          DO $extension_test$
+          BEGIN
+            IF session_user <> 'postgres' OR current_user <> 'app' THEN
+              RAISE EXCEPTION 'DocumentDB fixture must retain the postgres session and use app as its effective role';
+            END IF;
+            PERFORM documentdb_api.create_collection('app', 'cnpg_smoke');
+            PERFORM documentdb_api.insert_one(
+              'app', 'cnpg_smoke',
+              documentdb_core.bson_json_to_bson('{"_id":"fixture-1","rank":7}')
+            );
+            IF NOT EXISTS (
+              SELECT 1 FROM documentdb_api.collection('app', 'cnpg_smoke') AS c
+              WHERE documentdb_core.bson_get_value_text(document, '_id') = 'fixture-1'
+                AND documentdb_core.bson_get_value_text(document, 'rank') = '7'
+            ) THEN
+              RAISE EXCEPTION 'DocumentDB insert/query check failed';
+            END IF;
+            PERFORM documentdb_api.update(
+              'app',
+              documentdb_core.bson_json_to_bson(
+                '{"update":"cnpg_smoke","updates":[{"q":{"_id":"fixture-1"},"u":{"$set":{"rank":8}}}]}'
+              )
+            );
+            IF NOT EXISTS (
+              SELECT 1 FROM documentdb_api.collection('app', 'cnpg_smoke') AS c
+              WHERE documentdb_core.bson_get_value_text(document, '_id') = 'fixture-1'
+                AND documentdb_core.bson_get_value_text(document, 'rank') = '8'
+            ) THEN
+              RAISE EXCEPTION 'DocumentDB update/query check failed';
+            END IF;
+          END
+          $extension_test$;
+          SQL

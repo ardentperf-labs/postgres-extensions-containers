@@ -1,0 +1,22 @@
+Package: postgresql-18-prioritize
+Source: postgresql-prioritize
+Version: 1.0.4-13.pgdg12+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 50
+Depends: postgresql-18, libc6 (>= 2.2.5)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: http://pgxn.org/dist/prioritize/
+Priority: optional
+Section: database
+Filename: pool/main/p/postgresql-prioritize/postgresql-18-prioritize_1.0.4-13.pgdg12+1_amd64.deb
+Size: 11956
+SHA256: cf718955a26717f72ce4141c6fb27cae7bd2ffa7bfc46b7d1c8594a344fa6d64
+SHA1: 76b39fec582ef88bede4215537b266b192c018b9
+MD5sum: 045379e412866b55d6fd76d37eabe4dc
+Description: Get and set the nice priorities of PostgreSQL backends
+ This module implements an interface to getpriority() and setpriority() for
+ PostgreSQL backends, callable from SQL functions. Essentially, this module
+ allows users to `renice' their backends.
+Description-md5: 68c40bc61c85e2dd2ec3063f8f1aeace
+

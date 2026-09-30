@@ -1,0 +1,33 @@
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  libprotobuf-c1
+The following NEW packages will be installed:
+  libprotobuf-c1 postgresql-18-decoderbufs
+0 upgraded, 2 newly installed, 0 to remove and 0 not upgraded.
+Need to get 67.8 kB of archives.
+After this operation, 181 kB of additional disk space will be used.
+Get:1 http://deb.debian.org/debian bookworm/main amd64 libprotobuf-c1 amd64 1.4.1-1+b1 [27.5 kB]
+Get:2 https://apt.postgresql.org/pub/repos/apt bookworm-pgdg/main amd64 postgresql-18-decoderbufs amd64 3.6.1-1.pgdg12+1 [40.4 kB]
+debconf: delaying package configuration, since apt-utils is not installed
+Fetched 67.8 kB in 0s (1021 kB/s)
+Selecting previously unselected package libprotobuf-c1:amd64.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 12483 files and directories currently installed.)
+Preparing to unpack .../libprotobuf-c1_1.4.1-1+b1_amd64.deb ...
+Unpacking libprotobuf-c1:amd64 (1.4.1-1+b1) ...
+Selecting previously unselected package postgresql-18-decoderbufs.
+Preparing to unpack .../postgresql-18-decoderbufs_3.6.1-1.pgdg12+1_amd64.deb ...
+Unpacking postgresql-18-decoderbufs (3.6.1-1.pgdg12+1) ...
+Setting up libprotobuf-c1:amd64 (1.4.1-1+b1) ...
+Setting up postgresql-18-decoderbufs (3.6.1-1.pgdg12+1) ...
+Processing triggers for postgresql-common (293.pgdg12+1) ...
+debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+debconf: falling back to frontend: Readline
+debconf: unable to initialize frontend: Readline
+debconf: (This frontend requires a controlling tty.)
+debconf: falling back to frontend: Teletype
+Building PostgreSQL dictionaries from installed myspell/hunspell packages...
+Removing obsolete dictionary files:
+Processing triggers for libc-bin (2.36-9+deb12u14) ...

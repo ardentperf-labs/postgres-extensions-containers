@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  functional.sql: "\\set ON_ERROR_STOP on\nDO $$ DECLARE result text; BEGIN\n SELECT\
+    \ csv_agg(t) INTO result FROM (VALUES (1,'a,b')) AS t(id,label);\n IF result IS\
+    \ NULL OR position('\"a,b\"' in result) = 0 THEN RAISE EXCEPTION 'CSV quoting\
+    \ failed: %',result; END IF;\nEND $$;\n"

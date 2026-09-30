@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  functional.sql: "\\set ON_ERROR_STOP on\nSELECT pg_track_settings_snapshot();\n\
+    DO $$ BEGIN\n IF NOT EXISTS (SELECT FROM pg_track_settings_list) THEN RAISE EXCEPTION\
+    \ 'snapshot empty'; END IF;\nEND $$;\nSELECT pg_track_settings_reset();\n"

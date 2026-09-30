@@ -21,7 +21,7 @@ spec:
           - name: DB_URI
             valueFrom:
               secretKeyRef:
-                name: (join('-', [$values.name, 'app']))
+                name: (join('-', [$values.name, 'superuser']))
                 key: uri
         # renovate: datasource=docker depName=alpine/psql versioning=docker
         image: alpine/psql:18.6@sha256:794901afa39b7f80d8245a6d8fa9aaf987380e4b7a6d0be22d404194352e8c17
@@ -33,6 +33,12 @@ spec:
              echo "Skipping extension check (create_extension=false)"
              exit 0
            fi
-           DB_URI=$(echo $DB_URI | sed "s|/\*|/|")
+           DB_URI=$(echo $DB_URI | sed "s|/\*|/app|")
+           ready=false
+           for attempt in $(seq 1 60); do
+             if pg_isready -q -d "$DB_URI"; then ready=true; break; fi
+             sleep 1
+           done
+           test "$ready" = true
            test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = '${EXT_SQL_NAME}' AND extversion = '${EXT_VERSION}')" -q)" = "t"
            echo "Extension '${EXT_SQL_NAME} v${EXT_VERSION}' is installed!"

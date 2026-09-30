@@ -1,0 +1,8 @@
+postgresql-18-plsh:
+  Installed: (none)
+  Candidate: 1.20220917-4.pgdg12+2
+  Version table:
+     1.20220917-4.pgdg12+2 500
+        500 https://apt.postgresql.org/pub/repos/apt bookworm-pgdg/main amd64 Packages
+     1.20220917-4.pgdg12+1 500
+        500 https://apt.postgresql.org/pub/repos/apt bookworm-pgdg/main amd64 Packages

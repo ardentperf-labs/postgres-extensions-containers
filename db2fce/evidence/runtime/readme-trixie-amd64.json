@@ -1,0 +1,22 @@
+{
+  "target": "db2fce",
+  "readme_sha256": "1ec17b7f73f829e97b1567f38fd7219d8bdcd4c4c30ceea764279a03eaa2358e",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-db2fce"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-db2fce-app"
+    }
+  ],
+  "images": {
+    "db2fce-testing:0.0.17-18-trixie": "sha256:261b58d0380334eb33153912fc57f1b01513c5f91d3f7ac5dc5354e62a444cbb"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:23:58Z"
+}

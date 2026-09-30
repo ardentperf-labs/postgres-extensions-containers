@@ -1,0 +1,51 @@
+Package: postgresql-18-pgfaceting
+Source: pgfaceting
+Version: 0.2.0-6.pgdg12+1
+Architecture: all
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 43
+Depends: postgresql-18-roaringbitmap, postgresql-18
+Homepage: https://github.com/cybertec-postgresql/pgfaceting
+Priority: optional
+Section: database
+Filename: pool/main/p/pgfaceting/postgresql-18-pgfaceting_0.2.0-6.pgdg12+1_all.deb
+Size: 9936
+SHA512: a06c39259241a9c27b0872764e64774b181961b49a9de95f05107a04dbfb8796630a027e1bf662eadd14515d921a0c852a231defb6826f651c05b50e16e27cab
+SHA256: 86044c10ed27d52dd8b7cba0d098833e28c6d1d8f8aa2afbb497eb75172d34df
+SHA1: eef43a7b8b73bd2f03b52d5367780c8aa7215434
+MD5sum: 81de2c81c70f72490ca3cb7c743b615e
+Description: Faceted query acceleration for PostgreSQL using roaring bitmaps
+ PostgreSQL extension to quickly calculate facet counts using inverted indexes
+ built with roaring bitmaps. Requires pg_roaringbitmap to be installed.
+ .
+ Faceting means counting number occurrences of each value in a result set for a
+ set of attributes. Typical example of faceting is a web shop where you can see
+ how many items are remaining after filtering your search by red, green or
+ blue, and how many when filtering by size small, medium or large.
+Description-md5: 204b8d2810e09126771b5e27ee71ae70
+
+Package: postgresql-18-pgfaceting
+Source: pgfaceting
+Version: 0.2.0-5.pgdg12+1
+Architecture: all
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 43
+Depends: postgresql-18-roaringbitmap, postgresql-18
+Homepage: https://github.com/cybertec-postgresql/pgfaceting
+Priority: optional
+Section: database
+Filename: pool/main/p/pgfaceting/postgresql-18-pgfaceting_0.2.0-5.pgdg12+1_all.deb
+Size: 9892
+SHA256: d43bbdfab52e4153f85dbf09d0525e9f933ebc23c78bc6534d4868befebaaa44
+SHA1: e123c61c5a9152d19526b4ecc76a80bcf18ed029
+MD5sum: d0ecbbbf93fb681ef6bf7653cbb76954
+Description: Faceted query acceleration for PostgreSQL using roaring bitmaps
+ PostgreSQL extension to quickly calculate facet counts using inverted indexes
+ built with roaring bitmaps. Requires pg_roaringbitmap to be installed.
+ .
+ Faceting means counting number occurrences of each value in a result set for a
+ set of attributes. Typical example of faceting is a web shop where you can see
+ how many items are remaining after filtering your search by red, green or
+ blue, and how many when filtering by size small, medium or large.
+Description-md5: 204b8d2810e09126771b5e27ee71ae70
+

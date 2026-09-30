@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  functional.sql: |
+    \set ON_ERROR_STOP on
+    CREATE FUNCTION java_add(integer, integer)
+      RETURNS integer AS 'java.lang.Integer.sum' LANGUAGE java;
+    DO $$
+    BEGIN
+      IF java_add(19, 23) IS DISTINCT FROM 42 THEN
+        RAISE EXCEPTION 'PL/Java method invocation returned the wrong result';
+      END IF;
+      IF (SELECT lanpltrusted FROM pg_language WHERE lanname = 'java') IS DISTINCT FROM true THEN
+        RAISE EXCEPTION 'java language must be trusted';
+      END IF;
+      IF (SELECT lanpltrusted FROM pg_language WHERE lanname = 'javau') IS DISTINCT FROM false THEN
+        RAISE EXCEPTION 'javaU language must be untrusted';
+      END IF;
+    END
+    $$;

@@ -1,0 +1,49 @@
+Package: postgresql-18-plsh
+Source: postgresql-plsh
+Version: 1.20220917-4.pgdg12+2
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 74
+Depends: postgresql-18, libc6 (>= 2.4)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/petere/plsh
+Priority: optional
+Section: database
+Filename: pool/main/p/postgresql-plsh/postgresql-18-plsh_1.20220917-4.pgdg12+2_amd64.deb
+Size: 28236
+SHA512: e8074689e8820c55263c4b0c68930fa6f13b6dfa6f48d268d9dead1ae483310b9c3e69fed8f3356e72eb18cef1acbbad06276d9e1cb7e6957556f1d40638765c
+SHA256: a4343e5910bbba94a3b6069e2a312f0a3746e19eb6a8946cc4eea435d231887f
+SHA1: 232ba201fadd7c445c189e76bdf2b0957aab6f83
+MD5sum: eda909dd30b2f05aba7020a058c9edab
+Description: PL/sh procedural language for PostgreSQL 18
+ PL/sh enables an SQL developer to write procedural language functions
+ for PostgreSQL 18 in a shell of his choice.  You need this package
+ if you have any PostgreSQL 18 functions that use the language plsh.
+ .
+ PostgreSQL is an object-relational SQL database management system.
+Description-md5: 696308c55e9fd97ec1e4826fdd169ba0
+
+Package: postgresql-18-plsh
+Source: postgresql-plsh
+Version: 1.20220917-4.pgdg12+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 74
+Depends: postgresql-18, libc6 (>= 2.4)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/petere/plsh
+Priority: optional
+Section: database
+Filename: pool/main/p/postgresql-plsh/postgresql-18-plsh_1.20220917-4.pgdg12+1_amd64.deb
+Size: 28232
+SHA256: b17f9fbc1d7c132f3e95396a98cdb9c1f28cb88ec6aa75dab140ef36f39016d2
+SHA1: 5a43f54342d4a9ef4c82663a5f3094355696b018
+MD5sum: a81c160d0a890f1b704d8ca26a0734bf
+Description: PL/sh procedural language for PostgreSQL 18
+ PL/sh enables an SQL developer to write procedural language functions
+ for PostgreSQL 18 in a shell of his choice.  You need this package
+ if you have any PostgreSQL 18 functions that use the language plsh.
+ .
+ PostgreSQL is an object-relational SQL database management system.
+Description-md5: 696308c55e9fd97ec1e4826fdd169ba0
+

@@ -1,0 +1,22 @@
+{
+  "target": "pg-rewrite",
+  "readme_sha256": "3eacdb6ab99a286ce1d555e76f0303110da8c26000c6edb3effbd29353ba387b",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pg-rewrite"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pg-rewrite-app"
+    }
+  ],
+  "images": {
+    "pg-rewrite-testing:2.2-18-trixie": "sha256:c7c5d7844c8163be82461160aa3c375622a4b4fcbbcbbc2dab9760a26a5b7741"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:23:56Z"
+}

@@ -1,0 +1,71 @@
+Package: postgresql-18-plproxy
+Source: postgresql-plproxy
+Version: 2.12.0-1.pgdg12+2
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 299
+Depends: postgresql-18, libc6 (>= 2.14), libpq5
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://plproxy.github.io/
+Priority: optional
+Section: database
+Filename: pool/main/p/postgresql-plproxy/postgresql-18-plproxy_2.12.0-1.pgdg12+2_amd64.deb
+Size: 137452
+SHA512: 44077bccfea2641a492a4e6de55085b326afa126dbccacf1e38efb581dd6cce3f4ba6d2dda8ff8f0533b64b0e7745bfa74d6c12850c3dc07c7be17665e550b92
+SHA256: d7176542f785ca94dbecd1aca425eadd354d88465591b9ae52d44f6ea29541ba
+SHA1: a6c70b87a6428bf170aa0e3e70cb1032fb6e2d8d
+MD5sum: 1106ea7c192cc4f2b5fa5f914d65270f
+Description: database partitioning system for PostgreSQL 18
+ PL/Proxy is a database partitioning system implemented as a PL language. Main
+ idea is that proxy functions are created with same signature as the remote
+ functions to be called, so only destination info needs to be specified inside
+ proxy function bodies.
+Description-md5: 238b894f91ed2c6a30214ba06a8f5514
+
+Package: postgresql-18-plproxy
+Source: postgresql-plproxy
+Version: 2.12.0-1.pgdg12+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 299
+Depends: postgresql-18, libc6 (>= 2.14), libpq5
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://plproxy.github.io/
+Priority: optional
+Section: database
+Filename: pool/main/p/postgresql-plproxy/postgresql-18-plproxy_2.12.0-1.pgdg12+1_amd64.deb
+Size: 137380
+SHA512: b44b9f9f7aeea6027a4a15dbf17ae92f7966b7af1dc5a4c5f87eb1ba3c3cf3aff49e25cece00df97ac2ee0d9b562f07d80472397d20264ec710abd36c7acab8c
+SHA256: 95767442eaea8d5839bfffc699c8b1f438041060348d1b3241c955b645898eff
+SHA1: 243e2662b0303134bb979483bf46cd552852a946
+MD5sum: 256446febf3a68b2d24e3ce437212add
+Description: database partitioning system for PostgreSQL 18
+ PL/Proxy is a database partitioning system implemented as a PL language. Main
+ idea is that proxy functions are created with same signature as the remote
+ functions to be called, so only destination info needs to be specified inside
+ proxy function bodies.
+Description-md5: 238b894f91ed2c6a30214ba06a8f5514
+
+Package: postgresql-18-plproxy
+Source: postgresql-plproxy
+Version: 2.11.0-13.pgdg12+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 297
+Depends: postgresql-18, libc6 (>= 2.14), libpq5
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://plproxy.github.io/
+Priority: optional
+Section: database
+Filename: pool/main/p/postgresql-plproxy/postgresql-18-plproxy_2.11.0-13.pgdg12+1_amd64.deb
+Size: 137008
+SHA256: e2fcbd44e3a4dea5cd2e2bd7b99f0dffef75f7c38d96ce680ea4af1a3b7b5d41
+SHA1: 2d6d94f10c156cc1528a869561e14fc342c6d5f8
+MD5sum: 4d6957393bd170865fc78ffd31d94971
+Description: database partitioning system for PostgreSQL 18
+ PL/Proxy is a database partitioning system implemented as a PL language. Main
+ idea is that proxy functions are created with same signature as the remote
+ functions to be called, so only destination info needs to be specified inside
+ proxy function bodies.
+Description-md5: 238b894f91ed2c6a30214ba06a8f5514
+

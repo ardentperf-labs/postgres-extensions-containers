@@ -1,0 +1,31 @@
+{
+  "command": "task e2e:test:full TARGET=pgtap DISTRO=bookworm DAGGER_ENGINE_NAME=cnpg-approved-batch-engine",
+  "exit_code": 0,
+  "started_utc": "2026-09-29T21:36:55Z",
+  "duration_seconds": 72,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "pgtap/Dockerfile": "5e792d9bdc05421c1a9c46a6c20f808b452c135fbb1760a391d7fc7f3cbfc80b",
+    "pgtap/README.md": "0d7ef2935119f61c4d2c55d4e90d3a002014aa0bacd0cbe890e09bca9743c20d",
+    "pgtap/metadata.hcl": "1a090124f7ce378043374b4176a8d6b0791e2cec1204f0ff78925e55a1de89c5",
+    "pgtap/test/chainsaw-test.yaml": "57e979433dd8b08170055e36b186b42c87d15e9b2f87bc16212ea02f1fc427a8",
+    "pgtap/test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "pgtap/test/cluster.yaml": "95424e0f209dd9abca0d38a53805dffa74e5993794cdd9598c5dcc10e8bdacc6",
+    "pgtap/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "pgtap/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "pgtap/test/functional.sql": "61a17fa26715f685bea99311ba18a1ecef0740eb95bc4b9c95b3bfa80f465ced",
+    "pgtap/test/job-assert.yaml": "b657517c8fc5570b9d89b507dc356915df8dbf33380c35b32d528346806de4c6",
+    "pgtap/test/job.yaml": "fb775e738dbd7315eeb55a596e90e43a46e86eabc2ab7911c067d1bf29956b5b",
+    "pgtap/test/sql.yaml": "dc3b7b10cee3abe62a2064a570a3acac6d34029f44267f81e20478cae65147cd"
+  },
+  "image": "registry.pg-extensions:5000/pgtap-testing:1.3.4-18-bookworm@sha256:58e634e2972932cd0be5dc46379e64d9f42149fa46c28d2e9e1060c535f44ab8",
+  "architecture_manifests": {
+    "amd64": "sha256:ae5678a2c402f994625605a00158ec12bc925a453e837a2c07402b62f81bdd32",
+    "arm64": "sha256:7d1fe8f0685bb67029d4d914c38916197af0abafc07d21d9458f9ac62943827b"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

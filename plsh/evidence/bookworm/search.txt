@@ -1,0 +1,8 @@
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Sorting...
+Full Text Search...
+postgresql-18-plsh/bookworm-pgdg 1.20220917-4.pgdg12+2 amd64
+  PL/sh procedural language for PostgreSQL 18
+

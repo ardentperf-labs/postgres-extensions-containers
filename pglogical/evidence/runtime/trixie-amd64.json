@@ -1,0 +1,58 @@
+{
+  "command": "task e2e:test:full TARGET=pglogical DISTRO=trixie DAGGER_ENGINE_NAME=cnpg-approved-batch-engine",
+  "exit_code": 0,
+  "started_utc": "2026-09-29T23:05:58Z",
+  "duration_seconds": 160,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "pglogical/Dockerfile": "0f5c177f9598d9e67cf4c63c4e4cba6b1138738c5600516700c4c9403f5264fc",
+    "pglogical/README.md": "b897070df0987b62a6ee7bcd141a6fa184381357965345266b507ccabb8cb695",
+    "pglogical/metadata.hcl": "bf8cd3ff420378ec65701edade3eb04d11175a6603901144964aa8c86a5aede5",
+    "pglogical/test/chainsaw-test.yaml": "2eb187303cff9c2295ee6033b43b2eb54abf9aaf5c6e35fda9815b1ecc3f9bfb",
+    "pglogical/test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "pglogical/test/cluster.yaml": "95424e0f209dd9abca0d38a53805dffa74e5993794cdd9598c5dcc10e8bdacc6",
+    "pglogical/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "pglogical/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "pglogical/test/functional-job-assert.yaml": "b657517c8fc5570b9d89b507dc356915df8dbf33380c35b32d528346806de4c6",
+    "pglogical/test/functional-job.yaml": "ac46b9284e1d41e37167a947870731d09215fd88e0ceb3fa7266dbf5b1e0577b",
+    "pglogical/test/functional-sql.yaml": "5f3291394638eddd093fbb47d870143c68f7579d67910422f61911f5eaabd2a5",
+    "pglogical/test/functional.sql": "f8717bdf0816cae9779c86967b51cfce9ac75efae4e82a9b917ff23678555f72",
+    "pglogical/test/subscriber-database-assert.yaml": "21b70ac102e194aea934e986c65a17d236d0f7fbaef9da7d524113bc7042f6bf",
+    "pglogical/test/subscriber-database.yaml": "094e38e6ddb6b1236d936a8142372958d9631a985088cb7bff177955b8f777dd",
+    "pglogical/test/subscriber.sql": "3a1730df3fdcc829ef084dbcf6307eb124140395cc13505a7a5e10920b5ad231",
+    "pglogical/test/verify.sh": "a8077c3302f9fff6ed5ae838fa970f7098bf1ff3e246ddc3b9d76db8107937a9"
+  },
+  "shared_source_sha256": {
+    "Taskfile.yml": "3476e9ac10e5435935f7165eaf06d0cba0d8a6041a57789d58e3dd8ca6785133",
+    "docker-bake.hcl": "8c8a7228e03135424231bdab3579d020b5db0c0ea8a50bf1343506c1ab11be33",
+    "test/chainsaw-test.yaml": "0174a85c78c9ad3fa462fa532e0de6bcce6052a24f5d11bfeea82ecd397f1b19",
+    "test/check-extension-assert.yaml": "7a45714b7a37a7d57e71ca5f2d56c0d7e4490d91663001ea91d0da6eefb012a6",
+    "test/check-extension.yaml": "8113908a6612bde54f32de89b42b5183b1518021f57bbea50822dedf0fd4a9c3",
+    "test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "test/cluster.yaml": "5a27b229c6047734ced8e8af2d8f6449946197e29192e978ff874a9c7893d388",
+    "test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "dagger/maintenance/catalogs.go": "0b625983085112dfe30277e679c7693ee1b8825bbc90066adf0ff60c9183f147",
+    "dagger/maintenance/dagger.gen.go": "7972c1975f4406a86e75d3b637d75a87a9b7c03ad39f5493a659c00d061235ab",
+    "dagger/maintenance/dependencies.go": "a7409ee16cfcd0e32c9198a96cf0b6a2ceda68998d656acbfdfd3cd1d1688e7e",
+    "dagger/maintenance/dependencies_test.go": "ac341cc168f05476f31dab36fdb48d5b37088d36ddfb17cb8605c43bc0084269",
+    "dagger/maintenance/image.go": "0949136bf012e3c2c8e927633e925e4f58894cadb7f958fd9bbb33d421bceb54",
+    "dagger/maintenance/image_test.go": "1c02b920c6c5bcd3803e96c729dac64537d0ce18170cc98d96e60a051a34d657",
+    "dagger/maintenance/main.go": "65fb9e81371554a9dff95e8234e13e5cb48b6eb967715ecbb604af94ad379d31",
+    "dagger/maintenance/parse.go": "f00dde76ea734d5dc53cd373c03ff23ad1523b11cbce7bac942b5dd00f8cadea",
+    "dagger/maintenance/parse_test.go": "f523e839b34508bb1d8f918a0c8cada04b4d7473373dd0f47fcbe72650fd4d6e",
+    "dagger/maintenance/testingvalues.go": "dd61979933fc3af4b2285d838aec08e3d96f64ff46b566e4ae344c08d816a5e6",
+    "dagger/maintenance/updatelibs.go": "e33a49ba8a8f137ad07c6ede8139360fd1832ace45b92ed818733264460e7ef8",
+    "dagger/maintenance/updatelibs_test.go": "56aa65f3d16c414d32c00bf6145d4b6576b20e55107bb411c888e0d718000d10"
+  },
+  "image": "registry.pg-extensions:5000/pglogical-testing:2.4.8-18-trixie@sha256:ee94f0851360d061a778f94054aad58a92c35821ba51b5b26095bc9cd7d547ca",
+  "architecture_manifests": {
+    "amd64": "sha256:48598fbe82ff19c297e82556e1fb3eae87fcd6534f07028c06518dac5f4b7f03",
+    "arm64": "sha256:2df8e7c5f1d51765c17169ef276d6ba9c6c135602277b24171bad67d4204904e"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

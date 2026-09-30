@@ -1,0 +1,13 @@
+/.
+/usr
+/usr/share
+/usr/share/doc
+/usr/share/doc/postgresql-18-pgfaceting
+/usr/share/doc/postgresql-18-pgfaceting/README.md.gz
+/usr/share/doc/postgresql-18-pgfaceting/changelog.Debian.gz
+/usr/share/doc/postgresql-18-pgfaceting/copyright
+/usr/share/postgresql
+/usr/share/postgresql/18
+/usr/share/postgresql/18/extension
+/usr/share/postgresql/18/extension/pgfaceting--0.2.0.sql
+/usr/share/postgresql/18/extension/pgfaceting.control

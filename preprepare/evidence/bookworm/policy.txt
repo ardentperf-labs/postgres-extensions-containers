@@ -1,0 +1,6 @@
+postgresql-18-preprepare:
+  Installed: (none)
+  Candidate: 0.9-10.pgdg12+1
+  Version table:
+     0.9-10.pgdg12+1 500
+        500 https://apt.postgresql.org/pub/repos/apt bookworm-pgdg/main amd64 Packages

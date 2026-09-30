@@ -1,0 +1,35 @@
+{
+  "target": "bucardo",
+  "readme_sha256": "dcd0c0edb38b91680b0748e75a74f17cbd4623fd22809505139857aec05ab55c",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-c:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-bucardo"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-bucardo-control"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-bucardo-source"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-bucardo-target"
+    },
+    {
+      "kind": "Job",
+      "name": "bucardo-schema"
+    }
+  ],
+  "images": {
+    "plperl-testing:18.6-18-trixie": "sha256:e2bc39c4305919e56932da4b51fb665c91531cc46251bb79a89f551d7ecc3bc7",
+    "bucardo-testing:5.6.0-18-trixie": "sha256:9db47038bd757f4ba60d02a6696968a8c0aa921700396a4f70bb110803129a24"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:38:31Z"
+}

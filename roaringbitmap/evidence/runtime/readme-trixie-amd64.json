@@ -1,0 +1,22 @@
+{
+  "target": "roaringbitmap",
+  "readme_sha256": "c55094e12e8bdce26653426364881570f887320733a900149da3e0718eaf046e",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-b:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-roaringbitmap"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-roaringbitmap-app"
+    }
+  ],
+  "images": {
+    "roaringbitmap-testing:1.2.0-18-trixie": "sha256:4666dcf89025c045bc738ea814f1650384dca09e97e529d39c207aa2abae64d9"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:27:06Z"
+}

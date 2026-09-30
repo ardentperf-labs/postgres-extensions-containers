@@ -1,0 +1,31 @@
+{
+  "command": "task e2e:test:full TARGET=pgextwlist DISTRO=trixie DAGGER_ENGINE_NAME=cnpg-approved-batch-engine",
+  "exit_code": 0,
+  "started_utc": "2026-09-29T21:23:28Z",
+  "duration_seconds": 146,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "pgextwlist/Dockerfile": "5844557b5c5b9c8e782469591462696ef3867a01698ec3203e356e551488c1d2",
+    "pgextwlist/README.md": "be97962bdd3d549372ea642374aa5d54cb4150881559dea2c9340e4edc4dd795",
+    "pgextwlist/metadata.hcl": "e9e0d90b1fb8eacac9e2c8d2991a8f0d635dacd4fa13c5e6ab5b9846a20ac058",
+    "pgextwlist/test/chainsaw-test.yaml": "57e979433dd8b08170055e36b186b42c87d15e9b2f87bc16212ea02f1fc427a8",
+    "pgextwlist/test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "pgextwlist/test/cluster.yaml": "95424e0f209dd9abca0d38a53805dffa74e5993794cdd9598c5dcc10e8bdacc6",
+    "pgextwlist/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "pgextwlist/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "pgextwlist/test/functional.sql": "ac31596f58c18a5f682745a5ec76e963f06da3b88aadc8fafc63088fc2ec1ce0",
+    "pgextwlist/test/job-assert.yaml": "b657517c8fc5570b9d89b507dc356915df8dbf33380c35b32d528346806de4c6",
+    "pgextwlist/test/job.yaml": "90ffca305d2e0b886e53943fd7dc088b607f520cc4032c139ee02a3d4c08403b",
+    "pgextwlist/test/sql.yaml": "53b9d32e1484b06652f081f0e7fd12b197b9d3e3d5d23e9b8a2dcbceecf6e6a9"
+  },
+  "image": "registry.pg-extensions:5000/pgextwlist-testing:1.20-18-trixie@sha256:77ff3cf503007755f500ca42edca8073a255a001cf2be0002135e0b75fda5c04",
+  "architecture_manifests": {
+    "amd64": "sha256:5532f5889ce00606c078980e0c884528c4b41b65806c3b62ffd2821e1c914805",
+    "arm64": "sha256:ca0b5a3a2890472e9f59f604947549575c872144fda6be5742704c8843f4e43c"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

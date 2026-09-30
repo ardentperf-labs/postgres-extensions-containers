@@ -1,0 +1,42 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: functional
+spec:
+  timeouts:
+    apply: 5s
+    assert: 3m
+    delete: 30s
+  steps:
+  - name: create-cluster-and-database
+    try:
+    - apply:
+        file: cluster.yaml
+    - assert:
+        file: cluster-assert.yaml
+    - apply:
+        file: database.yaml
+    - assert:
+        file: database-assert.yaml
+    - apply:
+        file: database-bucardo.yaml
+    - assert:
+        file: database-bucardo-assert.yaml
+    - apply:
+        file: database-source.yaml
+    - assert:
+        file: database-source-assert.yaml
+    - apply:
+        file: database-target.yaml
+    - assert:
+        file: database-target-assert.yaml
+  - name: exercise-extension
+    try:
+    - apply:
+        file: functional-job.yaml
+    - assert:
+        file: functional-job-assert.yaml
+    catch:
+    - podLogs:
+        selector: job-name=functional
+    - events: {}

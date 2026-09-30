@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  source.sql: '
+
+    CREATE TABLE public.mimeo_source (id integer PRIMARY KEY, payload text NOT NULL);
+
+    INSERT INTO public.mimeo_source VALUES (1, ''initial''), (2, ''initial'');'
+  functional.sql: "INSERT INTO public.dblink_mapping_mimeo (data_source, username, pwd)\nVALUES (\n    format('host=%s port=%s dbname=mimeo_source sslmode=require', :'source_host', :'source_port'),\n    'postgres',\n    :'source_password'\n)\nRETURNING data_source_id \\gset\nSELECT public.table_maker(\n    'public.mimeo_source',\n    :data_source_id,\n    'public.mimeo_copy',\n    p_pulldata := true,\n    p_jobmon := false\n);\nSELECT count(*) FROM public.mimeo_copy;"

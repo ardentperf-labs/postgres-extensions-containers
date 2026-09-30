@@ -1,0 +1,10 @@
+postgresql-18-pgextwlist:
+  Installed: (none)
+  Candidate: 1.20-1.pgdg13+2
+  Version table:
+     1.20-1.pgdg13+2 500
+        500 https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main amd64 Packages
+     1.20-1.pgdg13+1 500
+        500 https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main amd64 Packages
+     1.19-2.pgdg13+1 500
+        500 https://apt.postgresql.org/pub/repos/apt trixie-pgdg/main amd64 Packages

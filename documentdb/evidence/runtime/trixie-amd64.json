@@ -1,0 +1,55 @@
+{
+  "command": "task e2e:test:full TARGET=documentdb DISTRO=trixie DAGGER_ENGINE_NAME=cnpg-approved-batch-c E2E_NETWORK=approved-batch-c KIND_CLUSTER_NAME=approved-batch-c-1.37.0 REGISTRY_NAME=registry.approved-batch-c REGISTRY_HOST_PORT=5002",
+  "working_directory": "isolated checkout with matching source hashes",
+  "registry_host_port": 5002,
+  "registry_name": "registry.approved-batch-c",
+  "exit_code": 0,
+  "started_utc": "2026-09-30T00:01:00Z",
+  "duration_seconds": 82,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "documentdb/Dockerfile": "75a572354548175773d329599a9b6b63dac0be6f603aa88cd636a64538eb7056",
+    "documentdb/README.md": "51b360add7baee3f8ef6d637a353958cb5396fdc34ca2e85b81429f5d05fb07c",
+    "documentdb/metadata.hcl": "2561d62612f9f0b21d487a2f42fb6f28201f5271738a1352debfd484f996941b",
+    "documentdb/test/chainsaw-test.yaml": "e3a53733ecac6c960d54c9a9e834e78dd0ab293323d40b5b62bf664dd9d80813",
+    "documentdb/test/cluster-assert.yaml": "643c3e27f90c7fdbf645c94522918a87f55335854921cdb29845736abfa4a7dc",
+    "documentdb/test/cluster.yaml": "8161fb1900a35632c986caa6086c9b7edb3f1bdd82aa6fe82fd066484d5363c8",
+    "documentdb/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "documentdb/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "documentdb/test/functional-job-assert.yaml": "afa3daaa75332d64e8b39a0640f9069ea5c74d53bf66e2d9bfe5a6db62d6289a",
+    "documentdb/test/functional-job.yaml": "a8b219fb0dcc454156044586c407e449214b89e1590eb44042e0d9e5d414ca70"
+  },
+  "shared_source_sha256": {
+    "Taskfile.yml": "3476e9ac10e5435935f7165eaf06d0cba0d8a6041a57789d58e3dd8ca6785133",
+    "docker-bake.hcl": "8c8a7228e03135424231bdab3579d020b5db0c0ea8a50bf1343506c1ab11be33",
+    "test/chainsaw-test.yaml": "50709e6fca9630121b55ff25b4cfed27240d2c142149bb56b5ca1c1e474dc216",
+    "test/check-extension-assert.yaml": "7a45714b7a37a7d57e71ca5f2d56c0d7e4490d91663001ea91d0da6eefb012a6",
+    "test/check-extension.yaml": "86553efff338d89b79e88c11a90d1649480700c98b9bbe31cb5b6f999a3d6e58",
+    "test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "test/cluster.yaml": "00f1c8fa55567898aba14e6614c7fd87e09196f3d9bab4e2368521d4521eb663",
+    "test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "dagger/maintenance/catalogs.go": "0b625983085112dfe30277e679c7693ee1b8825bbc90066adf0ff60c9183f147",
+    "dagger/maintenance/dagger.gen.go": "7972c1975f4406a86e75d3b637d75a87a9b7c03ad39f5493a659c00d061235ab",
+    "dagger/maintenance/dependencies.go": "a7409ee16cfcd0e32c9198a96cf0b6a2ceda68998d656acbfdfd3cd1d1688e7e",
+    "dagger/maintenance/dependencies_test.go": "ac341cc168f05476f31dab36fdb48d5b37088d36ddfb17cb8605c43bc0084269",
+    "dagger/maintenance/image.go": "0949136bf012e3c2c8e927633e925e4f58894cadb7f958fd9bbb33d421bceb54",
+    "dagger/maintenance/image_test.go": "1c02b920c6c5bcd3803e96c729dac64537d0ce18170cc98d96e60a051a34d657",
+    "dagger/maintenance/main.go": "65fb9e81371554a9dff95e8234e13e5cb48b6eb967715ecbb604af94ad379d31",
+    "dagger/maintenance/parse.go": "f00dde76ea734d5dc53cd373c03ff23ad1523b11cbce7bac942b5dd00f8cadea",
+    "dagger/maintenance/parse_test.go": "f523e839b34508bb1d8f918a0c8cada04b4d7473373dd0f47fcbe72650fd4d6e",
+    "dagger/maintenance/testingvalues.go": "dd61979933fc3af4b2285d838aec08e3d96f64ff46b566e4ae344c08d816a5e6",
+    "dagger/maintenance/updatelibs.go": "e33a49ba8a8f137ad07c6ede8139360fd1832ace45b92ed818733264460e7ef8",
+    "dagger/maintenance/updatelibs_test.go": "56aa65f3d16c414d32c00bf6145d4b6576b20e55107bb411c888e0d718000d10"
+  },
+  "image": "registry.approved-batch-c:5000/documentdb-testing:1.0-18-trixie@sha256:65f85c741efc21a7d058589740389c7894b5ba04a73fc8d947a45f3ba328cfa6",
+  "architecture_manifests": {
+    "amd64": "sha256:2d1e07804440d3dd7a4c550e902e9d3be1b140dc09a70531ba8e44ba7f84d327",
+    "arm64": "sha256:1f20b53a841763fa2066b39632596f78955e78842ca5456e20f5d279e65a066f"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}

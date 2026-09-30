@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: functional-sql
+data:
+  functional.sql: '\set ON_ERROR_STOP on
+
+    \getenv host PGHOST
+
+    \getenv port PGPORT
+
+    \getenv provider_database PGDATABASE
+
+    \getenv sslmode PGSSLMODE
+
+    -- PGDG ships this empty compatibility extension for upgrades from PostgreSQL
+    9.4.
+
+    CREATE EXTENSION pglogical_origin;
+
+    -- Public credentials exclusively for this disposable test cluster.
+
+    CREATE ROLE pglogical_fixture LOGIN SUPERUSER REPLICATION PASSWORD ''Pglogical-fixture-2026!'';
+
+    CREATE TABLE public.replication_fixture(id integer PRIMARY KEY, value text NOT
+    NULL);
+
+    INSERT INTO public.replication_fixture VALUES (1, ''initial-copy'');
+
+    SELECT pglogical.create_node(''provider'', format(''host=%s port=%s dbname=%s
+    user=pglogical_fixture password=Pglogical-fixture-2026! sslmode=%s'', :''host'',
+    :''port'', :''provider_database'', :''sslmode''));
+
+    SELECT pglogical.replication_set_add_table(''default'', ''public.replication_fixture'');
+
+    '
+  subscriber.sql: "\\set ON_ERROR_STOP on\n\\getenv host PGHOST\n\\getenv port PGPORT\n\
+    \\getenv provider_database PGDATABASE\n\\getenv sslmode PGSSLMODE\nCREATE TABLE\
+    \ public.replication_fixture(id integer PRIMARY KEY, value text NOT NULL);\nSELECT\
+    \ pglogical.create_node('subscriber', format('host=%s port=%s dbname=pglogical_subscriber\
+    \ user=pglogical_fixture password=Pglogical-fixture-2026! sslmode=%s', :'host',\
+    \ :'port', :'sslmode'));\nSELECT pglogical.create_subscription(\n subscription_name\
+    \ := 'fixture',\n provider_dsn := format('host=%s port=%s dbname=%s user=pglogical_fixture\
+    \ password=Pglogical-fixture-2026! sslmode=%s', :'host', :'port', :'provider_database',\
+    \ :'sslmode'),\n replication_sets := ARRAY['default'],\n synchronize_structure\
+    \ := false,\n synchronize_data := true);\n"
+  verify.sh: "#!/bin/sh\nset -eu\npsql -X -v ON_ERROR_STOP=1 -f /sql/functional.sql\n\
+    psql -X -v ON_ERROR_STOP=1 -d pglogical_subscriber -f /sql/subscriber.sql\nwait_for_rows()\
+    \ {\n  expected=$1\n  for attempt in $(seq 1 120); do\n    result=$(psql -X -v\
+    \ ON_ERROR_STOP=1 -At -d pglogical_subscriber -c \"SELECT coalesce(string_agg(id::text\
+    \ || ':' || value, ',' ORDER BY id), '') FROM public.replication_fixture\")\n\
+    \    if [ \"$result\" = \"$expected\" ]; then return 0; fi\n    sleep 1\n  done\n\
+    \  printf 'Subscriber did not reach expected state: %s; actual: %s\\n' \"$expected\"\
+    \ \"$result\" >&2\n  exit 1\n}\nwait_for_rows '1:initial-copy'\npsql -X -v ON_ERROR_STOP=1\
+    \ -c \"INSERT INTO public.replication_fixture VALUES (2,'inserted'); UPDATE public.replication_fixture\
+    \ SET value='updated' WHERE id=1;\"\nwait_for_rows '1:updated,2:inserted'\npsql\
+    \ -X -v ON_ERROR_STOP=1 -c 'DELETE FROM public.replication_fixture WHERE id=1;'\n\
+    wait_for_rows '2:inserted'\npsql -X -v ON_ERROR_STOP=1 -c 'TRUNCATE public.replication_fixture;'\n\
+    wait_for_rows ''\npsql -X -v ON_ERROR_STOP=1 -d pglogical_subscriber -c \"SELECT\
+    \ pglogical.drop_subscription('fixture'); SELECT pglogical.drop_node('subscriber');\"\
+    \npsql -X -v ON_ERROR_STOP=1 -c \"SELECT pglogical.drop_node('provider'); DROP\
+    \ ROLE pglogical_fixture;\"\nprintf 'Initial copy and INSERT/UPDATE/DELETE/TRUNCATE\
+    \ replication passed\\n'\n"

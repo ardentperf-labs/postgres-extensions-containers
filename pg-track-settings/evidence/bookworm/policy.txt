@@ -1,0 +1,6 @@
+postgresql-18-pg-track-settings:
+  Installed: (none)
+  Candidate: 2.1.2-5.pgdg12+1
+  Version table:
+     2.1.2-5.pgdg12+1 500
+        500 https://apt.postgresql.org/pub/repos/apt bookworm-pgdg/main amd64 Packages

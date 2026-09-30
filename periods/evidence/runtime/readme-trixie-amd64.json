@@ -1,0 +1,22 @@
+{
+  "target": "periods",
+  "readme_sha256": "bfcefe14576a8a967a101a47b5b00006412fe674690edeffdbf449776d36eff4",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.pg-extensions:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-periods"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-periods-app"
+    }
+  ],
+  "images": {
+    "periods-testing:1.2.3-18-trixie": "sha256:f6d5b062f1e898aaf865854453262443eac4f806c9c39805efaeb8734c24b047"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T21:58:44Z"
+}

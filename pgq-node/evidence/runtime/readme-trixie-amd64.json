@@ -1,0 +1,23 @@
+{
+  "target": "pgq-node",
+  "readme_sha256": "c51f57ea080bd6b0d2088520acaafdafe0cfa4df71a0e17acfc28b1cc0311244",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-c:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-pgq-node"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-pgq-node-app"
+    }
+  ],
+  "images": {
+    "pgq-testing:3.5.1-18-trixie": "sha256:2b22c1471e904937dc3881e118237e9006eba49ce024789ef8c1fcd91e515e86",
+    "pgq-node-testing:3.5-18-trixie": "sha256:8fda6119bf0e3443296b6f069a660a2676e321dfaf55d7255c08b702b9cd0dd5"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T22:32:52Z"
+}

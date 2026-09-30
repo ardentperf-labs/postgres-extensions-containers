@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: functional-check
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: psql
+        # renovate: datasource=docker depName=alpine/psql versioning=docker
+        image: alpine/psql:18.6@sha256:794901afa39b7f80d8245a6d8fa9aaf987380e4b7a6d0be22d404194352e8c17
+        env:
+        - name: PGSSLROOTCERT
+        - name: DB_URI
+          valueFrom:
+            secretKeyRef:
+              name: (join('-', [$values.name, 'superuser']))
+              key: uri
+        command: ['sh', '-c']
+        args:
+        - |
+          set -eu
+          DB_URI=$(printf '%s' "$DB_URI" | sed 's|/\*|/app|')
+          ready=false
+          attempt=0
+          while [ "$attempt" -lt 60 ]; do
+            if [ "$(psql "$DB_URI" -XqAt -v ON_ERROR_STOP=1 -c "SELECT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'ogr_fdw')" 2>/dev/null || true)" = t ]; then
+              ready=true
+              break
+            fi
+            attempt=$((attempt + 1))
+            sleep 2
+          done
+          test "$ready" = true
+          result=$(psql "$DB_URI" -XqAt -v ON_ERROR_STOP=1 <<'SQL'
+          GRANT USAGE ON FOREIGN DATA WRAPPER ogr_fdw TO app;
+          SET ROLE app;
+          CREATE SERVER ogr_fixture
+          FOREIGN DATA WRAPPER ogr_fdw
+          OPTIONS (datasource 'http://ogr-fixture/features.geojson', format 'GeoJSON');
+          CREATE FOREIGN TABLE ogr_features (
+          id integer,
+          label text
+          )
+          SERVER ogr_fixture
+          OPTIONS (layer 'features');
+          SELECT id = 42 AND label = 'survey marker'
+          FROM ogr_features WHERE id = 42;
+          SQL
+          )
+          test "$result" = t

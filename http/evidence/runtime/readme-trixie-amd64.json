@@ -1,0 +1,22 @@
+{
+  "target": "http",
+  "readme_sha256": "332c8edf36ee64d1b10770860a772a289b565426e5bd8a5123111a20ebd6f4eb",
+  "runtime_architecture": "amd64",
+  "distribution": "trixie",
+  "registry": "registry.approved-batch-b:5000",
+  "resources": [
+    {
+      "kind": "Cluster",
+      "name": "cluster-http"
+    },
+    {
+      "kind": "Database",
+      "name": "cluster-http-app"
+    }
+  ],
+  "images": {
+    "http-testing:1.7.2-18-trixie": "sha256:32e2ebc78e917192891943203b320d093d896ffee60b12194a32e5cfaa420fd0"
+  },
+  "result": "PASS",
+  "started_utc": "2026-09-29T23:18:41Z"
+}

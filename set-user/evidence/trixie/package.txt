@@ -1,0 +1,49 @@
+Package: postgresql-18-set-user
+Source: postgresql-set-user
+Version: 4.2.0-1.pgdg13+2
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 106
+Depends: postgresql-18, libc6 (>= 2.4)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/pgaudit/set_user
+Priority: optional
+Section: database
+Filename: pool/main/p/postgresql-set-user/postgresql-18-set-user_4.2.0-1.pgdg13+2_amd64.deb
+Size: 36004
+SHA512: 2f71c1e54c852a9ec456bf5e758eea9658efa9c870985a6968958dafd5aa2ec38d93925fdea53125bab1443e9d0ede21808dd0edb82323397c97ceb9a81bbedc
+SHA256: 71947080ff245c3045ba79ccfa3876184696c055c2ae4eb55a6ce6c58413199c
+SHA1: f293b4e44a436a7896120a39f1a3c178193ddbb2
+MD5sum: da9e64a0053173736062e19bb22c5941
+Description: PostgreSQL privilege escalation with enhanced logging and control
+ The set_user PostgreSQL extension allows switching users and optional
+ privilege escalation with enhanced logging and control. It provides an
+ additional layer of logging and control when unprivileged users must escalate
+ themselves to superuser or object owner roles in order to perform needed
+ maintenance tasks.
+Description-md5: 
+
+Package: postgresql-18-set-user
+Source: postgresql-set-user
+Version: 4.2.0-1.pgdg13+1
+Architecture: amd64
+Maintainer: Debian PostgreSQL Maintainers <team+postgresql@tracker.debian.org>
+Installed-Size: 106
+Depends: postgresql-18, libc6 (>= 2.4)
+Breaks: postgresql-18-jit-llvm (<< 19)
+Homepage: https://github.com/pgaudit/set_user
+Priority: optional
+Section: database
+Filename: pool/main/p/postgresql-set-user/postgresql-18-set-user_4.2.0-1.pgdg13+1_amd64.deb
+Size: 35968
+SHA256: eea056efa05f75cbfced17f782479379f173c2a844abdaaa9e41b52998eaa12b
+SHA1: eba3df0908e558d8d4ccfb9b5ccb9f542edf57cf
+MD5sum: 49571aede9ab415be2a8ac2efda3d080
+Description: PostgreSQL privilege escalation with enhanced logging and control
+ The set_user PostgreSQL extension allows switching users and optional
+ privilege escalation with enhanced logging and control. It provides an
+ additional layer of logging and control when unprivileged users must escalate
+ themselves to superuser or object owner roles in order to perform needed
+ maintenance tasks.
+Description-md5: 
+

@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: extension-functional-check
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: sql-check
+        # renovate: datasource=docker depName=alpine/psql versioning=docker
+        image: alpine/psql:18.6@sha256:794901afa39b7f80d8245a6d8fa9aaf987380e4b7a6d0be22d404194352e8c17
+        env:
+          - name: PGSSLROOTCERT
+          - name: DB_URI
+            valueFrom:
+              secretKeyRef:
+                name: (join('-', [$values.name, 'app']))
+                key: uri
+          - name: TEST_SQL
+            value: unused
+        command: ['sh', '-c']
+        args:
+          - |
+            set -eu
+            DB_URI=$(printf '%s' "$DB_URI" | sed "s|/\*|/|")
+            ready=false
+            for attempt in $(seq 1 60); do
+              if pg_isready -q -d "$DB_URI"; then ready=true; break; fi
+              sleep 1
+            done
+            test "$ready" = true
+            output=$(psql "$DB_URI" -X -v ON_ERROR_STOP=1 -Atq <<'SQL'
+            BEGIN;
+            CREATE TEMP TABLE rum_test (id integer, doc tsvector);
+            INSERT INTO rum_test VALUES
+              (1, to_tsvector('english', 'postgres database')),
+              (2, to_tsvector('english', 'other document'));
+            CREATE INDEX rum_test_idx ON rum_test USING rum (doc rum_tsvector_ops);
+            SET LOCAL enable_seqscan = off;
+            EXPLAIN (COSTS OFF)
+              SELECT id FROM rum_test WHERE doc @@ to_tsquery('english', 'postgres');
+            SELECT 'RESULT:' || COALESCE((
+              SELECT id FROM rum_test WHERE doc @@ to_tsquery('english', 'postgres')
+            )::text, 'NULL');
+            COMMIT;
+            SQL
+            )
+            printf '%s\n' "$output"
+            printf '%s\n' "$output" | grep -Fq 'Index Scan using rum_test_idx'
+            printf '%s\n' "$output" | grep -Fxq 'RESULT:1'
+            echo 'RUM indexed full-text search passed'

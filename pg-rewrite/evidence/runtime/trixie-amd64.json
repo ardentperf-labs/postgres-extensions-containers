@@ -1,0 +1,31 @@
+{
+  "command": "task e2e:test:full TARGET=pg-rewrite DISTRO=trixie DAGGER_ENGINE_NAME=cnpg-approved-batch-engine",
+  "exit_code": 0,
+  "started_utc": "2026-09-29T21:12:33Z",
+  "duration_seconds": 146,
+  "runtime_architecture": "amd64",
+  "build_architectures": [
+    "amd64",
+    "arm64"
+  ],
+  "source_sha256": {
+    "pg-rewrite/Dockerfile": "26e1037ce68339e7d14312fc43c751c899c511a101e930b83f366584d817cb39",
+    "pg-rewrite/README.md": "20534464b255cc2740b0940d80c1b078569d70c880b9ba4f847201c6b2eee7df",
+    "pg-rewrite/metadata.hcl": "4fd12dd81efd711a82fedf0fd4ea43aaef1e72129a8dbd882cabd9a2f7a62aef",
+    "pg-rewrite/test/chainsaw-test.yaml": "57e979433dd8b08170055e36b186b42c87d15e9b2f87bc16212ea02f1fc427a8",
+    "pg-rewrite/test/cluster-assert.yaml": "66293f47ca78e7dc39fb9b2211e11946a501a5523b994ef7a4c330fa8069be22",
+    "pg-rewrite/test/cluster.yaml": "95424e0f209dd9abca0d38a53805dffa74e5993794cdd9598c5dcc10e8bdacc6",
+    "pg-rewrite/test/database-assert.yaml": "9478dddd5b43bdf5c3786f043bb0d82cfae319313bc9c85441325c3b01ed9031",
+    "pg-rewrite/test/database.yaml": "3af91e2fe32d529569f803e6cb5d0a0e858974d75d1e1fb73356c64035765012",
+    "pg-rewrite/test/functional.sql": "349cb3a19b93aa2c427eee8b25174001ee6d7b33caa3e6f1f4e59c13f3f0f32b",
+    "pg-rewrite/test/job-assert.yaml": "b657517c8fc5570b9d89b507dc356915df8dbf33380c35b32d528346806de4c6",
+    "pg-rewrite/test/job.yaml": "fb775e738dbd7315eeb55a596e90e43a46e86eabc2ab7911c067d1bf29956b5b",
+    "pg-rewrite/test/sql.yaml": "6e5a6e885b53155c02ccd66921233d24795868b4871df3d36d46f33ef3c041db"
+  },
+  "image": "registry.pg-extensions:5000/pg-rewrite-testing:2.2-18-trixie@sha256:7c8ea16656ecf8b6a6c58333fa6aac0e005adae8608b694f63ae5f3a960235e7",
+  "architecture_manifests": {
+    "amd64": "sha256:7334f3100d45c7616c438ee3a06caf9138bc04b24760cfe32ddc3a107fe2b200",
+    "arm64": "sha256:ce5391da038f246ea511c87ffe0bfed204e7d16ddf0bc23ace149b0fc66347e2"
+  },
+  "base_git_revision": "f0bd1add50d214d1e8d617af1bee4f164f9988db"
+}
