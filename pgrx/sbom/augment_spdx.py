@@ -371,6 +371,40 @@ def license_expression(value):
     return value if expression() and position == len(tokens) else 'NOASSERTION'
 
 
+def cargo_about_license_expressions(packages, report):
+    """Return cargo-about's resolved SPDX expression keyed by full Cargo ID.
+
+    cargo-about's JSON `crates` records carry the resolved expression, including
+    clarifications. `licenses[].used_by` is only the selected notice text and
+    cannot represent the full expression for alternatives such as `MIT OR
+    Apache-2.0`.
+    """
+    crate_records = report.get('crates')
+    require(isinstance(crate_records, list), 'malformed cargo-about crate list')
+    resolved = {}
+    for record in crate_records:
+        require(isinstance(record, dict) and isinstance(record.get('package'), dict),
+                'malformed cargo-about crate record')
+        package = record['package']
+        cargo_id = package.get('id')
+        if cargo_id not in packages:
+            continue
+        require(cargo_id not in resolved, 'duplicate cargo-about Cargo identity: ' + str(cargo_id))
+        component = packages[cargo_id]
+        require(package.get('name') == component.get('name') and
+                package.get('version') == component.get('version'),
+                'cargo-about package identity mismatch: ' + cargo_id)
+        expression = record.get('license')
+        require(isinstance(expression, str) and expression not in ('', 'Unknown', 'Ignore', 'NOASSERTION'),
+                'cargo-about did not resolve a crate license: ' + cargo_id)
+        require(license_expression(expression) == expression,
+                'cargo-about returned an unsupported SPDX expression for ' + cargo_id + ': ' + expression)
+        resolved[cargo_id] = expression
+    missing = set(packages) - set(resolved)
+    require(not missing, 'selected Cargo graph lacks resolved cargo-about licenses: ' + ', '.join(sorted(missing)))
+    return resolved
+
+
 def validate_document(document):
     elements = [document, *document.get('packages', []), *document.get('files', [])]
     ids = indexed(elements, 'SPDXID')
@@ -422,6 +456,7 @@ def augment_spdx(document, context):
         require([fact for fact in cfg if fact.startswith(key + '=')] == [key + '=' + json.dumps(value)], 'target configuration mismatch: ' + key)
     packages, edges = selected_graph(reports['cargo-metadata'], build['root_id'],
                                     build['features'] + (['default'] if build['default_features'] else []), cfg, triple)
+    about_licenses = cargo_about_license_expressions(packages, reports['cargo-about'])
     root_component = packages[build['root_id']]
     cyclone = reports['cyclonedx']
     cyclone_root = cyclone.get('metadata', {}).get('component', {})
@@ -480,8 +515,10 @@ def augment_spdx(document, context):
                        'licenseConcluded': 'NOASSERTION'}
             result['packages'].append(package)
         package['name'] = component['name']; package['versionInfo'] = component['version']
-        if package.get('licenseDeclared', 'NOASSERTION') == 'NOASSERTION':
-            package['licenseDeclared'] = license_expression(component.get('license'))
+        # cargo-about resolves package-specific declarations and configured
+        # clarifications. This preserves full AND/OR expressions while filling
+        # missing or inaccurate Cargo metadata uniformly for every crate.
+        package['licenseDeclared'] = about_licenses[key]
         ref = {'referenceCategory': 'PACKAGE-MANAGER', 'referenceType': 'purl', 'referenceLocator': purl}
         if ref not in package.setdefault('externalRefs', []):
             package['externalRefs'].append(ref)

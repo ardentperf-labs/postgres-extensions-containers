@@ -11,7 +11,7 @@ import sys
 from build_config import RECIPES
 from system_libraries import stage_extra_libraries
 sys.path.insert(0,str(Path(__file__).resolve().parent/'sbom'))
-from augment_spdx import selected_graph
+from augment_spdx import cargo_about_license_expressions, selected_graph
 
 
 def normalize_about(data):
@@ -64,6 +64,10 @@ def main():
     licenses=build/'pgrx-licenses/rust';licenses.mkdir(parents=True,exist_ok=True)
     associations=[]
     about=json.loads((directory/'cargo-about.json').read_text())
+    # Fail the build if cargo-about did not resolve a reportable expression
+    # for every crate in the selected runtime graph. The hook repeats this
+    # check against the hash-verified report before writing SPDX.
+    cargo_about_license_expressions(packages,about)
     for entry in about['licenses']:
         selected=[use['crate']['id'] for use in entry['used_by'] if use['crate']['id'] in packages]
         if not selected:continue
