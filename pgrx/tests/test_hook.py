@@ -188,6 +188,16 @@ class HookTest(unittest.TestCase):
         self.assertEqual(packages['demo']['licenseDeclared'],'Apache-2.0 OR MIT')
         self.assertEqual(packages['runtime']['licenseDeclared'],'(BSD-3-Clause OR MIT) AND Zlib')
 
+    def test_cargo_about_deprecated_gnu_identifiers_are_canonicalized(self):
+        report=json.loads((self.evidence/'cargo-about.json').read_text())
+        report['crates'][0]['license']='AGPL-3.0'
+        report['crates'][1]['license']='(GPL-2.0+ OR LGPL-2.1) AND GFDL-1.2'
+        self.write_report('cargo-about',report)
+        packages={package['name']:package for package in self.run_hook()['packages']}
+        self.assertEqual(packages['demo']['licenseDeclared'],'AGPL-3.0-only')
+        self.assertEqual(packages['runtime']['licenseDeclared'],
+                         '(GPL-2.0-or-later OR LGPL-2.1-only) AND GFDL-1.2-only')
+
     def test_cargo_about_missing_or_unresolved_selected_license_fails(self):
         report=json.loads((self.evidence/'cargo-about.json').read_text())
         report['crates'].pop()
