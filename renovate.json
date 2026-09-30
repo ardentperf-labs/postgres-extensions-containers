@@ -155,13 +155,26 @@
       "versioningTemplate": "docker"
     },
     {
-      "description": "PGRX CNPG operator/catalog fixture commits; refresh URLs and checksums together",
+      "description": "PGRX CNPG operator release tags; keep each fixture on its minor line",
       "customType": "regex",
       "managerFilePatterns": [
         "/pgrx/dependencies/fixtures/lock\\.json$/"
       ],
       "matchStrings": [
-        "\"repository\":\\s*\"(?<packageName>[^\"\\s]+)\",\\s*\"ref\":\\s*\"(?<currentValue>[^\"\\s]+)\",\\s*\"revision\":\\s*\"(?<currentDigest>[a-f0-9]{40})\""
+        "\"repository\":\\s*\"(?<packageName>cloudnative-pg/cloudnative-pg)\",\\s*\"ref\":\\s*\"(?<currentValue>v[0-9]+\\.[0-9]+\\.[0-9]+)\",\\s*\"revision\":\\s*\"(?<currentDigest>[a-f0-9]{40})\""
+      ],
+      "depNameTemplate": "https://github.com/{{{packageName}}}",
+      "datasourceTemplate": "github-tags",
+      "versioningTemplate": "semver"
+    },
+    {
+      "description": "PGRX CNPG catalog fixture commits; refresh URLs and checksums together",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/pgrx/dependencies/fixtures/lock\\.json$/"
+      ],
+      "matchStrings": [
+        "\"repository\":\\s*\"(?<packageName>cnpg-extensions/artifacts)\",\\s*\"ref\":\\s*\"(?<currentValue>main)\",\\s*\"revision\":\\s*\"(?<currentDigest>[a-f0-9]{40})\""
       ],
       "depNameTemplate": "https://github.com/{{{packageName}}}",
       "datasourceTemplate": "git-refs",
@@ -179,6 +192,34 @@
     }
   ],
   "packageRules": [
+    {
+      "description": "Keep CNPG 1.29 operator fixtures on the 1.29 release line",
+      "matchDatasources": [
+        "github-tags"
+      ],
+      "matchPackageNames": [
+        "cloudnative-pg/cloudnative-pg"
+      ],
+      "matchFileNames": [
+        "pgrx/dependencies/fixtures/lock.json"
+      ],
+      "matchCurrentValue": "/^v1\\.29\\.\\d+$/",
+      "allowedVersions": "/^v1\\.29\\.\\d+$/"
+    },
+    {
+      "description": "Keep CNPG 1.30 operator fixtures on the 1.30 release line",
+      "matchDatasources": [
+        "github-tags"
+      ],
+      "matchPackageNames": [
+        "cloudnative-pg/cloudnative-pg"
+      ],
+      "matchFileNames": [
+        "pgrx/dependencies/fixtures/lock.json"
+      ],
+      "matchCurrentValue": "/^v1\\.30\\.\\d+$/",
+      "allowedVersions": "/^v1\\.30\\.\\d+$/"
+    },
     {
       "description": "require manual review for mysql-fdw updates",
       "matchPackageNames": [
@@ -227,7 +268,8 @@
         "!supabase/pg_jsonschema",
         "!CrunchyData/pg_parquet",
         "!paradedb/paradedb",
-        "!neondatabase/pg_session_jwt"
+        "!neondatabase/pg_session_jwt",
+        "!cloudnative-pg/cloudnative-pg"
       ]
     },
     {
@@ -272,20 +314,7 @@
       ],
       "groupName": "cnpg-sbom-generator image digests",
       "automerge": false
-    },
-    {
-      "matchDatasources": [
-        "github-tags"
-      ],
-      "matchUpdateTypes": [
-        "digest",
-        "pinDigest",
-        "major",
-        "minor",
-        "patch"
-      ],
-      "groupName": "all github action",
-      "pinDigests": true
+
     }
   ]
 }

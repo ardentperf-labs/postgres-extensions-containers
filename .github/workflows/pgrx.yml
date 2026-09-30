@@ -27,7 +27,7 @@ name: Build, test and publish PGRX extensions
         required: false
         default: ''
       cnpg_version:
-        description: CNPG fixture selector; local default is main
+        description: CNPG fixture selector; local default is the locked stable release
         type: string
         required: false
         default: ''

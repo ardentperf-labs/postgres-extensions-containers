@@ -75,7 +75,7 @@ def main():
     matrix={'include':[{k:r[k] for k in ('id','target','platform','architecture','runner')} for r in result['rows']]}
     fixtures=json.loads((ROOT/'pgrx/dependencies/fixtures/lock.json').read_text())
     selector=result['inputs'].get('cnpg_version')
-    selectors=[selector] if selector else ['main'] if boolean(result['inputs'].get('local',False)) else fixtures['supported_releases']
+    selectors=[selector] if selector else [fixtures['selector']] if boolean(result['inputs'].get('local',False)) else fixtures['supported_releases']
     if not set(selectors)<=set(fixtures['operators']):raise ValueError('unsupported CNPG selector; refresh fixture locks')
     smoke_matrix={'include':[{'target':target,'cnpg':selector} for target in result['targets'] for selector in selectors]}
     if 'GITHUB_OUTPUT' in os.environ:
