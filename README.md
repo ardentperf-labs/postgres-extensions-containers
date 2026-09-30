@@ -215,6 +215,7 @@ skopeo inspect docker://<image> | jq '.Labels'
 
 Published images carry platform-specific BuildKit SPDX and provenance
 attestations. See the [SBOM and authenticity guide](./sbom-generator/README.md)
+and the [common verification command](./pgrx/VERIFYING_IMAGES.md)
 for digest-pinned Cosign verification, Buildx extraction, platform-specific
 Trivy scanning, and the distinction between payload inventory and direct image
 scans. The guide also describes [generator publication and test builds](./sbom-generator/README.md#generator-release-and-test-builds),
@@ -244,3 +245,5 @@ kubectl apply -f \
 
 Clusters using this catalog should reference it instead of the corresponding
 upstream base catalog; it already includes the upstream extension definitions.
+
+PGRX build contributors: see the [build and local validation guide](./pgrx/README.md).

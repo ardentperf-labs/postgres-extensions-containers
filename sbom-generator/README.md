@@ -291,55 +291,20 @@ tag is not a reproducible security reference.
 
 ## Verify the image
 
-The retained release workflow is `.github/workflows/bake_targets.yml`. A
-production image built from `main` is verified with the workflow identity and
-GitHub's OIDC issuer:
+Use the [common verification and scanning procedure](../pgrx/VERIFYING_IMAGES.md)
+for every extension image. Its anchored publisher policy allows exactly the
+Debian and PGRX release workflows from the chosen repository and branch. It
+verifies the signed immutable index, checks the complete platform attestation
+graph and subject bindings, and only then writes SPDX and provenance for Trivy.
 
-```bash
-IMAGE='ghcr.io/cloudnative-pg/h3:4.2.3-18-trixie@sha256:INDEX_DIGEST'
+BuildKit embeds its attestations in the signed index. Use `cosign verify` for
+that index; `cosign verify-attestation` is not the retrieval path for these
+embedded statements. Buildx extraction alone does not authenticate a publisher.
+The common command handles both single-platform and multi-platform Buildx output.
 
-cosign verify "$IMAGE" \
-  --certificate-identity-regexp='^https://github.com/cloudnative-pg/postgres-extensions-containers/.github/workflows/bake_targets\.yml@refs/heads/main$' \
-  --certificate-oidc-issuer='https://token.actions.githubusercontent.com'
-```
-
-Substitute the actual GitHub owner in both the image and identity. A branch or
-pull-request build has a different workflow identity. Local validation uses a
-disposable Cosign key and `COSIGN_TLOG_UPLOAD=false`; it validates signature
-storage and digest binding, not the future hosted OIDC identity.
-
-## Retrieve the platform SBOM
-
-Use Buildx's standard platform selector and SPDX template. The extension image
-reference is the only difference from the base PostgreSQL extraction form:
-
-```bash
-docker buildx imagetools inspect "$IMAGE" \
-  --format '{{ json (index .SBOM "linux/amd64").SPDX }}' \
-  > extension-amd64.spdx.json
-
-trivy sbom --scanners vuln,license extension-amd64.spdx.json
-```
-
-For the other platform, repeat the same command with `linux/arm64` and a
-separate output file:
-
-```bash
-docker buildx imagetools inspect "$IMAGE" \
-  --format '{{ json (index .SBOM "linux/arm64").SPDX }}' \
-  > extension-arm64.spdx.json
-
-trivy sbom --scanners vuln,license extension-arm64.spdx.json
-```
-
-Each report covers one platform. Native-only builds should be extracted and
-scanned with `linux/amd64` or `linux/arm64` matching the built image; validate
-the second architecture only after the final multi-platform phase.
-
-The composed document describes the shipped extension payload, including
-copied system libraries and `/licenses` files. It does not describe the whole
-PostgreSQL container or runtime dependencies supplied by the base image. Scan
-the base PostgreSQL image and separately mounted extension images separately.
+Each SPDX document describes the shipped extension payload, including copied
+system libraries and `/licenses` files. Scan the PostgreSQL base image and
+separately mounted extension images separately.
 
 ## Direct image scans
 

@@ -3,6 +3,8 @@ name: Build, test and publish extensions
 on:
   push:
     paths-ignore:
+      - 'pgrx/**'
+      - 'docker-bake-pgrx.hcl'
       - '.github/workflows/pgrx.yml'
       - '.github/workflows/pgrx_targets.yml'
       - '.github/workflows/sbom-generator.yml'
