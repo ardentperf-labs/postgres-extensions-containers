@@ -397,6 +397,16 @@ def cargo_about_license_expressions(packages, report):
         expression = record.get('license')
         require(isinstance(expression, str) and expression not in ('', 'Unknown', 'Ignore', 'NOASSERTION'),
                 'cargo-about did not resolve a crate license: ' + cargo_id)
+        # SPDX deprecated the GNU version-only identifiers in favor of explicit
+        # -only / -or-later forms. Keep the expression's operators and grouping.
+        def canonical_identifier(match):
+            token = match.group()
+            if re.fullmatch(r'(?:A?GPL|LGPL|GFDL)-[0-9]+\.[0-9]+\+?', token):
+                current = token.rstrip('+') + ('-or-later' if token.endswith('+') else '-only')
+                if current in LICENSE_IDS:
+                    return current
+            return token
+        expression = re.sub(r'[A-Za-z0-9.+-]+', canonical_identifier, expression)
         require(license_expression(expression) == expression,
                 'cargo-about returned an unsupported SPDX expression for ' + cargo_id + ': ' + expression)
         resolved[cargo_id] = expression
