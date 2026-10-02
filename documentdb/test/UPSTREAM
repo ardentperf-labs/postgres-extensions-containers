@@ -1,0 +1,34 @@
+Extension/test target: documentdb
+Upstream repository: https://github.com/documentdb/documentdb (PGDG source for upstream 1.0~RC1)
+PGDG source package: documentdb 1.0~RC1-1.pgdg13+1
+Source descriptor: documentdb_1.0~RC1-1.pgdg13+1.dsc
+Source descriptor SHA256: a5d2d0e1205c755887d1c2daa15eccf405a56972eae08c808f73196782968317
+Original source archive(s):
+  documentdb_1.0~RC1.orig.tar.gz SHA256 00de4b3552580564ab549c243e82ca1da4f8324df357caa4853c6c17bb7e347f
+Copied upstream suite paths (relative to exact extracted source package):
+  pg_documentdb/src/test/regress/sql/
+  pg_documentdb/src/test/regress/expected/
+  pg_documentdb/src/test/regress/specs/
+  pg_documentdb/src/test/regress/basic_schedule/
+  pg_documentdb/src/test/regress/isolation_schedule/
+  pg_documentdb/src/test/regress/test_mutate_18/
+  pg_documentdb/src/test/regress/mutate_schedule.sh/
+  pg_documentdb/src/test/regress/Makefile/
+  pg_documentdb/src/test/regress/regression_opts.conf/
+  pg_documentdb/src/test/regress/isolation_postgresql.conf/
+  pg_documentdb/src/test/regress/postgresql.conf/
+  pg_documentdb/src/test/regress/postgresql_base.conf/
+  pg_documentdb/src/test/Makefile/
+  pg_documentdb/Makefile/
+  debian/tests/control/
+  debian/tests/installcheck/
+Copied license/copyright notices:
+  upstream/LICENSE
+  upstream/NOTICE
+  upstream/debian-copyright
+Native suite selection: Upstream PG18 basic schedule and isolation schedule are retained and passed to native PG_REGRESS/PG_ISOLATION_REGRESS.
+Expected output/test inputs are copied byte-for-byte; no custom SQL assertions or edited expected files are included.
+Requirements / limitations:
+  Full PG18 native basic regression schedule plus upstream isolation schedule. Remote server must have documentdb_core, documentdb, pg_cron, vector, postgis, and tsm_system_rows available, loadable, and configured; native regression config expects shared_preload_libraries=pg_documentdb_core,pg_documentdb,pg_cron and other PGDG test GUCs. It uses existing server mode because upstream package installcheck is intended for an installed cluster.
+PGDG autopkgtest itself only creates the extension through pg_buildext; source regressions are broader and require the exact upstream PG18 schedule plus server preload/configuration.
+The upstream Makefile's additional static check-test-output validation target is not run; it is not part of PGDG installcheck.

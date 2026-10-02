@@ -1,0 +1,5 @@
+#!/bin/sh
+
+export PG_VIRTUALENV_ARGS=-oshared_preload_libraries=pg_documentdb_core,pg_documentdb,pg_cron
+
+echo "create extension documentdb cascade" | pg_buildext psql
