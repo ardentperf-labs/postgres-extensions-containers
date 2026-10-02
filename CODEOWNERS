@@ -129,6 +129,7 @@
 /unit/ @ardentperf
 /http/ @ardentperf
 /icu-ext/ @ardentperf
+/mongo-fdw/ @ardentperf
 /ogr-fdw/ @ardentperf
 /pg-gvm/ @ardentperf
 /pg-pwhash/ @ardentperf
@@ -154,3 +155,4 @@
 /pgq-node/ @ardentperf
 /bucardo/ @ardentperf
 /londiste/ @ardentperf
+/documentdb/ @ardentperf

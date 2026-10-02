@@ -177,6 +177,8 @@ repository:
         comment: GitHub packages for the http server image
       - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/icu-ext
         comment: GitHub packages for the icu_ext server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/mongo-fdw
+        comment: GitHub packages for the mongo_fdw server image
       - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/ogr-fdw
         comment: GitHub packages for the ogr_fdw server image
       - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pg-gvm
@@ -227,6 +229,8 @@ repository:
         comment: GitHub packages for the Bucardo server SQL server image
       - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/londiste
         comment: GitHub packages for the londiste SQL components server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/documentdb
+        comment: GitHub packages for the documentdb server image
 
   security:
     tools:
