@@ -200,14 +200,19 @@ jobs:
             exit 1
           fi
           cosign download signature "$reference" > "$output/cosign-downloaded-signature.json"
+          jq -r '.verificationMaterial.certificate.rawBytes' "$output/cosign-downloaded-signature.json" | base64 --decode > "$output/signing-certificate.der"
+          openssl x509 -inform DER -in "$output/signing-certificate.der" -out "$output/signing-certificate.pem"
+          openssl x509 -in "$output/signing-certificate.pem" -noout -subject -issuer -ext subjectAltName > "$output/certificate-subject.txt"
+          certificate_subject_uri=$(openssl x509 -in "$output/signing-certificate.pem" -noout -ext subjectAltName | sed -n 's/^[[:space:]]*URI://p' | head -n1 | sed 's/[[:space:]]*$//')
+          test "$certificate_subject_uri" = "$EXPECTED_IDENTITY"
           jq -n \
             --arg extension "$EXTENSION" \
             --arg tag "$TAG" \
             --arg image "$image" \
             --arg digest "$digest" \
             --arg issuer "$ISSUER" \
-            --arg subject "$EXPECTED_IDENTITY" \
-            '{extension:$extension,tag:$tag,image:$image,index_digest:$digest,issuer_policy:$issuer,certificate_subject_policy:$subject,identity_policy_verified:true,signature_verified:true}' \
+            --arg subject "$certificate_subject_uri" \
+            '{extension:$extension,tag:$tag,image:$image,index_digest:$digest,issuer_policy:$issuer,certificate_subject_uri:$subject,identity_policy_verified:true,signature_verified:true}' \
             > "$output/summary.json"
 
       - name: Upload signature evidence
