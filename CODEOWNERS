@@ -16,6 +16,9 @@
 # pg-uuidv7
 /pg-uuidv7/ @ardentperf
 
+# pgagent
+/pgagent/ @ardentperf
+
 # pgmemcache
 /pgmemcache/ @ardentperf
 
@@ -33,6 +36,9 @@
 
 # mysql-fdw
 /mysql-fdw/ @ardentperf
+
+# snakeoil
+/snakeoil/ @ardentperf
 
 # show-plans
 /show-plans/ @ardentperf
@@ -63,6 +69,9 @@
 
 # pg-stat-plans
 /pg-stat-plans/ @ardentperf
+
+# plr
+/plr/ @ardentperf
 
 # plpgsql-check
 /plpgsql-check/ @ardentperf
@@ -124,6 +133,7 @@
 /pg-gvm/ @ardentperf
 /pg-pwhash/ @ardentperf
 /pgpcre/ @ardentperf
+/pljava/ @ardentperf
 /pljs/ @ardentperf
 /pllua/ @ardentperf
 /pointcloud/ @ardentperf
@@ -137,4 +147,9 @@
 /periods/ @ardentperf
 /prioritize/ @ardentperf
 /pg-rage-terminator/ @ardentperf
+/plperl/ @ardentperf
+/plpython3/ @ardentperf
 /pltcl/ @ardentperf
+/pgfaceting/ @ardentperf
+/pgq-node/ @ardentperf
+/bucardo/ @ardentperf

@@ -76,6 +76,7 @@ project due to licensing constraints, but are otherwise fully compatible with
 | **[pg-track-settings](pg-track-settings)** | Track PostgreSQL configuration settings | [powa.readthedocs.io](https://powa.readthedocs.io/) | @ardentperf | PostgreSQL |
 | **[pg-uuidv7](pg-uuidv7)** | UUID version 7 (time-sortable) generator | [github.com/fboulnois/pg_uuidv7](https://github.com/fboulnois/pg_uuidv7) | @ardentperf | MPL-2.0 |
 | **[pg-wait-sampling](pg-wait-sampling)** | Sample wait events and expose historical and aggregated profiles | [github.com/postgrespro/pg_wait_sampling](https://github.com/postgrespro/pg_wait_sampling) | @ardentperf | PostgreSQL |
+| **[pgagent](pgagent)** | PostgreSQL job scheduler (pgAdmin component) | [pgadmin.org](https://www.pgadmin.org/docs/pgadmin4/latest/pgagent.html) | @ardentperf | Boost libraries (BSL-1.0) |
 | **[pgextwlist](pgextwlist)** | PostgreSQL extension whitelisting | [github.com/dimitri/pgextwlist](https://github.com/dimitri/pgextwlist) | @ardentperf | PostgreSQL |
 | **[pgfincore](pgfincore)** | PostgreSQL functions to manage relation blocks in memory | [villemain.org/projects/pgfincore](http://villemain.org/projects/pgfincore) | @ardentperf | BSD-3-Clause |
 | **[pglogical](pglogical)** | Logical replication over PostgreSQL connections | [github.com/2ndQuadrant/pglogical](https://github.com/2ndQuadrant/pglogical) | @ardentperf | PostgreSQL |
@@ -94,6 +95,7 @@ project due to licensing constraints, but are otherwise fully compatible with
 | **[plprofiler](plprofiler)** | PL/pgSQL execution profiler | [github.com/bigsql/plprofiler](https://github.com/bigsql/plprofiler) | @ardentperf | Artistic-2.0 |
 | **[plpgsql-check](plpgsql-check)** | PL/pgSQL linter and static checker | [github.com/okbob/plpgsql_check](https://github.com/okbob/plpgsql_check) | @ardentperf | MIT |
 | **[plproxy](plproxy)** | Database partitioning system for PostgreSQL | [plproxy.github.io](https://plproxy.github.io/) | @ardentperf | ISC |
+| **[plr](plr)** | R procedural language for PostgreSQL | [joeconway.com/plr](https://www.joeconway.com/plr/) | @ardentperf | GPL-2+ |
 | **[plsh](plsh)** | PL/sh procedural language for PostgreSQL | [github.com/petere/plsh](https://github.com/petere/plsh) | @ardentperf | PostgreSQL |
 | **[pltcl](pltcl)** | Tcl procedural language for PostgreSQL | [www.postgresql.org/docs/18/pltcl.html](https://www.postgresql.org/docs/18/pltcl.html) | @ardentperf | PostgreSQL, TCL |
 | **[pointcloud](pointcloud)** | Types and functions for storing and querying LiDAR point-cloud data | [github.com/pgpointcloud/pointcloud](https://github.com/pgpointcloud/pointcloud) | @ardentperf | BSD-3-Clause |
@@ -108,6 +110,7 @@ project due to licensing constraints, but are otherwise fully compatible with
 | **[rum](rum)** | RUM index access method for full-text search and ordering | [github.com/postgrespro/rum](https://github.com/postgrespro/rum) | @ardentperf | PostgreSQL |
 | **[semver](semver)** | Semantic-version data type with comparison and ordering operators | [pgxn.org/dist/semver/doc/semver.html](https://pgxn.org/dist/semver/doc/semver.html) | @ardentperf | PostgreSQL |
 | **[set-user](set-user)** | PostgreSQL privilege escalation with enhanced logging and control | [github.com/pgaudit/set_user](https://github.com/pgaudit/set_user) | @ardentperf | PostgreSQL |
+| **[snakeoil](snakeoil)** | ClamAV antivirus scanning for PostgreSQL | [github.com/credativ/pg_snakeoil](https://github.com/credativ/pg_snakeoil) | @ardentperf | libclamav12 (LGPL-2+) |
 | **[show-plans](show-plans)** | Query plans for currently running statements | [github.com/cybertec-postgresql/pg_show_plans](https://github.com/cybertec-postgresql/pg_show_plans) | @ardentperf | Cybertec PostgreSQL-style license |
 | **[table-log](table-log)** | Log table changes and restore tables to a point in time | [github.com/df7cb/table_log](https://github.com/df7cb/table_log) | @ardentperf | LicenseRef-table-log |
 | **[tdigest](tdigest)** | t-digest aggregates for approximate quantile and percentile calculations | [github.com/tvondra/tdigest](https://github.com/tvondra/tdigest) | @ardentperf | PostgreSQL |
