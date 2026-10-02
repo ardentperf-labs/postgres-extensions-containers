@@ -101,19 +101,26 @@ jobs:
             container=$(docker create "$image@$digest" /__verification_only_never_started__)
             docker export --output "$output/$distro.rootfs.tar" "$container"
             docker rm "$container" >/dev/null
-            python3 .github/workflows/debian_notice_verify.py \
+            if python3 .github/workflows/debian_notice_verify.py \
               --sbom "$sbom" \
               --rootfs-tar "$output/$distro.rootfs.tar" \
               --extension "$EXTENSION" \
               --distro "$distro" \
               --arch "$ARCH" \
               --image "$image@$digest" \
-              --output "$output/$distro-verification.json"
+              --output "$output/$distro-verification.json"; then
+              :
+            else
+              status=$?
+              rm -f "$output/$distro.rootfs.tar"
+              exit "$status"
+            fi
             rm "$output/$distro.rootfs.tar"
           done < <(jq -r 'keys[]' "$output/build-metadata.json")
           jq -s '{extension:env.EXTENSION,arch:env.ARCH,generator:env.GENERATOR,source_commit:env.GITHUB_SHA,cases:.}' "$output"/*-verification.json > "$output/summary.json"
 
       - name: Upload SPDX and filesystem evidence
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: debian-license-${{ matrix.extension }}-${{ matrix.arch }}
