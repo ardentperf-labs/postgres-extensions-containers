@@ -161,6 +161,9 @@ builds need neither preparation step.
 
 ## Generator release and test builds
 
+The [release design](RELEASE-DESIGN.md) describes the architecture and rollout.
+Release identity uses commits and image digests, without major/minor versions.
+
 The repository publishes one image per owner at
 `ghcr.io/<lowercase-owner>/cnpg-sbom-generator`. Its full source commit and
 index digest identify each checked build. `sha-<full-commit>` is an immutable
@@ -240,6 +243,21 @@ PR to `cloudnative-pg/postgres-extensions-containers`. If accepted, upstream
 publishes its own image and uses it for its Debian builds. Each repository owns
 its GHCR package, digest updates, and consumer builds; upstream acceptance does
 not switch the downstream pins. PGRX integration remains downstream.
+
+Rerunning publication reuses the existing commit image and checks it again.
+To rebuild with different dependencies, make a new commit. To roll back a
+consumer, revert its digest pin to the previous checked image and hold the
+Renovate update until a fix is published. Retain commit-tagged images so those
+older references remain available.
+
+Renovate also tracks `spdx-tools` in `requirements-validation.txt`, grouped
+with ScanCode for compatibility review. A newer validator can be merged only
+when it satisfies ScanCode's dependency constraints and passes the checks.
+
+On first publication, configure the GHCR package's visibility and repository
+access. GitHub initially creates container packages as private; make the package
+public for anonymous pulls by downstream builds and Renovate, or explicitly
+configure their read access. See [GitHub's package visibility instructions](https://docs.github.com/en/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility).
 
 ## Attestation layout
 
