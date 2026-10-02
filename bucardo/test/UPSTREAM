@@ -1,0 +1,10 @@
+Extension/test target: bucardo
+Upstream repository: https://github.com/bucardo/bucardo
+PGDG source package: bucardo 5.6.0-6.pgdg13+1
+Source descriptor: bucardo_5.6.0-6.pgdg13+1.dsc
+Source descriptor SHA256: 7cf574443e231545dba414b5bb4c8237311dd8442fb2963503f18f22b3cbcd97
+Original source archive: bucardo_5.6.0.orig.tar.gz SHA256 80ec23d2f362f41bb2cf6ab18bb3d21882a7457eb1784130135152f1786fdf01
+Copied upstream suite paths: upstream/t/, upstream/scripts/, upstream/Bucardo.pm, upstream/bucardo, upstream/bucardo.schema, upstream/Makefile.PL, upstream/debian/tests/.
+Copied license: upstream/LICENSE.
+Native suite limitation: source t/ contains Perl tests that create multiple PostgreSQL test clusters and run Bucardo replication; Debian debian/tests/install requires root to stop system PostgreSQL, create a local trust-auth cluster, and start the daemon. That is not compatible with the remote CNPG scratch server contract.
+Expected behavior: run.sh reports exit 77 with that concrete blocker; no custom functional assertions or replacement smoke tests are used.

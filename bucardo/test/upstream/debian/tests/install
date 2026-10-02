@@ -1,0 +1,22 @@
+#!/bin/sh
+
+set -eux
+
+service postgresql stop
+
+# create /var/run/bucardo if missing
+if [ ! -d /var/run/bucardo ]; then
+  mkdir /var/run/bucardo
+  chown bucardo:bucardo /var/run/bucardo
+fi
+
+# start a temporary PG server
+PGVERSION=$(ls -v /usr/lib/postgresql | tail -n1)
+trap "su bucardo -c 'cd /var/lib/bucardo && bucardo stop' || :; pg_dropcluster $PGVERSION regress --stop" EXIT
+pg_createcluster $PGVERSION regress -p 5432 --start -- --auth trust
+
+# start bucardo
+su postgres -c 'psql -f bucardo.schema'
+su bucardo -c 'cd /var/lib/bucardo && bucardo start'
+sleep 1
+ps auxf | grep '[B]ucardo Master Control Program'
