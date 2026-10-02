@@ -1,6 +1,6 @@
 # SBOM generator: simple publication and digest updates
 
-Status: **proposal for review**, 2026-10-02. No workflow changes are implemented by this document.
+Status: **accepted design; implementation under validation**, 2026-10-02. The workflow and README implement this design; upstream adoption remains a proposal.
 
 ## 1. Recommendation
 
