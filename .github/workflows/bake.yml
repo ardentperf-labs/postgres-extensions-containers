@@ -186,18 +186,25 @@ jobs:
           output="$RUNNER_TEMP/signature-evidence/$EXTENSION/$TAG"
           mkdir -p "$output"
           image="ghcr.io/ardentperf-labs/$EXTENSION-testing:$TAG"
-          digest=$(docker buildx imagetools inspect "$image" | sed -n 's/^Digest: //p' | head -n1)
+          printf 'image=%s\ntag=%s\nexpected_issuer=%s\nexpected_subject=%s\n' "$image" "$TAG" "$ISSUER" "$EXPECTED_IDENTITY" > "$output/inputs.txt"
+          docker buildx imagetools inspect "$image" > "$output/manifest-inspect.txt"
+          digest=$(awk '$1 == "Digest:" {print $2; exit}' "$output/manifest-inspect.txt" | tr -d '\r')
           [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]
           reference="$image@$digest"
           cosign verify \
             --output=json \
             --certificate-oidc-issuer "$ISSUER" \
-            --certificate-identity "$EXPECTED_IDENTITY" \
-            "$reference" > "$output/cosign-verification.json"
-          subject=$(jq -r '.[0].optional.Subject' "$output/cosign-verification.json")
-          issuer=$(jq -r '.[0].optional.Issuer' "$output/cosign-verification.json")
+            "$reference" > "$output/issuer-verification.json"
+          subject=$(jq -r '.[0].optional.Subject' "$output/issuer-verification.json")
+          issuer=$(jq -r '.[0].optional.Issuer' "$output/issuer-verification.json")
+          jq '[.[] | {issuer:.optional.Issuer,subject:.optional.Subject}]' "$output/issuer-verification.json" > "$output/certificate-identities.json"
           test "$subject" = "$EXPECTED_IDENTITY"
           test "$issuer" = "$ISSUER"
+          cosign verify \
+            --output=json \
+            --certificate-oidc-issuer "$ISSUER" \
+            --certificate-identity "$EXPECTED_IDENTITY" \
+            "$reference" > "$output/identity-policy-verification.json"
           jq -n \
             --arg extension "$EXTENSION" \
             --arg tag "$TAG" \
