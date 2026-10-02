@@ -231,6 +231,7 @@
         "postgresql-*-jsquery",
         "postgresql-*-mysql-fdw",
         "postgresql-*-pg-csv",
+        "postgresql-*-pgfaceting",
         "postgresql-*-pglogical",
         "postgresql-*-pgmp",
         "postgresql-*-pgpcre",
@@ -245,6 +246,8 @@
         "postgresql-*-stat-log",
         "postgresql-*-tablelog",
         "postgresql-*-toastinfo",
+        "postgresql-plperl-*",
+        "postgresql-plpython3-*",
         "postgresql-pltcl-*"
       ],
       "automerge": false,
