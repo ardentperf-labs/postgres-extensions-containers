@@ -80,7 +80,7 @@ spec:
 
 The image metadata preloads `pg_documentdb`, `pg_documentdb_core`, `pg_documentdb_extended_rum` and `pg_cron`, sets `cron.database_name` to `app`, and sets `documentdb.localhost_connection_string` to CNPG's `/controller/run` Unix socket. DocumentDB uses libpq for some operations that must run outside the calling transaction; the socket routes those self-connections through CNPG's existing local peer authentication instead of TCP password authentication. It does not add or widen any `pg_hba.conf` rule. If the PostgreSQL image/operator uses a different Unix socket directory, set the GUC to `host=<socket-directory>` for that deployment. The image supports the `documentdb`, `documentdb_core` and optional `documentdb_extended_rum` SQL extensions. The PGDG `documentdb_distributed` control, SQL files, library and bitcode are omitted because that component requires Citus, for which this catalog has no compatible dependency image. Unrelated dependency bitcode is excluded as well. The separate Mongo wire-protocol gateway is also outside this image.
 
-The optional extended-RUM component is installed after the main DocumentDB extension and provides a DocumentDB-specific RUM access method for BSON indexes.
+The optional extended-RUM component is installed after the main DocumentDB extension and provides a DocumentDB-specific RUM access method for BSON indexes. The current upstream runner loads `documentdb_core` and `documentdb`, but not `documentdb_extended_rum`; source provenance and test selection are recorded in [test/UPSTREAM](test/UPSTREAM) and [test/run.sh](test/run.sh).
 
 For this CNPG setup, use an administrator-authenticated SQL session and switch to the application role for document operations. Grant the DocumentDB administrator role to `app` from that administrator session, then set the effective role to `app`:
 
@@ -118,4 +118,4 @@ The SQL API returns the inserted document and then the updated rank. Use Documen
 
 The PGDG package is 1.0~RC1-1.pgdg13+1; `documentdb`, `documentdb_core` and `documentdb_extended_rum` each have SQL catalog version 1.0-0. The included main API uses Expat/MIT and Apache-2.0 code, and extended RUM uses the PostgreSQL license. The Citus-dependent distributed component and its bitcode are omitted; package source archives are not included. The package copyright notice and staged system-library notices are included under `/licenses`; the RUM dependency image carries its own licenses.
 
-Renovate tracks the PGDG package. Rebuild the image after package or base-image security updates; rerun the build when linked libraries change.
+Renovate tracks the PGDG package. Rebuild the image after package or base-image security updates; rerun the build and extension tests when linked libraries change.
