@@ -1,0 +1,8 @@
+\set ECHO none
+create extension londiste;
+select array_length(extconfig, 1) as dumpable from pg_catalog.pg_extension where extname = 'londiste';
+ dumpable 
+----------
+        4
+(1 row)
+
