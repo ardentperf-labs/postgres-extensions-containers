@@ -1,0 +1,11 @@
+repoURL: https://github.com/tada/pljava
+tag: pljava-1_6_10
+commit: not-recorded-in-release-tarball
+sourcePackage: postgresql-pljava
+sourceVersion: 1.6.10-1.pgdg13+1
+sourceDscSHA256: 2207b4db99999c42f59d61369f7bba5c2a6ae06e514ac8f788598ae358e19e51
+sourceOrigSHA256: 443ac3add92351cb2b46ed17dd80b0f2cad5bc6c31eef8e7be7ef52937365085
+copiedpaths: root and module pom.xml files; pljava-api, pljava, and pljava-pgxs src/test trees; COPYRIGHT
+runnerStatus: 0 (Dagger installs pljava and deploys the PGDG-packaged pljava-examples-1.6.10.jar from the mounted extension image)
+testMethod: sqlj.install_jar(..., true) runs the upstream examples deployment descriptor against the installed native module and JVM
+scope: the vendored Maven/JUnit source tests are retained for provenance but are not run; they rebuild PL/Java instead of testing the mounted package

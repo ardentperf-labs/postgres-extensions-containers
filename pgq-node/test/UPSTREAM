@@ -1,0 +1,20 @@
+Extension/test target: pgq-node
+Upstream repository: https://github.com/pgq/pgq-node (PGDG Debian VCS: https://salsa.debian.org/postgresql/pgq-node.git)
+PGDG source package: pgq-node 3.5-9.pgdg13+1
+Source descriptor: pgq-node_3.5-9.pgdg13+1.dsc
+Source descriptor SHA256: 3277fa6ebb300c1a8cebce65f2206d8ef6a19c7cf9a22ba223d518ffd4e4edb6
+Original source archive(s):
+  pgq-node_3.5.orig.tar.gz SHA256 d2e330f3aef74827e18fa93b141810b57d8e88e51198b8b5a79a20f527541dfa
+Copied upstream suite paths (relative to exact extracted source package):
+  sql/
+  expected/
+  Makefile/
+  mk/common-pgxs.mk/
+  debian/tests/control/
+  debian/tests/installcheck/
+Copied license/copyright notices:
+  upstream/debian-copyright
+Native suite selection: Exact PGXS modern-PostgreSQL Extension_regress order: pgq_node_init_ext pgq_node_test.
+Expected output/test inputs are copied byte-for-byte; no custom SQL assertions or edited expected files are included.
+Requirements / limitations:
+  Requires pgq installed as an extension; the native modern-PostgreSQL Makefile branch runs Extension_regress. Its shared PGXS helper forces database `regression`, which test/run.sh preserves. SQL creates pgq and pgq_node.

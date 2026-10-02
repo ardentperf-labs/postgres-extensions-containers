@@ -49,6 +49,11 @@ spec:
 
 Mount the matching roaringbitmap image and create `roaringbitmap` before `pgfaceting`. Facet indexes and pending deltas are database tables. Schedule `faceting.merge_deltas()` through a SQL scheduler; normal PostgreSQL privileges and data-volume retention apply.
 
+## Verify behavior
+
+The vendored upstream suite is pinned in [test/UPSTREAM](test/UPSTREAM) and
+invoked by [test/run.sh](test/run.sh).
+
 ## Dependencies and updates
 
 The image contains only the PGDG package server payload and license notices.

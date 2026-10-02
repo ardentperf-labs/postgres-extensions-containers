@@ -1,0 +1,9 @@
+Depends:
+ postgresql-plperl,
+ procps,
+ @,
+Tests:
+ install,
+Restrictions:
+ allow-stderr,
+ needs-root,
