@@ -1,194 +1,58 @@
-name: Build and publish SBOM generator
-
+name: Probe new GHCR package visibility
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'sbom-generator/**'
-      - '.github/workflows/sbom-generator.yml'
-  pull_request:
-    paths:
-      - 'sbom-generator/**'
-      - '.github/workflows/sbom-generator.yml'
   workflow_dispatch:
-    inputs:
-      publish:
-        description: "Publish a checked test image to GHCR (never updates latest)"
-        required: false
-        default: false
-        type: boolean
-
 permissions: {}
-
-env:
-  # renovate: datasource=docker depName=aquasec/trivy
-  TRIVY_IMAGE: aquasec/trivy:0.69.3@sha256:bcc376de8d77cfe086a917230e818dc9f8528e3c852f7b1aff648949b6258d1c
-
 jobs:
-  check:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - arch: amd64
-            runner: ubuntu-24.04
-          - arch: arm64
-            runner: ubuntu-24.04-arm
-    runs-on: ${{ matrix.runner }}
-    env:
-      SBOM_SMOKE_PLATFORM: linux/${{ matrix.arch }}
-    permissions:
-      contents: read
-    concurrency:
-      group: sbom-generator-check-${{ github.ref }}-${{ matrix.arch }}
-      cancel-in-progress: true
-    services:
-      registry:
-        # renovate: datasource=docker depName=registry
-        image: registry:2@sha256:a3d8aaa63ed8681a604f1dea0aa03f100d5895b6a58ace528858a7b332415373
-        ports:
-          - 5000:5000
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          persist-credentials: false
-
-      - name: Run tests
-        run: |
-          python3 -m venv "$RUNNER_TEMP/sbom-generator-venv"
-          "$RUNNER_TEMP/sbom-generator-venv/bin/python" -m pip install \
-            --requirement sbom-generator/requirements-validation.txt
-          "$RUNNER_TEMP/sbom-generator-venv/bin/python" -m unittest discover \
-            -s sbom-generator/tests -p 'test_*.py'
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@594f3bf4285d9ea8dc53c9a0c9c4092420091003 # v4
-        with:
-          driver-opts: network=host
-
-      - name: Build local generator
-        run: |
-          docker buildx build --platform "$SBOM_SMOKE_PLATFORM" \
-            --build-arg "SBOM_GENERATOR_REVISION=$GITHUB_SHA" \
-            --label "org.opencontainers.image.source=https://github.com/$GITHUB_REPOSITORY" \
-            --tag localhost:5000/cnpg-sbom-generator:check --push sbom-generator
-
-      - name: Check BuildKit integration and license report
-        env:
-          PYTHON: ${{ runner.temp }}/sbom-generator-venv/bin/python
-        run: bash sbom-generator/tests/integration/buildkit-smoke.sh localhost:5000/cnpg-sbom-generator:check "$RUNNER_TEMP/sbom-check"
-
-      - name: Save check evidence
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: sbom-generator-check-${{ matrix.arch }}
-          path: ${{ runner.temp }}/sbom-check
-          if-no-files-found: ignore
-
-  publish:
-    needs: check
-    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.publish) }}
+  probe:
     runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
-    concurrency:
-      group: sbom-generator-publish
-      cancel-in-progress: false
-    services:
-      registry:
-        # renovate: datasource=docker depName=registry
-        image: registry:2@sha256:a3d8aaa63ed8681a604f1dea0aa03f100d5895b6a58ace528858a7b332415373
-        ports:
-          - 5000:5000
     steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          persist-credentials: false
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4
-        with:
-          platforms: linux/arm64
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@594f3bf4285d9ea8dc53c9a0c9c4092420091003 # v4
-        with:
-          driver-opts: network=host
-
-      - name: Log in to GHCR
-        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Select publication destination
-        id: destination
+          password: ${{ github.token }}
+      - name: First publication with workflow token and correct repository label
         env:
-          EVENT_NAME: ${{ github.event_name }}
-        run: |
-          echo "image=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/cnpg-sbom-generator" >> "$GITHUB_OUTPUT"
-          if [[ "$EVENT_NAME" == push ]]; then alias="latest"; else alias="test"; fi
-          echo "alias=$alias" >> "$GITHUB_OUTPUT"
-
-      - name: Publish or reuse commit image
-        env:
-          IMAGE: ${{ steps.destination.outputs.image }}
-        run: |
-          python3 sbom-generator/release.py build \
-            --image "$IMAGE" --revision "$GITHUB_SHA" --repository "$GITHUB_REPOSITORY" \
-            --output "$RUNNER_TEMP/sbom-release"
-
-      - name: Check published digest with BuildKit
-        env:
-          IMAGE: ${{ steps.destination.outputs.image }}
-          PYTHON: ${{ runner.temp }}/sbom-generator-venv/bin/python
-        run: |
-          python3 -m venv "$RUNNER_TEMP/sbom-generator-venv"
-          "$PYTHON" -m pip install --requirement sbom-generator/requirements-validation.txt
-          digest=$(cat "$RUNNER_TEMP/sbom-release/digest")
-          bash sbom-generator/tests/integration/buildkit-smoke.sh "$IMAGE@$digest" "$RUNNER_TEMP/sbom-release/smoke"
-
-      - name: Promote checked digest
-        env:
-          IMAGE: ${{ steps.destination.outputs.image }}
-          ALIAS: ${{ steps.destination.outputs.alias }}
           GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
-          python3 sbom-generator/release.py promote \
-            --image "$IMAGE" --revision "$GITHUB_SHA" --repository "$GITHUB_REPOSITORY" \
-            --output "$RUNNER_TEMP/sbom-release" --alias "$ALIAS"
-
-      - name: Summarize publication
+          set -euo pipefail
+          package="cnpg-visibility-probe-$GITHUB_RUN_ID"
+          export PROBE_IMAGE="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/$package:test"
+          mkdir -p "$RUNNER_TEMP/probe" "$RUNNER_TEMP/evidence"
+          printf 'GHCR visibility test; no application payload.\n' > "$RUNNER_TEMP/probe/notice.txt"
+          printf 'FROM scratch\nCOPY notice.txt /notice.txt\n' > "$RUNNER_TEMP/probe/Dockerfile"
+          docker build --label "org.opencontainers.image.source=https://github.com/$GITHUB_REPOSITORY" \
+            --label "org.opencontainers.image.revision=$GITHUB_SHA" \
+            --tag "$PROBE_IMAGE" "$RUNNER_TEMP/probe"
+          docker push "$PROBE_IMAGE"
+          gh api "orgs/$GITHUB_REPOSITORY_OWNER/packages/container/$package" \
+            --jq '{name,visibility,created_at,repository: .repository.full_name}' \
+            > "$RUNNER_TEMP/evidence/package.json"
+          python3 - <<'PY'
+          import json, os, urllib.request, urllib.error
+          from pathlib import Path
+          image=os.environ['PROBE_IMAGE']; name=image.removeprefix('ghcr.io/').rsplit(':',1)[0]
+          result={'image':image,'anonymous':True}
+          try:
+              url='https://ghcr.io/token?service=ghcr.io&scope=repository:'+name+':pull'
+              with urllib.request.urlopen(url) as r: token=json.load(r)['token']
+              result['token_http_status']=200
+              request=urllib.request.Request('https://ghcr.io/v2/'+name+'/manifests/test',headers={
+                  'Authorization':'Bearer '+token,'Accept':'application/vnd.docker.distribution.manifest.v2+json, application/vnd.oci.image.manifest.v1+json'})
+              with urllib.request.urlopen(request) as r: result['manifest_http_status']=r.status
+          except urllib.error.HTTPError as e:
+              result['http_error']=e.code
+          output=Path(os.environ['RUNNER_TEMP'])/'evidence/anonymous.json'
+          output.write_text(json.dumps(result,indent=2)+'\n')
+          print(json.dumps(result))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
-        env:
-          IMAGE: ${{ steps.destination.outputs.image }}
-          ALIAS: ${{ steps.destination.outputs.alias }}
-        run: |
-          {
-            echo '## SBOM generator publication'
-            echo "Source: [$GITHUB_SHA](https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA)"
-            echo 'Smoke-test architecture: linux/amd64; published platforms: linux/amd64 and linux/arm64.'
-            if [[ -f "$RUNNER_TEMP/sbom-release/digest" ]]; then
-              digest=$(cat "$RUNNER_TEMP/sbom-release/digest")
-              echo "Commit artifact: \`$IMAGE:sha-$GITHUB_SHA@$digest\`"
-              if [[ -f "$RUNNER_TEMP/sbom-release/promotion.json" ]] && jq -e '.promoted' "$RUNNER_TEMP/sbom-release/promotion.json" > /dev/null; then
-                echo "Promoted reference: \`$IMAGE:$ALIAS@$digest\`"
-              else
-                echo "Alias $ALIAS was not promoted by this run. Check the job logs before using this artifact."
-              fi
-            fi
-            echo "[Logs and evidence](https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Save publication evidence
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: sbom-generator-publication
-          path: ${{ runner.temp }}/sbom-release
-          if-no-files-found: ignore
+          name: ghcr-visibility-probe
+          path: ${{ runner.temp }}/evidence
+          if-no-files-found: error
