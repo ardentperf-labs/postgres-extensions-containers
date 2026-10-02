@@ -156,7 +156,7 @@ class ComposeTest(unittest.TestCase):
             "https://github.com/cnpg-extensions/postgres-extensions-containers",
         )
 
-    def test_license_files_are_directly_mapped_to_the_named_package(self):
+    def test_license_files_are_mapped_by_checksum_and_source_ownership(self):
         document = builder_document()
         document["packages"].append(
             package("SPDXRef-Package-copyright", "libgomp1", "1", "pkg:deb/debian/libgomp1@1?arch=amd64&distro=debian-12.15")
@@ -174,10 +174,10 @@ class ComposeTest(unittest.TestCase):
         output = compose(
             document,
             extension_name="plr",
-            final_inventory=inventory(("licenses/libgomp1/copyright", "copyright")),
+            final_inventory=inventory(("licenses/system/libgomp1/copyright", "copyright")),
             platform="linux/amd64",
             scancode_report={"files": [{
-                "path": "licenses/libgomp1/copyright",
+                "path": "licenses/system/libgomp1/copyright",
                 "license_detections": [{"license_expression_spdx": "GPL-2.0-only"}],
             }]},
         )
@@ -196,6 +196,16 @@ class ComposeTest(unittest.TestCase):
                 "pkg:deb/debian/libgfortran5@1?arch=amd64&distro=debian-12.15",
             )
         )
+        document["files"].append({
+            "SPDXID": "SPDXRef-File-gfortran-copyright",
+            "fileName": "usr/share/doc/libgfortran5/copyright",
+            "checksums": checksum("gfortran-license-evidence"),
+        })
+        document["relationships"].append({
+            "spdxElementId": "SPDXRef-Package-libgfortran5",
+            "relationshipType": "CONTAINS",
+            "relatedSpdxElement": "SPDXRef-File-gfortran-copyright",
+        })
         output = compose(
             document,
             extension_name="plr",
