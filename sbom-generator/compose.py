@@ -325,10 +325,6 @@ def compose(builder_document: dict[str, Any], *,
 
     all_package_ids = {package["SPDXID"] for package in packages}
     package_ids = set(builder_packages)
-    package_ids_by_name: defaultdict[str, set[str]] = defaultdict(set)
-    for package_id, package in builder_packages.items():
-        if package_id not in packages_without_file_analysis:
-            package_ids_by_name[package["name"]].add(package_id)
     retained_package_ids: set[str] = set()
     owners_by_source_file: defaultdict[str, set[str]] = defaultdict(set)
     for relationship in relationships:
@@ -349,8 +345,7 @@ def compose(builder_document: dict[str, Any], *,
 
     composed_files: list[dict[str, Any]] = []
     source_to_final: defaultdict[str, set[str]] = defaultdict(set)
-    direct_final_owners: defaultdict[str, set[str]] = defaultdict(set)
-    def add_final_file(record: dict[str, Any], owner: str | None = None) -> None:
+    def add_final_file(record: dict[str, Any]) -> None:
         output_record = {
             "SPDXID": file_id(record["name"], record["algorithm"], record["value"]),
             "checksums": record.get("checksums", [{
@@ -363,18 +358,9 @@ def compose(builder_document: dict[str, Any], *,
             "licenseInfoInFiles": ["NOASSERTION"],
         }
         composed_files.append(output_record)
-        if owner is not None:
-            retained_package_ids.add(owner)
-            direct_final_owners[output_record["SPDXID"]].add(owner)
 
     for final_record in final:
         final_name = final_record["name"].lstrip("/")
-        license_parts = final_name.split("/", 2)
-        if license_parts[0] == "licenses" and len(license_parts) > 1:
-            owners = package_ids_by_name.get(license_parts[1], set())
-            add_final_file(final_record, next(iter(owners)) if len(owners) == 1 else None)
-            continue
-
         candidates = by_checksum.get(
             checksum_key(final_record["algorithm"], final_record["value"]), []
         )
@@ -485,16 +471,6 @@ def compose(builder_document: dict[str, Any], *,
                 if identity not in seen_relationships:
                     seen_relationships.add(identity)
                     composed_relationships.append(replacement)
-
-    composed_relationships.extend(
-        {
-            "spdxElementId": package_id,
-            "relationshipType": "CONTAINS",
-            "relatedSpdxElement": file_id_value,
-        }
-        for file_id_value, package_ids_for_file in direct_final_owners.items()
-        for package_id in sorted(package_ids_for_file)
-    )
 
     output = deepcopy(builder)
     os_package = debian_os_package(packages, builder_path)
