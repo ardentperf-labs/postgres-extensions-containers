@@ -1,0 +1,20 @@
+Extension/test target: pgfaceting
+Upstream repository: https://github.com/cybertec-postgresql/pgfaceting
+PGDG source package: pgfaceting 0.2.0-6.pgdg13+1
+Source descriptor: pgfaceting_0.2.0-6.pgdg13+1.dsc
+Source descriptor SHA256: 780950f0afb9a23d08081eda9328c43fad48cbec1daebeb202c4f6cd2df8cda0
+Original source archive(s):
+  pgfaceting_0.2.0.orig.tar.gz SHA256 d35bae6f7ca139c705ed2d4588add3de8c303527388a987a7e2264d3fbcbbd7f
+Copied upstream suite paths (relative to exact extracted source package):
+  test/sql/
+  test/expected/
+  Makefile/
+  debian/tests/control/
+  debian/tests/installcheck/
+Copied license/copyright notices:
+  upstream/LICENSE
+  upstream/debian-copyright
+Native suite selection: Exact PGXS REGRESS order: base error_checks; the upstream Makefile sets --inputdir=test.
+Expected output/test inputs are copied byte-for-byte; no custom SQL assertions or edited expected files are included.
+Requirements / limitations:
+  Requires the declared roaringbitmap prerequisite extension installed in the scratch server; SQL creates both extensions and tests the native PGXS suite.
