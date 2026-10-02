@@ -1,0 +1,23 @@
+Extension/test target: mongo-fdw
+Upstream repository: https://github.com/EnterpriseDB/mongo_fdw (release source REL-5_5_3)
+PGDG source package: mongo-fdw 5.5.3-1.pgdg13+1
+Source descriptor: mongo-fdw_5.5.3-1.pgdg13+1.dsc
+Source descriptor SHA256: 964c549681d3a8f37a0a0a3f8503ba3643465f4b30d8e7860ad466cfa0e64cd8
+Original source archive(s):
+  mongo-fdw_5.5.3.orig.tar.gz SHA256 ece1de711293d30b609150206c6166bb5c7dc589c17b133394e28dc06465c82a
+Copied upstream suite paths (relative to exact extracted source package):
+  sql/
+  expected/
+  data/
+  Makefile/
+  mongodb_init.sh/
+  debian/tests/control/
+  debian/tests/installcheck/
+Copied license/copyright notices:
+  upstream/LICENSE
+  upstream/debian-copyright
+Native suite selection: Exact PGXS REGRESS order from source Makefile: server_options connection_validation dml select pushdown join_pushdown aggregate_pushdown limit_offset_pushdown.
+Expected output/test inputs are copied byte-for-byte; no custom SQL assertions or edited expected files are included.
+Requirements / limitations:
+  Requires a pre-seeded MongoDB fixture service and exported MONGO_HOST, MONGO_PORT, MONGO_USER_NAME, MONGO_PWD. Upstream mongodb_init.sh and data fixtures are copied verbatim; source comments require MongoDB test databases/users and fixture collections. This wrapper does not mutate fixture data.
+The upstream fixture initialization script defaults to localhost:27017 with user edb/edb and is included unmodified; an externally seeded MongoDB service must match configured connection data.

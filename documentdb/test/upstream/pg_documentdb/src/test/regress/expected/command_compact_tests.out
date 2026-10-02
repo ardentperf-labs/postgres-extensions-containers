@@ -1,0 +1,255 @@
+SET documentdb.next_collection_id TO 25709000;
+SET documentdb.next_collection_index_id TO 25709000;
+SET search_path TO documentdb_core,documentdb_api,documentdb_api_catalog,documentdb_api_internal;
+-- Error cases: NULL and empty spec
+SELECT documentdb_api.compact(NULL);
+ compact 
+---------
+ 
+(1 row)
+
+SELECT documentdb_api.compact('{}');
+ERROR:  Invalid command compact specification, missing database or collection name
+SELECT documentdb_api.compact('{"noIdea": "collection1"}');
+ERROR:  The BSON field compact.noIdea is not recognized as a known field
+SELECT documentdb_api.compact('{"compact": "non_existing_collection"}');
+ERROR:  Invalid command compact specification, missing database or collection name
+SELECT documentdb_api.compact('{"compact": 1 }');
+ERROR:  The BSON field 'compact' has an incorrect type 'int'; it should be of type 'string'.
+SELECT documentdb_api.compact('{"compact": true }');
+ERROR:  The BSON field 'compact' has an incorrect type 'bool'; it should be of type 'string'.
+SELECT documentdb_api.compact('{"compact": ["coll"]}');
+ERROR:  The BSON field 'compact' has an incorrect type 'array'; it should be of type 'string'.
+-- Create a test collection
+SELECT documentdb_api.create_collection('compact_db','compact_coll');
+NOTICE:  creating collection
+ create_collection 
+-------------------
+ t
+(1 row)
+
+-- Invalid args
+SELECT documentdb_api.compact('{"compact": "compact_coll", "dryRun": "invalid"}');
+ERROR:  The BSON field 'dryRun' has an incorrect type 'string'; it should be of type 'bool'.
+SELECT documentdb_api.compact('{"compact": "compact_coll", "force": false}');
+ERROR:  command compact option force:false is not supported
+SELECT documentdb_api.compact('{"compact": "compact_coll", "mode": "invalid"}');
+ERROR:  Invalid compact mode 'invalid'. Supported values are 'full', 'standard', and 'updateStats'.
+SELECT documentdb_api.compact('{"compact": "compact_coll", "mode": 1}');
+ERROR:  The BSON field 'mode' has an incorrect type 'int'; it should be of type 'string'.
+SELECT documentdb_api.compact('{"compact": "compact_coll", "dryRun": true, "mode": "updateStats"}');
+ERROR:  compact option dryRun:true cannot be combined with mode 'updateStats'
+SELECT documentdb_api.compact('{"compact": "compact_coll", "mode": "updateStats", "mode": "full"}');
+ERROR:  conflicting compact mode values are mutually exclusive
+SELECT documentdb_api.compact('{"compact": "compact_coll", "mode": "full", "mode": "standard"}');
+ERROR:  conflicting compact mode values are mutually exclusive
+-- Default mode is "standard", which is NOT gated by the GUC and runs even with GUC off
+SELECT documentdb_api.compact('{"compact": "compact_coll", "$db": "compact_db"}');
+                                    compact                                     
+--------------------------------------------------------------------------------
+ { "ok" : { "$numberDouble" : "1.0" }, "bytesFreed" : { "$numberLong" : "0" } }
+(1 row)
+
+-- mode "full" IS gated: with GUC off it should be a no-op returning bytesFreed: 0
+SELECT documentdb_api.compact('{"compact": "compact_coll", "$db": "compact_db", "mode": "full"}');
+                                    compact                                     
+--------------------------------------------------------------------------------
+ { "ok" : { "$numberDouble" : "1.0" }, "bytesFreed" : { "$numberLong" : "0" } }
+(1 row)
+
+-- mode "standard" is NOT gated and still runs (returns ok)
+SELECT documentdb_api.compact('{"compact": "compact_coll", "$db": "compact_db", "mode": "standard"}');
+                                    compact                                     
+--------------------------------------------------------------------------------
+ { "ok" : { "$numberDouble" : "1.0" }, "bytesFreed" : { "$numberLong" : "0" } }
+(1 row)
+
+-- dryRun with GUC off should return estimatedBytesFreed: 0
+SELECT documentdb_api.compact('{"compact": "compact_coll", "$db": "compact_db", "dryRun": true}');
+                                         compact                                         
+-----------------------------------------------------------------------------------------
+ { "ok" : { "$numberDouble" : "1.0" }, "estimatedBytesFreed" : { "$numberLong" : "0" } }
+(1 row)
+
+SELECT documentdb_api.compact('{"compact": "compact_coll", "$db": "compact_db", "dryRun": true, "mode": "standard"}');
+                                         compact                                         
+-----------------------------------------------------------------------------------------
+ { "ok" : { "$numberDouble" : "1.0" }, "estimatedBytesFreed" : { "$numberLong" : "0" } }
+(1 row)
+
+SELECT documentdb_api.compact('{"compact": "compact_coll", "$db": "compact_db", "mode": "full", "dryRun": true}');
+                                         compact                                         
+-----------------------------------------------------------------------------------------
+ { "ok" : { "$numberDouble" : "1.0" }, "estimatedBytesFreed" : { "$numberLong" : "0" } }
+(1 row)
+
+-- mode updateStats runs ANALYZE instead of VACUUM and is not gated by the vacuum full GUC
+SET client_min_messages TO DEBUG1;
+SELECT documentdb_api.compact('{"compact": "compact_coll", "$db": "compact_db", "mode": "updateStats"}');
+LOG:  Updating statistics for collection compact_db.compact_coll
+DEBUG:  executing "ANALYZE documentdb_data.documents_25709001" via connection to "host=localhost port=58050 user=REGRESSION_USER dbname=regression application_name='documentdb-Internal'"
+                                    compact                                     
+--------------------------------------------------------------------------------
+ { "ok" : { "$numberDouble" : "1.0" }, "bytesFreed" : { "$numberLong" : "0" } }
+(1 row)
+
+RESET client_min_messages;
+-- Enable the GUC and run compact (with vacuum full)
+SET documentdb.enableCompactVacuumFull TO on;
+-- Insert data to have something to compact
+SELECT documentdb_api.insert_one('compact_db', 'compact_coll', '{ "_id": 1, "a": "hello" }');
+                              insert_one                              
+----------------------------------------------------------------------
+ { "n" : { "$numberInt" : "1" }, "ok" : { "$numberDouble" : "1.0" } }
+(1 row)
+
+-- With GUC on, compact should execute and return bytesFreed
+SELECT documentdb_api.compact('{"compact": "compact_coll", "$db": "compact_db"}');
+                                    compact                                     
+--------------------------------------------------------------------------------
+ { "ok" : { "$numberDouble" : "1.0" }, "bytesFreed" : { "$numberLong" : "0" } }
+(1 row)
+
+-- mode: "full" must be requested explicitly and runs a blocking vacuum full
+SELECT documentdb_api.compact('{"compact": "compact_coll", "$db": "compact_db", "mode": "full"}');
+                                      compact                                       
+------------------------------------------------------------------------------------
+ { "ok" : { "$numberDouble" : "1.0" }, "bytesFreed" : { "$numberLong" : "32768" } }
+(1 row)
+
+-- mode: "standard" should run a regular (non-blocking) vacuum
+SELECT documentdb_api.compact('{"compact": "compact_coll", "$db": "compact_db", "mode": "standard"}');
+                                    compact                                     
+--------------------------------------------------------------------------------
+ { "ok" : { "$numberDouble" : "1.0" }, "bytesFreed" : { "$numberLong" : "0" } }
+(1 row)
+
+-- dryRun with GUC on should return estimatedBytesFreed
+SELECT documentdb_api.compact('{"compact": "compact_coll", "$db": "compact_db", "dryRun": true}');
+                                         compact                                         
+-----------------------------------------------------------------------------------------
+ { "ok" : { "$numberDouble" : "1.0" }, "estimatedBytesFreed" : { "$numberLong" : "0" } }
+(1 row)
+
+-- comment field should be accepted
+SELECT documentdb_api.compact('{"compact": "compact_coll", "$db": "compact_db", "comment": "test comment"}');
+                                    compact                                     
+--------------------------------------------------------------------------------
+ { "ok" : { "$numberDouble" : "1.0" }, "bytesFreed" : { "$numberLong" : "0" } }
+(1 row)
+
+RESET documentdb.enableCompactVacuumFull;
+-- After reset, mode "full" should be no-op again since it is gated by the GUC
+SELECT documentdb_api.compact('{"compact": "compact_coll", "$db": "compact_db", "mode": "full"}');
+                                    compact                                     
+--------------------------------------------------------------------------------
+ { "ok" : { "$numberDouble" : "1.0" }, "bytesFreed" : { "$numberLong" : "0" } }
+(1 row)
+
+-- ... but the default (standard) mode still runs since it is not gated by the GUC
+SELECT documentdb_api.compact('{"compact": "compact_coll", "$db": "compact_db"}');
+                                    compact                                     
+--------------------------------------------------------------------------------
+ { "ok" : { "$numberDouble" : "1.0" }, "bytesFreed" : { "$numberLong" : "0" } }
+(1 row)
+
+SELECT documentdb_api.drop_collection('compact_db','compact_coll');
+ drop_collection 
+-----------------
+ t
+(1 row)
+
+-- bytesFreed must be a measured delta of the on-disk size, not an estimate.
+-- Build a collection with real bloat: insert a large number of documents and
+-- then delete most of them, leaving the dead tuples behind for compact to reclaim.
+SELECT documentdb_api.create_collection('compact_db','compact_delta_coll');
+NOTICE:  creating collection
+ create_collection 
+-------------------
+ t
+(1 row)
+
+SELECT documentdb_api.insert_one('compact_db', 'compact_delta_coll',
+    FORMAT('{ "_id": %s, "a": "%s" }', g, repeat('x', 400))::documentdb_core.bson) IS NOT NULL AS inserted
+    FROM generate_series(1, 20000) g OFFSET 19999;
+ inserted 
+----------
+ t
+(1 row)
+
+SELECT documentdb_api.delete('compact_db',
+    '{"delete": "compact_delta_coll", "deletes": [{"q": {"_id": {"$lt": 18000}}, "limit": 0}]}');
+                                           delete                                           
+--------------------------------------------------------------------------------------------
+ ("{ ""n"" : { ""$numberInt"" : ""17999"" }, ""ok"" : { ""$numberDouble"" : ""1.0"" } }",t)
+(1 row)
+
+SET documentdb.enableCompactVacuumFull TO on;
+-- Capture the size before and after so the assertion does not depend on an
+-- exact byte count, which varies with page layout and PostgreSQL version.
+SELECT documentdb_api_internal.get_storage_stats_worker(collection_id, '{ "physicalSize": true }') AS size_before
+    FROM documentdb_api_catalog.collections
+    WHERE database_name = 'compact_db' AND collection_name = 'compact_delta_coll' \gset
+-- VACUUM FULL rewrites the table, so the reported bytesFreed must be positive
+-- and must match the actual reduction in the on-disk size.
+SELECT documentdb_api.compact('{"compact": "compact_delta_coll", "$db": "compact_db", "mode": "full"}') AS compact_result \gset
+SELECT documentdb_api_internal.get_storage_stats_worker(collection_id, '{ "physicalSize": true }') AS size_after
+    FROM documentdb_api_catalog.collections
+    WHERE database_name = 'compact_db' AND collection_name = 'compact_delta_coll' \gset
+SELECT documentdb_core.bson_get_value_text((:'compact_result')::documentdb_core.bson, 'bytesFreed')::int8 > 0
+    AS reported_positive_bytes_freed;
+ reported_positive_bytes_freed 
+-------------------------------
+ t
+(1 row)
+
+SELECT documentdb_core.bson_get_value_text((:'compact_result')::documentdb_core.bson, 'bytesFreed')::int8 =
+       documentdb_core.bson_get_value_text((:'size_before')::documentdb_core.bson, 'total_rel_size')::int8 -
+       documentdb_core.bson_get_value_text((:'size_after')::documentdb_core.bson, 'total_rel_size')::int8
+    AS reported_delta_matches_measurement;
+ reported_delta_matches_measurement 
+------------------------------------
+ t
+(1 row)
+
+-- A second compact on an already compacted collection has nothing left to
+-- reclaim, so the measured delta must be 0 rather than a stale estimate.
+SELECT documentdb_api.compact('{"compact": "compact_delta_coll", "$db": "compact_db", "mode": "full"}');
+                                    compact                                     
+--------------------------------------------------------------------------------
+ { "ok" : { "$numberDouble" : "1.0" }, "bytesFreed" : { "$numberLong" : "0" } }
+(1 row)
+
+-- freeSpaceTarget larger than the remaining bloat must suppress the vacuum.
+SELECT documentdb_api.compact('{"compact": "compact_delta_coll", "$db": "compact_db", "mode": "full", "freeSpaceTargetMB": 1000000}');
+                                    compact                                     
+--------------------------------------------------------------------------------
+ { "ok" : { "$numberDouble" : "1.0" }, "bytesFreed" : { "$numberLong" : "0" } }
+(1 row)
+
+-- The spec selects which metric groups the single storage stats worker
+-- collects, so a spec that does not ask for the physical size must not report
+-- it and one that does must.
+SELECT documentdb_core.bson_get_value_text(
+           documentdb_api_internal.get_storage_stats_worker(collection_id, '{ "bloatEstimate": true }'),
+           'total_rel_size') IS NULL AS bloat_only_spec_omits_size,
+       documentdb_core.bson_get_value_text(
+           documentdb_api_internal.get_storage_stats_worker(collection_id, '{ "physicalSize": true }'),
+           'total_rel_size') IS NOT NULL AS size_spec_reports_size,
+       documentdb_core.bson_get_value_text(
+           documentdb_api_internal.get_storage_stats_worker(collection_id, '{}'),
+           'total_rel_size') IS NULL AS empty_spec_reports_nothing
+    FROM documentdb_api_catalog.collections
+    WHERE database_name = 'compact_db' AND collection_name = 'compact_delta_coll';
+ bloat_only_spec_omits_size | size_spec_reports_size | empty_spec_reports_nothing 
+----------------------------+------------------------+----------------------------
+ t                          | t                      | t
+(1 row)
+
+RESET documentdb.enableCompactVacuumFull;
+SELECT documentdb_api.drop_collection('compact_db','compact_delta_coll');
+ drop_collection 
+-----------------
+ t
+(1 row)
+
