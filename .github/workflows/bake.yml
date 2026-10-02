@@ -75,6 +75,7 @@ jobs:
           filters: |
             _shared: &shared
               - 'docker-bake.hcl'
+              - 'scripts/**'
               - 'Taskfile.yml'
               - 'test/**'
               - 'dagger/maintenance/**'

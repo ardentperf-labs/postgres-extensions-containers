@@ -4,10 +4,20 @@ set -eux
 # Based on the system-library staging in CloudNativePG's PostGIS image:
 # https://github.com/cloudnative-pg/postgres-extensions-containers/blob/main/postgis/Dockerfile
 
+if [ ! -r /tmp/base-image-libs.out ] || [ ! -s /tmp/base-image-libs.out ]; then
+	echo "ERROR: Base image library capture is missing or empty. Run capture_base_image_libs.sh before installing extension packages, in the same builder stage." >&2
+	exit 1
+fi
+
 # Get libraries
 ldd "$@" | awk '{print $3}' | grep '^/' | sort | uniq > /tmp/all-deps.out
 # Extract all the libs that aren't already part of the base image
 comm -13 /tmp/base-image-libs.out /tmp/all-deps.out > /tmp/libraries.out
+
+if [ ! -s /tmp/libraries.out ]; then
+	echo "ERROR: No additional system libraries detected. Install extension packages between capture_base_image_libs.sh and stage_system_libs.sh, and pass the extension's shared libraries to stage_system_libs.sh." >&2
+	exit 1
+fi
 
 mkdir -p /system /licenses
 while read -r lib; do
