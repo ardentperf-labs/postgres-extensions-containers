@@ -1,0 +1,11 @@
+--- a/src/libmongoc/src/mongoc/mongoc-collection.c
++++ b/src/libmongoc/src/mongoc/mongoc-collection.c
+@@ -286,8 +286,8 @@ mongoc_collection_aggregate (mongoc_collection_t *collection,       /* IN */
+ {
+    return _mongoc_aggregate (collection->client,
+-                             collection->ns,
+                              collection->db,
++                             collection->ns,
+                              flags,
+                              pipeline,
+                              opts,
