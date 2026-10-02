@@ -1,195 +1,112 @@
-name: Build, test and publish extensions
+name: Debian licensing regression matrix
 
 on:
-  push:
-    paths-ignore:
-      - '.github/workflows/pgrx.yml'
-      - '.github/workflows/pgrx_targets.yml'
-      - '.github/workflows/sbom-generator.yml'
-      - 'sbom-generator/**'
   workflow_dispatch:
     inputs:
-      extension_name:
-        description: "The PostgreSQL extension to build (directory name)"
+      extensions:
+        description: JSON array of core extension names to validate
         required: true
         type: string
-
-defaults:
-  run:
-    shell: 'bash -Eeuo pipefail -x {0}'
+        default: '["age","debversion","h3","hypopg","mobilitydb","mysql-fdw","pg-cron","pg-hint-plan","pg-partman","pg-qualstats","pg-rrule","pg-squeeze","pg-stat-kcache","pg-uuidv7","pgagent","pgmemcache","pgmp","pgsentinel","pgsphere","pldebugger","plpgsql-check","plprofiler","plr","q3c","snakeoil","tds-fdw","toastinfo"]'
 
 permissions: {}
 
 jobs:
-  # Gather extensions that have been modified
-  change-triage:
-    name: Check changed files
-    runs-on: ubuntu-24.04
-    outputs:
-      matrix: ${{ steps.get-matrix.outputs.matrix}}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          persist-credentials: false
-
-      - name: Fetch valid targets
-        id: get-targets
-        uses: dagger/dagger-for-github@27b130bf0f79a7f6fbbbe0fbca6760dc9bb40a77 # v8.4.1
-        env:
-          # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-          DAGGER_VERSION: 0.21.9
-        with:
-          version: ${{ env.DAGGER_VERSION }}
-          verb: call
-          module: ./dagger/maintenance/
-          args: get-targets
-
-      - name: Validate extension name
-        if: github.event_name == 'workflow_dispatch'
-        env:
-          INPUT_EXTENSION_NAME: ${{ github.event.inputs.extension_name }}
-          VALID_TARGETS: ${{ steps.get-targets.outputs.output }}
-        run: |
-          if ! echo "$VALID_TARGETS" | jq -e --arg ext "$INPUT_EXTENSION_NAME" 'index($ext)' > /dev/null; then
-            echo "::error::'$INPUT_EXTENSION_NAME' is not a valid extension target. Valid targets: $VALID_TARGETS"
-            exit 1
-          fi
-
-      - name: Compute paths-filter extensions block
-        env:
-          VALID_TARGETS: ${{ steps.get-targets.outputs.output }}
-        run: |
-          if ! echo "$VALID_TARGETS" | jq -e 'length > 0' > /dev/null; then
-            echo "::error::dagger get-targets returned no extensions: $VALID_TARGETS"
-            exit 1
-          fi
-          {
-            echo 'EXTENSIONS<<YAML_EOF'
-            echo "$VALID_TARGETS" | jq -r '.[] | "\(.):\n  - \"\(.)/**\"\n  - *shared"'
-            echo 'YAML_EOF'
-          } >> "$GITHUB_ENV"
-
-      - name: Check for changes
-        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
-        id: filter
-        with:
-          filters: |
-            _shared: &shared
-              - 'docker-bake.hcl'
-              - 'Taskfile.yml'
-              - 'test/**'
-              - 'dagger/maintenance/**'
-              - '.github/workflows/bake_targets.yml'
-            ${{ env.EXTENSIONS }}
-
-      # Compute a matrix containing the list of all extensions that have been modified
-      - name: Compute matrix
-        id: get-matrix
-        env:
-          # JSON array containing the extensions that have been changed
-          CHANGES: ${{ steps.filter.outputs.changes }}
-          # Input Extension name
-          INPUT_EXTENSION_NAME: ${{ github.event.inputs.extension_name }}
-          EVENT_NAME: ${{ github.event_name }}
-        run: |
-          if [[ "${EVENT_NAME}" == 'workflow_dispatch' ]]; then
-            CHANGES="[\"$INPUT_EXTENSION_NAME\"]"
-          fi
-
-          # Filter away the shared filter
-          EXTENSIONS_CHANGED=$(echo "$CHANGES" | jq -c 'map(select(. != "_shared"))')
-
-          echo "matrix=$EXTENSIONS_CHANGED" >> "$GITHUB_OUTPUT"
-
-  Bake:
-    name: Bake
-    needs: change-triage
+  build-and-verify:
+    name: ${{ matrix.extension }} / linux/${{ matrix.arch }}
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     permissions:
-      packages: write
       contents: read
-      id-token: write
-      security-events: write
-    if: ${{ join(fromJSON(needs.change-triage.outputs.matrix)) != '' }}
+      packages: write
     strategy:
       fail-fast: false
+      max-parallel: 4
       matrix:
-        extension: ${{ fromJSON(needs.change-triage.outputs.matrix) }}
-    uses: ./.github/workflows/bake_targets.yml
-    with:
-      extension_name: ${{ matrix.extension }}
-    secrets:
-      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
-  automerge-gate:
-    name: Automerge gate
-    if: ${{ always() }}
-    needs:
-      - change-triage
-      - Bake
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
+        extension: ${{ fromJSON(inputs.extensions) }}
+        arch: [amd64, arm64]
     steps:
-      - name: Verify build and test results
-        if: >-
-          ${{
-            needs.change-triage.result != 'success' ||
-            (
-              needs.Bake.result != 'success' &&
-              needs.Bake.result != 'skipped'
-            )
-          }}
-        run: |
-          echo "CI failed:"
-          echo "change-triage: ${{ needs.change-triage.result }}"
-          echo "Bake: ${{ needs.Bake.result }}"
-          exit 1
-
-      - name: Checkout Renovate changes
-        if: startsWith(github.ref, 'refs/heads/renovate/')
+      - name: Check out validation source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          fetch-depth: 0
           persist-credentials: false
 
-      - name: Check Renovate versions for prereleases
-        if: startsWith(github.ref, 'refs/heads/renovate/')
-        env:
-          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-        run: |
-          # Real examples: MobilityDB 1.3.0-alpha, HypoPG 2.0.0beta,
-          # pg_partman 5.3.0RC1, MobilityDB 1.3.0~rc1-1.pgdg13+1.
-          # Dockerfiles use EXT_VERSION from metadata and have no Renovate annotations.
-          for FILE in */metadata.hcl */README.md; do
-            DIFF=$(git diff --no-ext-diff --no-color --unified=2 "origin/$DEFAULT_BRANCH"...HEAD -- "$FILE")
-            # Every metadata/README annotation is directly above its value; -A2
-            # includes both the removed (-) and replacement (+) value lines.
-            if grep -EA2 '^[ +][[:space:]]*(//|#) renovate:' <<< "$DIFF" |
-               grep '^\+' |
-               grep -Ei 'alpha|beta|rc|~'; then
-              # AGE final releases retain rc in their version names.
-              # https://github.com/apache/age/releases/tag/PG18/v1.8.0-rc0
-              if [[ "${FILE%%/*}" == age ]]; then
-                continue
-              fi
-              echo "::error file=$FILE::Renovate changed a version containing alpha, beta, rc, or ~ (see the added lines above). These markers can indicate an unstable prerelease, so the Automerge gate is failing to prevent automatic approval/merge. Before approving this PR, verify from the upstream release announcement that this exact version is a final production release. If it is a prerelease, use a stable version or close the update. If the marker is part of a confirmed final release's naming convention, document the evidence and add a narrowly scoped exception to this check, then rerun CI; approval alone does not clear the failed gate."
-              exit 1
-            fi
-          done
-
-      - name: CI passed
-        run: echo "All required CI passed"
-
-  Catalogs:
-    name: Update Catalogs
-    needs: Bake
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: write
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 # v4
+      - name: Log in to GHCR
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
         with:
-          event-type: update-catalogs
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@594f3bf4285d9ea8dc53c9a0c9c4092420091003 # v4
+        with:
+          buildkitd-config-inline: |
+            [worker.oci]
+              max-parallelism = 1
+
+      - name: Expose the builder stage to the SBOM generator
+        env:
+          EXTENSION: ${{ matrix.extension }}
+        run: sed -i '2i ARG BUILDKIT_SBOM_SCAN_STAGE=builder' "$EXTENSION/Dockerfile"
+
+      - name: Build the two distro targets with the current generator
+        id: build
+        uses: docker/bake-action@018cb6412ab401ebaa809aa5f85966b74628600f # v7
+        env:
+          BUILDX_METADATA_PROVENANCE: disabled
+          environment: testing
+          registry: ghcr.io/${{ github.repository_owner }}
+          revision: ${{ github.sha }}
+          # renovate: datasource=docker depName=ghcr.io/ardentperf-labs/cnpg-sbom-generator
+          sbom_generator: ghcr.io/ardentperf-labs/cnpg-sbom-generator:latest@sha256:8ccaccaf223ff4ef12565615d12e6a5dfb099472d8763573bbc6ce8ad4444753
+        with:
+          source: .
+          files: ./docker-bake.hcl,./${{ matrix.extension }}/metadata.hcl
+          push: true
+          set: '*.platform=linux/${{ matrix.arch }}'
+
+      - name: Export SPDX and verify shipped files
+        env:
+          BUILD_METADATA: ${{ steps.build.outputs.metadata }}
+          EXTENSION: ${{ matrix.extension }}
+          ARCH: ${{ matrix.arch }}
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/licensing-evidence/$EXTENSION-$ARCH"
+          mkdir -p "$output"
+          printf '%s' "$BUILD_METADATA" > "$output/build-metadata.json"
+          count=$(jq 'length' "$output/build-metadata.json")
+          test "$count" -eq 2
+          while IFS= read -r target; do
+            image=$(jq -r --arg target "$target" '.[$target]["image.name"] | split(",")[0]' "$output/build-metadata.json")
+            digest=$(jq -r --arg target "$target" '.[$target]["containerimage.digest"]' "$output/build-metadata.json")
+            test -n "$image"
+            [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]
+            distro=${target##*-}
+            case "$distro" in bookworm|trixie) ;; *) echo "unexpected target: $target" >&2; exit 1 ;; esac
+            sbom="$output/$distro.spdx.json"
+            docker buildx imagetools inspect "$image@$digest" --format '{{json .SBOM.SPDX}}' > "$sbom"
+            test -s "$sbom"
+            docker pull --platform "linux/$ARCH" "$image@$digest"
+            container=$(docker create "$image@$digest")
+            docker export --output "$output/$distro.rootfs.tar" "$container"
+            docker rm "$container" >/dev/null
+            python3 .github/workflows/debian_notice_verify.py \
+              --sbom "$sbom" \
+              --rootfs-tar "$output/$distro.rootfs.tar" \
+              --extension "$EXTENSION" \
+              --distro "$distro" \
+              --arch "$ARCH" \
+              --image "$image@$digest" \
+              --output "$output/$distro-verification.json"
+            rm "$output/$distro.rootfs.tar"
+          done < <(jq -r 'keys[]' "$output/build-metadata.json")
+          jq -s '{extension:env.EXTENSION,arch:env.ARCH,source_commit:env.GITHUB_SHA,cases:.}' "$output"/*-verification.json > "$output/summary.json"
+
+      - name: Upload SPDX and filesystem evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: debian-license-${{ matrix.extension }}-${{ matrix.arch }}
+          path: ${{ runner.temp }}/licensing-evidence/${{ matrix.extension }}-${{ matrix.arch }}/
+          if-no-files-found: error
+          retention-days: 14
