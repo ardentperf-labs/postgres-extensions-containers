@@ -132,6 +132,7 @@
         "postgresql-18-icu-ext",
         "postgresql-18-ip4r",
         "postgresql-18-jsquery",
+        "postgresql-18-mongo-fdw",
         "postgresql-18-numeral",
         "postgresql-18-ogr-fdw",
         "postgresql-18-orafce",
@@ -165,6 +166,16 @@
       "automerge": false,
       "prBodyNotes": [
         "The SQL extension versions in this image do not track the full upstream package version (including independently versioned bundled extensions). Before merging, inspect the new package control files and SQL upgrade scripts, and update the extension metadata.hcl, README.md and affected test expectations where needed. Do not infer SQL versions from the package version or approve solely because CI passed."
+      ]
+    },
+    {
+      "description": "require SQL version review for documentdb updates",
+      "matchPackageNames": [
+        "postgresql-18-documentdb"
+      ],
+      "automerge": false,
+      "prBodyNotes": [
+        "DocumentDB package 1.0~RC1 ships SQL version 1.0-0. Before merging, inspect all shipped control files and SQL upgrade scripts, and update metadata.hcl, README.md and affected test expectations where needed. Do not infer SQL versions from the package version or approve solely because CI passed. See docs/extension-stack/sql-version-review.md."
       ]
     }
   ]
