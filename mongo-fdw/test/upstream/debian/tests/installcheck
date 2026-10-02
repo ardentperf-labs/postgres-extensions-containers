@@ -1,0 +1,3 @@
+#!/bin/sh
+
+echo "create extension mongo_fdw" | pg_buildext psql
