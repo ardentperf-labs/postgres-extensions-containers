@@ -8,6 +8,16 @@ on:
         required: true
         type: string
         default: '["age","debversion","h3","hypopg","mobilitydb","mysql-fdw","pg-cron","pg-hint-plan","pg-partman","pg-qualstats","pg-rrule","pg-squeeze","pg-stat-kcache","pg-uuidv7","pgagent","pgmemcache","pgmp","pgsentinel","pgsphere","pldebugger","plpgsql-check","plprofiler","plr","q3c","snakeoil","tds-fdw","toastinfo"]'
+      architectures:
+        description: JSON array of native runner architectures
+        required: true
+        type: string
+        default: '["amd64","arm64"]'
+      generator:
+        description: Pinned SBOM generator image reference
+        required: true
+        type: string
+        default: 'ghcr.io/ardentperf-labs/cnpg-sbom-generator:latest@sha256:8ccaccaf223ff4ef12565615d12e6a5dfb099472d8763573bbc6ce8ad4444753'
 
 permissions: {}
 
@@ -23,7 +33,7 @@ jobs:
       max-parallel: 4
       matrix:
         extension: ${{ fromJSON(inputs.extensions) }}
-        arch: [amd64, arm64]
+        arch: ${{ fromJSON(inputs.architectures) }}
     steps:
       - name: Check out validation source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -57,8 +67,7 @@ jobs:
           environment: testing
           registry: ghcr.io/${{ github.repository_owner }}
           revision: ${{ github.sha }}
-          # renovate: datasource=docker depName=ghcr.io/ardentperf-labs/cnpg-sbom-generator
-          sbom_generator: ghcr.io/ardentperf-labs/cnpg-sbom-generator:latest@sha256:8ccaccaf223ff4ef12565615d12e6a5dfb099472d8763573bbc6ce8ad4444753
+          sbom_generator: ${{ inputs.generator }}
         with:
           source: .
           files: ./docker-bake.hcl,./${{ matrix.extension }}/metadata.hcl
@@ -70,6 +79,7 @@ jobs:
           BUILD_METADATA: ${{ steps.build.outputs.metadata }}
           EXTENSION: ${{ matrix.extension }}
           ARCH: ${{ matrix.arch }}
+          GENERATOR: ${{ inputs.generator }}
         run: |
           set -euo pipefail
           output="$RUNNER_TEMP/licensing-evidence/$EXTENSION-$ARCH"
@@ -88,7 +98,7 @@ jobs:
             docker buildx imagetools inspect "$image@$digest" --format '{{json .SBOM.SPDX}}' > "$sbom"
             test -s "$sbom"
             docker pull --platform "linux/$ARCH" "$image@$digest"
-            container=$(docker create "$image@$digest")
+            container=$(docker create "$image@$digest" /__verification_only_never_started__)
             docker export --output "$output/$distro.rootfs.tar" "$container"
             docker rm "$container" >/dev/null
             python3 .github/workflows/debian_notice_verify.py \
@@ -101,7 +111,7 @@ jobs:
               --output "$output/$distro-verification.json"
             rm "$output/$distro.rootfs.tar"
           done < <(jq -r 'keys[]' "$output/build-metadata.json")
-          jq -s '{extension:env.EXTENSION,arch:env.ARCH,source_commit:env.GITHUB_SHA,cases:.}' "$output"/*-verification.json > "$output/summary.json"
+          jq -s '{extension:env.EXTENSION,arch:env.ARCH,generator:env.GENERATOR,source_commit:env.GITHUB_SHA,cases:.}' "$output"/*-verification.json > "$output/summary.json"
 
       - name: Upload SPDX and filesystem evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
