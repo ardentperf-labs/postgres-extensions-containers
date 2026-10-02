@@ -36,7 +36,7 @@ spec:
   extensions:
   - name: toastinfo
     # toastinfo's SQL extension version is independent of its package version.
-    # renovate: suite=trixie-pgdg depName=postgresql-18-toastinfo extractVersion=^(?<version>\d+)
+    # SQL version must be checked in the package control files before merging updates.
     version: '1'
 ~~~
 

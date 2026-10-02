@@ -79,26 +79,6 @@
   ],
   "packageRules": [
     {
-      "description": "require manual review for mysql-fdw updates",
-      "matchPackageNames": [
-        "postgresql-18-mysql-fdw"
-      ],
-      "automerge": false,
-      "prBodyNotes": [
-        "⚠️ Current MySQL FDW SQL extension version is 1.2. It changed from 1.1 to 1.2 on October 14, 2022 (first included in package version 2.9.0). Manually check the upstream repository to see whether the SQL extension version changed before merging this package update. If it changed, manually update mysql-fdw/README.md, mysql-fdw/metadata.hcl, and renovate.json."
-      ]
-    },
-    {
-      "description": "require manual review for pldebugger updates",
-      "matchPackageNames": [
-        "postgresql-18-pldebugger"
-      ],
-      "automerge": false,
-      "prBodyNotes": [
-        "⚠️ Current PL/Debugger SQL extension version is 1.1. It changed from 1.0 to 1.1 on June 25, 2018 (first included in upstream release v1.3). The Debian package version is currently 1:1.10. Renovate updates the package and image references only. Manually check the upstream repository to see whether the SQL extension version changed before merging this package update. If it changed, manually update pldebugger/README.md, pldebugger/metadata.hcl, and renovate.json."
-      ]
-    },
-    {
       "description": "require stable release verification for all updates",
       "matchPackageNames": [
         "*"
@@ -120,6 +100,34 @@
       ],
       "groupName": "all github action",
       "pinDigests": true
+    },
+    {
+      "description": "require SQL version review when no verified package mapping covers all shipped extensions",
+      "matchPackageNames": [
+        "postgresql-*-credcheck",
+        "postgresql-*-jsquery",
+        "postgresql-*-mysql-fdw",
+        "postgresql-*-pg-csv",
+        "postgresql-*-pglogical",
+        "postgresql-*-pgmp",
+        "postgresql-*-pgpcre",
+        "postgresql-*-pgtt",
+        "postgresql-*-pldebugger",
+        "postgresql-*-pllua",
+        "postgresql-*-plsh",
+        "postgresql-*-prefix",
+        "postgresql-*-preprepare",
+        "postgresql-*-rdkit",
+        "postgresql-*-similarity",
+        "postgresql-*-stat-log",
+        "postgresql-*-tablelog",
+        "postgresql-*-toastinfo",
+        "postgresql-pltcl-*"
+      ],
+      "automerge": false,
+      "prBodyNotes": [
+        "⚠️ SQL versions in this image cannot all be updated by a verified package-version extraction rule. Before merging, inspect every shipped extension control file and SQL upgrade script, including independently versioned bundled extensions. Update metadata.hcl, README.md and affected test expectations where needed. Do not infer SQL versions from the package version or approve solely because CI passed."
+      ]
     }
   ]
 }

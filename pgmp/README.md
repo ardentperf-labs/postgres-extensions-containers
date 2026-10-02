@@ -50,7 +50,7 @@ spec:
     name: cluster-pgmp
   extensions:
   - name: pgmp
-    # renovate: suite=trixie-pgdg depName=postgresql-18-pgmp extractVersion=^(?<version>\d+\.\d+)
+    # SQL version must be checked in the package control files before merging updates.
     version: '1.1'
 ```
 Alternatively, you can enable the extension directly with SQL:

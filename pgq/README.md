@@ -1,0 +1,62 @@
+# PgQ
+<!--
+SPDX-FileCopyrightText: Copyright © contributors to CNPG Extensions.
+SPDX-License-Identifier: Apache-2.0
+-->
+
+A transactional, lockless event queue implemented with SQL and PostgreSQL C helpers. [Upstream project](https://github.com/pgq/pgq).
+
+## Usage
+
+~~~yaml
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: cluster-pgq
+spec:
+  imageCatalogRef:
+    apiGroup: postgresql.cnpg.io
+    kind: ClusterImageCatalog
+    name: postgresql-minimal-trixie
+    major: 18
+  instances: 1
+  storage:
+    size: 1Gi
+  postgresql:
+    extensions:
+    - name: pgq
+      image:
+        # renovate: suite=trixie-pgdg depName=postgresql-18-pgq3
+        reference: ghcr.io/cnpg-extensions/pgq:3.5.1-18-trixie
+~~~
+
+Install the SQL extension in the Database:
+
+~~~yaml
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: cluster-pgq-app
+spec:
+  name: app
+  owner: app
+  cluster:
+    name: cluster-pgq
+  extensions:
+  - name: pgq
+    # renovate: suite=trixie-pgdg depName=postgresql-18-pgq3 extractVersion=^(?<version>\d+\.\d+\.\d+)
+    version: '3.5.1'
+~~~
+
+~~~sql
+SELECT pgq.create_queue('order_events');
+SELECT pgq.insert_event('order_events', 'order_created', 'order_id                                  ');
+~~~
+
+A separate `pgqd` daemon advances ticks and handles queue maintenance. The server image does not start or supervise daemon processes.
+
+## Package and runtime details
+
+PG18 images use the PGDG `postgresql-18-pgq3` package. Its full Debian copyright notice is carried in `/licenses/postgresql-18-pgq3/`. Server C helpers use libc/libpq from the base image. The PGQ tick/maintenance daemon is not bundled; run PGDG `pgqd` separately and connect through a CNPG `-rw` service.
+
+The image supports PostgreSQL 18 on Debian Bookworm and Trixie. Renovate tracks the PGDG package pins in `metadata.hcl`.
