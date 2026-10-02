@@ -62,7 +62,10 @@ jobs:
       - name: Expose the builder stage to the SBOM generator
         env:
           EXTENSION: ${{ matrix.extension }}
-        run: sed -i '2i ARG BUILDKIT_SBOM_SCAN_STAGE=builder' "$EXTENSION/Dockerfile"
+          ARCH: ${{ matrix.arch }}
+        run: |
+          python3 .github/workflows/apply_validation_overrides.py "$EXTENSION" "$ARCH"
+          sed -i '2i ARG BUILDKIT_SBOM_SCAN_STAGE=builder' "$EXTENSION/Dockerfile"
 
       - name: Build the two distro targets with the current generator
         id: build
@@ -86,6 +89,7 @@ jobs:
           ARCH: ${{ matrix.arch }}
           GENERATOR: ${{ inputs.generator }}
           CORE_SOURCE_COMMIT: ${{ inputs.core_source_commit }}
+          VALIDATION_OVERRIDE: ${{ matrix.extension == 'plpgsql-check' && 'archive-pgdg-exact-pin-v1' || 'none' }}
         run: |
           set -euo pipefail
           output="$RUNNER_TEMP/licensing-evidence/$EXTENSION-$ARCH"
@@ -123,7 +127,7 @@ jobs:
             fi
             rm "$output/$distro.rootfs.tar"
           done < <(jq -r 'keys[]' "$output/build-metadata.json")
-          jq -s '{extension:env.EXTENSION,arch:env.ARCH,generator:env.GENERATOR,harness_commit:env.GITHUB_SHA,core_source_commit:env.CORE_SOURCE_COMMIT,cases:.}' "$output"/*-verification.json > "$output/summary.json"
+          jq -s '{extension:env.EXTENSION,arch:env.ARCH,generator:env.GENERATOR,harness_commit:env.GITHUB_SHA,core_source_commit:env.CORE_SOURCE_COMMIT,validation_override:env.VALIDATION_OVERRIDE,cases:.}' "$output"/*-verification.json > "$output/summary.json"
 
       - name: Upload SPDX and filesystem evidence
         if: always()
