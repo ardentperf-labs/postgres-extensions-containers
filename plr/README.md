@@ -76,14 +76,12 @@ SELECT plr_version();
 
 ## Known Caveats
 
-- **R runtime bundled**: The full R runtime (`libR.so` and related libraries)
-  is bundled in the image under `/system/`. Only the base R packages are
-  available. Additional R packages cannot be installed at runtime in a minimal
-  container environment.
-- **Self-referential symlink fix**: The R library installs `libR.so` as a
-  symlink pointing to itself via a complex chain. The Dockerfile includes a
-  guard to avoid creating broken self-referential symlinks during the
-  ldd-diff step.
+- **R runtime**: The Dockerfile stages the shared-library dependencies
+  reported by `ldd` on `plr.so`, including `libR.so` and its dependencies when
+  they are not already present in the base image. It copies the canonical
+  `libR.so` target after staging to prevent a self-referential symlink. The
+  image does not include R package data trees, and additional R packages cannot
+  be installed at runtime in a minimal container environment.
 - **Testing limitation**: The CI tests verify that the extension can be created
   (`CREATE EXTENSION plr`) and that the `plr_version()` function returns a
   result. Full R statistical function tests were not exercised.

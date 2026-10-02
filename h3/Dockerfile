@@ -10,24 +10,32 @@ ARG EXT_VERSION
 
 USER 0
 
+# Capture base image libraries before installing extension packages.
+COPY scripts/capture_base_image_libs.sh /usr/local/bin/capture_base_image_libs.sh
+RUN /usr/local/bin/capture_base_image_libs.sh
+
 RUN apt-get update && \
 	apt-get install -y --no-install-recommends "postgresql-${PG_MAJOR}-h3=${EXT_VERSION}"
+
+# Gather system libraries and their licenses
+COPY scripts/stage_system_libs.sh /usr/local/bin/stage_system_libs.sh
+RUN /usr/local/bin/stage_system_libs.sh /usr/lib/postgresql/${PG_MAJOR}/lib/h3*.so
 
 FROM scratch
 ARG PG_MAJOR
 
 # Licenses
-COPY --parents --from=builder /usr/share/doc/./libh3-1/copyright /licenses/
+COPY --from=builder /licenses /licenses/
 COPY --from=builder /usr/share/doc/postgresql-${PG_MAJOR}-h3/copyright /licenses/postgresql-${PG_MAJOR}-h3/
 
 # Libraries
 COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/h3.so /lib/
 COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/h3_postgis.so /lib/
 
-# System libs
-COPY --from=builder /lib/*-linux-gnu/libh3.so.1 /system/
-
 # Share
 COPY --from=builder /usr/share/postgresql/${PG_MAJOR}/extension/h3* /share/extension/
+
+# System libs
+COPY --from=builder /system /system/
 
 USER 65532:65532

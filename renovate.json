@@ -120,6 +120,52 @@
       ],
       "groupName": "all github action",
       "pinDigests": true
+    },
+    {
+      "description": "require SQL version review for approved extensions with independently versioned SQL",
+      "matchPackageNames": [
+        "postgresql-18-asn1oid",
+        "postgresql-18-credcheck",
+        "postgresql-18-dirtyread",
+        "postgresql-18-first-last-agg",
+        "postgresql-18-http",
+        "postgresql-18-icu-ext",
+        "postgresql-18-ip4r",
+        "postgresql-18-jsquery",
+        "postgresql-18-numeral",
+        "postgresql-18-ogr-fdw",
+        "postgresql-18-orafce",
+        "postgresql-18-periods",
+        "postgresql-18-pg-background",
+        "postgresql-18-pg-csv",
+        "postgresql-18-pg-gvm",
+        "postgresql-18-pg-permissions",
+        "postgresql-18-pg-wait-sampling",
+        "postgresql-18-pgfincore",
+        "postgresql-18-pglogical",
+        "postgresql-18-pgnodemx",
+        "postgresql-18-pgpcre",
+        "postgresql-18-pgtt",
+        "postgresql-18-pllua",
+        "postgresql-18-plsh",
+        "postgresql-18-prefix",
+        "postgresql-18-preprepare",
+        "postgresql-18-prioritize",
+        "postgresql-18-rdkit",
+        "postgresql-18-roaringbitmap",
+        "postgresql-18-rum",
+        "postgresql-18-stat-log",
+        "postgresql-18-statviz",
+        "postgresql-18-tablelog",
+        "postgresql-18-unit",
+        "postgresql-plperl-18",
+        "postgresql-plpython3-18",
+        "postgresql-pltcl-18"
+      ],
+      "automerge": false,
+      "prBodyNotes": [
+        "The SQL extension versions in this image do not track the full upstream package version (including independently versioned bundled extensions). Before merging, inspect the new package control files and SQL upgrade scripts, and update the extension metadata.hcl, README.md and affected test expectations where needed. Do not infer SQL versions from the package version or approve solely because CI passed."
+      ]
     }
   ]
 }

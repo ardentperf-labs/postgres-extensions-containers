@@ -10,25 +10,31 @@ ARG EXT_VERSION
 
 USER 0
 
+# Capture base image libraries before installing extension packages.
+COPY scripts/capture_base_image_libs.sh /usr/local/bin/capture_base_image_libs.sh
+RUN /usr/local/bin/capture_base_image_libs.sh
+
 RUN apt-get update && \
 	apt-get install -y --no-install-recommends "pgagent=${EXT_VERSION}"
+
+# Gather system libraries and their licenses
+COPY scripts/stage_system_libs.sh /usr/local/bin/stage_system_libs.sh
+RUN /usr/local/bin/stage_system_libs.sh /usr/bin/pgagent
 
 FROM scratch
 ARG PG_MAJOR
 
 # Licenses
-COPY --parents --from=builder /usr/share/doc/./libboost-filesystem1.*/copyright /licenses/
-COPY --parents --from=builder /usr/share/doc/./libboost-thread1.*/copyright /licenses/
+COPY --from=builder /licenses /licenses/
 COPY --from=builder /usr/share/doc/pgagent/copyright /licenses/pgagent/
 
 # Binary
 COPY --from=builder /usr/bin/pgagent /bin/
 
-# System libs
-COPY --from=builder /lib/*-linux-gnu/libboost_filesystem.so.* /system/
-COPY --from=builder /lib/*-linux-gnu/libboost_thread.so.* /system/
-
 # Share
 COPY --from=builder /usr/share/postgresql/${PG_MAJOR}/extension/pgagent* /share/extension/
+
+# System libs
+COPY --from=builder /system /system/
 
 USER 65532:65532
