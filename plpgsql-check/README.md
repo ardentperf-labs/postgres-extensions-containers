@@ -18,7 +18,7 @@ postgresql:
   - name: plpgsql-check
     image:
       # renovate: suite=trixie-pgdg depName=postgresql-18-plpgsql-check
-      reference: ghcr.io/cnpg-extensions/plpgsql-check:2.10.9-18-trixie
+      reference: ghcr.io/cnpg-extensions/plpgsql-check:2.10.11-18-trixie
 ~~~
 
 Enable the SQL extension in a Database:
@@ -35,7 +35,7 @@ spec:
     name: cluster-plpgsql-check
   extensions:
   - name: plpgsql_check
-    # The SQL extension version is 2.10; the package version is 2.10.9.
+    # The SQL extension version is 2.10; the package version is 2.10.11.
     # renovate: suite=trixie-pgdg depName=postgresql-18-plpgsql-check extractVersion=^(?<version>\d+\.\d+)
     version: '2.10'
 ~~~
