@@ -1,0 +1,8 @@
+Repository: https://github.com/citusdata/pg_cron
+Source package: pg-cron 1.6.8-1.pgdg13+2
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/pg-cron/pg-cron_1.6.8-1.pgdg13+2.dsc
+SHA256: 6d34d1f7289176003079c675db9891d31fd15b329f198578662277683772aba5
+Copied paths: sql, expected, pg_cron.conf, Makefile, LICENSE, debian/copyright
+Suite: Makefile REGRESS for PostgreSQL 18, including applicable upstream version variants.
+Test SQL and expected output are unmodified; update manually.
+Test Cluster cron.database_name is contrib_regression so the upstream suite owns extension creation in its regression database.

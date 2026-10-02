@@ -1,0 +1,16 @@
+Extension: periods
+Upstream repository: https://github.com/xocolatl/periods
+PGDG source package: postgresql-periods 1.2.3-2.pgdg13+1
+Source descriptor: postgresql-periods_1.2.3-2.pgdg13+1.dsc
+Source descriptor SHA256: 862e67185da0bf92d6c51f5754b9d4143335ea7c9ca501d8c759425a2d902e23
+Original source archive(s):
+  postgresql-periods_1.2.3.orig.tar.gz SHA256 2104b4a1ecf682ef499a13119ecdf5e511839d6164bfb18d04db014efa922831
+Copied upstream source paths (relative to the exact extracted PGDG source tree):
+  sql/
+  expected/
+Copied license/copyright notices:
+  upstream/LICENSE
+Runner: test/run.sh invokes the native PG_REGRESS suite with its source-defined cases and options.
+Expected output files are copied byte-for-byte from this source package; no generated or edited expected outputs are vendored.
+Requirements / limits:
+  Requires btree_gist. Tests create/drop roles and uninstall the extension; run only against a disposable database with role-management privileges.

@@ -1,0 +1,7 @@
+Repository: https://github.com/ohmu/pgmemcache
+Source package: pgmemcache 2.3.0-16.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/pgmemcache/pgmemcache_2.3.0-16.pgdg13+1.dsc
+SHA256: 06ac2224cca47771eb113520ff3e650417ce27b02068ee5761556a0bc17aaa94
+Copied paths: sql, expected, test.sql, localtests.sh, Makefile; upstream license notices and debian/copyright.
+Suite: packaged Makefile REGRESS (Debian manual-memcached-start patch). A runner-local daemon does not satisfy the server-side loopback requirement.
+Test inputs and expected output are unmodified; update manually.

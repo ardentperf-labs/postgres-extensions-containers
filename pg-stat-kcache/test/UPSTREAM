@@ -1,0 +1,7 @@
+Repository: https://powa.readthedocs.io/
+Source package: pg-stat-kcache 2.3.2-1.pgdg13+2
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/pg-stat-kcache/pg-stat-kcache_2.3.2-1.pgdg13+2.dsc
+SHA256: 0bdaa811256c3f762b7858bd06c1be0aa317420911ac272cf8a751e9a1d5fbe8
+Copied paths: test, expected, Makefile, LICENSE, debian/copyright
+Suite: Makefile REGRESS for PostgreSQL 18, including applicable upstream version variants.
+Test SQL and expected output are unmodified; update manually.

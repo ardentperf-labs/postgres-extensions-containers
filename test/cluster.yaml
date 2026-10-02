@@ -7,8 +7,12 @@ spec:
     apiGroup: postgresql.cnpg.io
     kind: ClusterImageCatalog
     name: (regex_replace_all('^.*minimal-', $values.pg_image, 'postgresql-minimal-'))
-    major: 18
+    major: ($values.pg_major)
   instances: 1
+
+  # The upstream regression runner needs a disposable superuser connection to
+  # create and drop its databases. This Cluster exists only for test execution.
+  enableSuperuserAccess: true
 
   storage:
     size: 1Gi

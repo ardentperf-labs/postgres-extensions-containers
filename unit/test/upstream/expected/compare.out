@@ -1,0 +1,259 @@
+-- test comparisons
+WITH
+  v(u) AS (VALUES
+	(NULL),
+	('-2'::unit),
+	('-1'::unit),
+	('-0'::unit),
+	('0'::unit),
+	('1'::unit),
+	('2'::unit),
+	(meter()),
+	(meter() * '2'),
+	(kilogram()),
+	(kilogram() * '2')
+  ),
+  va(a) AS (SELECT * FROM v),
+  vb(b) AS (SELECT * FROM v)
+SELECT
+  a, b,
+  CASE WHEN unit_cmp(a, b) < 0 THEN '<'
+       WHEN unit_cmp(a, b) = 0 THEN '='
+       WHEN unit_cmp(a, b) > 0 THEN '>'
+  END AS cmp,
+  a < b  AS lt, a <= b AS le,
+  a = b  AS eq, a <> b AS ne,
+  a >= b AS ge, a > b  AS gt
+FROM
+  va CROSS JOIN vb;
+  a   |  b   | cmp | lt | le | eq | ne | ge | gt 
+------+------+-----+----+----+----+----+----+----
+      |      |     |    |    |    |    |    | 
+      | -2   |     |    |    |    |    |    | 
+      | -1   |     |    |    |    |    |    | 
+      | -0   |     |    |    |    |    |    | 
+      | 0    |     |    |    |    |    |    | 
+      | 1    |     |    |    |    |    |    | 
+      | 2    |     |    |    |    |    |    | 
+      | 1 m  |     |    |    |    |    |    | 
+      | 2 m  |     |    |    |    |    |    | 
+      | 1 kg |     |    |    |    |    |    | 
+      | 2 kg |     |    |    |    |    |    | 
+ -2   |      |     |    |    |    |    |    | 
+ -2   | -2   | =   | f  | t  | t  | f  | t  | f
+ -2   | -1   | <   | t  | t  | f  | t  | f  | f
+ -2   | -0   | <   | t  | t  | f  | t  | f  | f
+ -2   | 0    | <   | t  | t  | f  | t  | f  | f
+ -2   | 1    | <   | t  | t  | f  | t  | f  | f
+ -2   | 2    | <   | t  | t  | f  | t  | f  | f
+ -2   | 1 m  | <   | t  | t  | f  | t  | f  | f
+ -2   | 2 m  | <   | t  | t  | f  | t  | f  | f
+ -2   | 1 kg | <   | t  | t  | f  | t  | f  | f
+ -2   | 2 kg | <   | t  | t  | f  | t  | f  | f
+ -1   |      |     |    |    |    |    |    | 
+ -1   | -2   | >   | f  | f  | f  | t  | t  | t
+ -1   | -1   | =   | f  | t  | t  | f  | t  | f
+ -1   | -0   | <   | t  | t  | f  | t  | f  | f
+ -1   | 0    | <   | t  | t  | f  | t  | f  | f
+ -1   | 1    | <   | t  | t  | f  | t  | f  | f
+ -1   | 2    | <   | t  | t  | f  | t  | f  | f
+ -1   | 1 m  | <   | t  | t  | f  | t  | f  | f
+ -1   | 2 m  | <   | t  | t  | f  | t  | f  | f
+ -1   | 1 kg | <   | t  | t  | f  | t  | f  | f
+ -1   | 2 kg | <   | t  | t  | f  | t  | f  | f
+ -0   |      |     |    |    |    |    |    | 
+ -0   | -2   | >   | f  | f  | f  | t  | t  | t
+ -0   | -1   | >   | f  | f  | f  | t  | t  | t
+ -0   | -0   | =   | f  | t  | t  | f  | t  | f
+ -0   | 0    | =   | f  | t  | t  | f  | t  | f
+ -0   | 1    | <   | t  | t  | f  | t  | f  | f
+ -0   | 2    | <   | t  | t  | f  | t  | f  | f
+ -0   | 1 m  | <   | t  | t  | f  | t  | f  | f
+ -0   | 2 m  | <   | t  | t  | f  | t  | f  | f
+ -0   | 1 kg | <   | t  | t  | f  | t  | f  | f
+ -0   | 2 kg | <   | t  | t  | f  | t  | f  | f
+ 0    |      |     |    |    |    |    |    | 
+ 0    | -2   | >   | f  | f  | f  | t  | t  | t
+ 0    | -1   | >   | f  | f  | f  | t  | t  | t
+ 0    | -0   | =   | f  | t  | t  | f  | t  | f
+ 0    | 0    | =   | f  | t  | t  | f  | t  | f
+ 0    | 1    | <   | t  | t  | f  | t  | f  | f
+ 0    | 2    | <   | t  | t  | f  | t  | f  | f
+ 0    | 1 m  | <   | t  | t  | f  | t  | f  | f
+ 0    | 2 m  | <   | t  | t  | f  | t  | f  | f
+ 0    | 1 kg | <   | t  | t  | f  | t  | f  | f
+ 0    | 2 kg | <   | t  | t  | f  | t  | f  | f
+ 1    |      |     |    |    |    |    |    | 
+ 1    | -2   | >   | f  | f  | f  | t  | t  | t
+ 1    | -1   | >   | f  | f  | f  | t  | t  | t
+ 1    | -0   | >   | f  | f  | f  | t  | t  | t
+ 1    | 0    | >   | f  | f  | f  | t  | t  | t
+ 1    | 1    | =   | f  | t  | t  | f  | t  | f
+ 1    | 2    | <   | t  | t  | f  | t  | f  | f
+ 1    | 1 m  | <   | t  | t  | f  | t  | f  | f
+ 1    | 2 m  | <   | t  | t  | f  | t  | f  | f
+ 1    | 1 kg | <   | t  | t  | f  | t  | f  | f
+ 1    | 2 kg | <   | t  | t  | f  | t  | f  | f
+ 2    |      |     |    |    |    |    |    | 
+ 2    | -2   | >   | f  | f  | f  | t  | t  | t
+ 2    | -1   | >   | f  | f  | f  | t  | t  | t
+ 2    | -0   | >   | f  | f  | f  | t  | t  | t
+ 2    | 0    | >   | f  | f  | f  | t  | t  | t
+ 2    | 1    | >   | f  | f  | f  | t  | t  | t
+ 2    | 2    | =   | f  | t  | t  | f  | t  | f
+ 2    | 1 m  | >   | f  | f  | f  | t  | t  | t
+ 2    | 2 m  | <   | t  | t  | f  | t  | f  | f
+ 2    | 1 kg | >   | f  | f  | f  | t  | t  | t
+ 2    | 2 kg | <   | t  | t  | f  | t  | f  | f
+ 1 m  |      |     |    |    |    |    |    | 
+ 1 m  | -2   | >   | f  | f  | f  | t  | t  | t
+ 1 m  | -1   | >   | f  | f  | f  | t  | t  | t
+ 1 m  | -0   | >   | f  | f  | f  | t  | t  | t
+ 1 m  | 0    | >   | f  | f  | f  | t  | t  | t
+ 1 m  | 1    | >   | f  | f  | f  | t  | t  | t
+ 1 m  | 2    | <   | t  | t  | f  | t  | f  | f
+ 1 m  | 1 m  | =   | f  | t  | t  | f  | t  | f
+ 1 m  | 2 m  | <   | t  | t  | f  | t  | f  | f
+ 1 m  | 1 kg | >   | f  | f  | f  | t  | t  | t
+ 1 m  | 2 kg | <   | t  | t  | f  | t  | f  | f
+ 2 m  |      |     |    |    |    |    |    | 
+ 2 m  | -2   | >   | f  | f  | f  | t  | t  | t
+ 2 m  | -1   | >   | f  | f  | f  | t  | t  | t
+ 2 m  | -0   | >   | f  | f  | f  | t  | t  | t
+ 2 m  | 0    | >   | f  | f  | f  | t  | t  | t
+ 2 m  | 1    | >   | f  | f  | f  | t  | t  | t
+ 2 m  | 2    | >   | f  | f  | f  | t  | t  | t
+ 2 m  | 1 m  | >   | f  | f  | f  | t  | t  | t
+ 2 m  | 2 m  | =   | f  | t  | t  | f  | t  | f
+ 2 m  | 1 kg | >   | f  | f  | f  | t  | t  | t
+ 2 m  | 2 kg | >   | f  | f  | f  | t  | t  | t
+ 1 kg |      |     |    |    |    |    |    | 
+ 1 kg | -2   | >   | f  | f  | f  | t  | t  | t
+ 1 kg | -1   | >   | f  | f  | f  | t  | t  | t
+ 1 kg | -0   | >   | f  | f  | f  | t  | t  | t
+ 1 kg | 0    | >   | f  | f  | f  | t  | t  | t
+ 1 kg | 1    | >   | f  | f  | f  | t  | t  | t
+ 1 kg | 2    | <   | t  | t  | f  | t  | f  | f
+ 1 kg | 1 m  | <   | t  | t  | f  | t  | f  | f
+ 1 kg | 2 m  | <   | t  | t  | f  | t  | f  | f
+ 1 kg | 1 kg | =   | f  | t  | t  | f  | t  | f
+ 1 kg | 2 kg | <   | t  | t  | f  | t  | f  | f
+ 2 kg |      |     |    |    |    |    |    | 
+ 2 kg | -2   | >   | f  | f  | f  | t  | t  | t
+ 2 kg | -1   | >   | f  | f  | f  | t  | t  | t
+ 2 kg | -0   | >   | f  | f  | f  | t  | t  | t
+ 2 kg | 0    | >   | f  | f  | f  | t  | t  | t
+ 2 kg | 1    | >   | f  | f  | f  | t  | t  | t
+ 2 kg | 2    | >   | f  | f  | f  | t  | t  | t
+ 2 kg | 1 m  | >   | f  | f  | f  | t  | t  | t
+ 2 kg | 2 m  | <   | t  | t  | f  | t  | f  | f
+ 2 kg | 1 kg | >   | f  | f  | f  | t  | t  | t
+ 2 kg | 2 kg | =   | f  | t  | t  | f  | t  | f
+(121 rows)
+
+-- test btree index
+CREATE TEMP TABLE u (u unit);
+INSERT INTO u SELECT meter(generate_series(1,10000)::double precision);
+INSERT INTO u SELECT generate_series(1,10000)::text::unit * kilogram();
+ANALYZE u;
+CREATE INDEX ON u(u);
+SELECT * FROM u WHERE u = meter(400);
+   u   
+-------
+ 400 m
+(1 row)
+
+SELECT * FROM u WHERE u = '300' * kilogram();
+   u    
+--------
+ 300 kg
+(1 row)
+
+EXPLAIN (COSTS OFF) SELECT * FROM u WHERE u = meter(400);
+             QUERY PLAN             
+------------------------------------
+ Index Only Scan using u_u_idx on u
+   Index Cond: (u = '400 m'::unit)
+(2 rows)
+
+EXPLAIN (COSTS OFF) SELECT * FROM u WHERE u = '300' * kilogram();
+             QUERY PLAN             
+------------------------------------
+ Index Only Scan using u_u_idx on u
+   Index Cond: (u = '300 kg'::unit)
+(2 rows)
+
+-- test strict operators
+SELECT '1 m'::unit << '1 m'::unit;
+ ?column? 
+----------
+ f
+(1 row)
+
+SELECT '1 m'::unit << '1 A'::unit;
+ERROR:  dimension mismatch in "strict comparison" operation: "1 m", "1 A"
+SELECT '1 m'::unit <<= '1 m'::unit;
+ ?column? 
+----------
+ t
+(1 row)
+
+SELECT '1 m'::unit <<= '1 A'::unit;
+ERROR:  dimension mismatch in "strict comparison" operation: "1 m", "1 A"
+SELECT '1 m'::unit == '1 m'::unit;
+ ?column? 
+----------
+ t
+(1 row)
+
+SELECT '1 m'::unit == '1 A'::unit;
+ERROR:  dimension mismatch in "strict comparison" operation: "1 m", "1 A"
+SELECT '1 m'::unit <<>> '1 m'::unit;
+ ?column? 
+----------
+ f
+(1 row)
+
+SELECT '1 m'::unit <<>> '1 A'::unit;
+ERROR:  dimension mismatch in "strict comparison" operation: "1 m", "1 A"
+SELECT '1 m'::unit >>= '1 m'::unit;
+ ?column? 
+----------
+ t
+(1 row)
+
+SELECT '1 m'::unit >>= '1 A'::unit;
+ERROR:  dimension mismatch in "strict comparison" operation: "1 m", "1 A"
+SELECT '1 m'::unit >> '1 m'::unit;
+ ?column? 
+----------
+ f
+(1 row)
+
+SELECT '1 m'::unit >> '1 A'::unit;
+ERROR:  dimension mismatch in "strict comparison" operation: "1 m", "1 A"
+-- test range type
+SELECT 'empty'::unitrange;
+ unitrange 
+-----------
+ empty
+(1 row)
+
+SELECT '(1 m, 2 m)'::unitrange;
+   unitrange   
+---------------
+ ("1 m","2 m")
+(1 row)
+
+SELECT '(1 m, 2 A)'::unitrange;
+ERROR:  dimension mismatch in "strict comparison" operation: "1 m", "2 A"
+LINE 1: SELECT '(1 m, 2 A)'::unitrange;
+               ^
+SELECT unit_diff('1 A', '2 A');
+ unit_diff 
+-----------
+        -1
+(1 row)
+
+SELECT unit_diff('1 A', '2 K');
+ERROR:  dimension mismatch in "-" operation: "1 A", "2 K"

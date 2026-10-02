@@ -1,0 +1,7 @@
+Repository: https://github.com/EnterpriseDB/mysql_fdw
+Source package: postgresql-mysql-fdw 2.9.3-2.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-mysql-fdw/postgresql-mysql-fdw_2.9.3-2.pgdg13+1.dsc
+SHA256: a202c3f1311bd7b44b8c345c4151a523a6ab392fece1eac29e5afe147b237890
+Copied paths: sql, expected, mysql_init.sh, Makefile; upstream license notices and debian/copyright.
+Suite: Makefile REGRESS. mysql_init.sh documents the prerequisite databases and user. Missing external fixture is unsupported, never a pass.
+Test inputs and expected output are unmodified; update manually.

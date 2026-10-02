@@ -1,0 +1,55 @@
+-- Use terse verbosity, so that the expected output does not depend on the
+-- error context, which differs between PostgreSQL versions.
+\set VERBOSITY terse
+
+-- Reproducer: tdigest_trimmed_agg() used to convert the trimmed range from
+-- double to int64 without checking whether the rounded bounds still fit.
+--
+-- This one does not crash, it just gives wrong answers.
+--
+-- The unsafe boundary calculation converted expressions such as
+--
+--     ceil(count * high)
+--
+-- directly to int64. count is int64, but multiplication is done in double, with
+-- a 53-bit mantissa, so once the total count gets close enough to 2^63 the
+-- product rounds up to exactly 2^63, which is not representable as int64. The
+-- conversion back to int64 is undefined behaviour; on x86-64 it yields
+-- INT64_MIN. count_high then ends up hugely negative, every centroid falls
+-- outside [count_low, count_high], nothing is accumulated, and the function
+-- returns NULL as if the digest were empty.
+--
+-- The threshold is sharp - the last total count that still works is
+-- 9223372036854775295, one more and the answer turns into NULL:
+--
+--     total count           tdigest_digest_sum
+--     9223372036854775295   1.844674407370955e+19    correct
+--     9223372036854775296   NULL                     wrong
+--     9223372036854775807   NULL                     wrong
+--
+-- This affects tdigest_digest_sum() and tdigest_digest_avg() as well as the
+-- tdigest_sum() and tdigest_avg() aggregates, i.e. anything going through
+-- tdigest_trimmed_agg().
+
+-- the last value that still produces the right answer
+SELECT tdigest_digest_sum('flags 1 count 9223372036854775295 compression 10 centroids 1 (2, 9223372036854775295)'::tdigest);
+SELECT tdigest_digest_avg('flags 1 count 9223372036854775295 compression 10 centroids 1 (2, 9223372036854775295)'::tdigest);
+
+-- one more, and the result silently becomes NULL
+SELECT tdigest_digest_sum('flags 1 count 9223372036854775296 compression 10 centroids 1 (2, 9223372036854775296)'::tdigest);
+SELECT tdigest_digest_avg('flags 1 count 9223372036854775296 compression 10 centroids 1 (2, 9223372036854775296)'::tdigest);
+
+-- INT64_MAX, same thing
+SELECT tdigest_digest_sum('flags 1 count 9223372036854775807 compression 10 centroids 1 (2, 9223372036854775807)'::tdigest);
+SELECT tdigest_digest_avg('flags 1 count 9223372036854775807 compression 10 centroids 1 (2, 9223372036854775807)'::tdigest);
+
+-- side by side, so the discontinuity is easy to see
+SELECT n AS total_count, tdigest_digest_sum(('flags 1 count ' || n || ' compression 10 centroids 1 (2, ' || n || ')')::tdigest) AS sum
+  FROM (VALUES (9223372036854775295::bigint),
+               (9223372036854775296::bigint),
+               (9223372036854775807::bigint)) v(n);
+
+SELECT n AS total_count, tdigest_digest_avg(('flags 1 count ' || n || ' compression 10 centroids 1 (2, ' || n || ')')::tdigest) AS avg
+  FROM (VALUES (9223372036854775295::bigint),
+               (9223372036854775296::bigint),
+               (9223372036854775807::bigint)) v(n);

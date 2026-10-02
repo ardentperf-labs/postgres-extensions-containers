@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"maps"
 	"path"
@@ -177,13 +178,6 @@ func (m *Maintenance) GenerateTestingValues(
 			targetExtensionImage, AnnotationImageBaseName)
 	}
 
-	version := annotations[AnnotationImageSQLVersion]
-	if version == "" && metadata.CreateExtension {
-		return nil, fmt.Errorf(
-			"extension image %s doesn't have an %q annotation or its value is empty",
-			targetExtensionImage, AnnotationImageSQLVersion)
-	}
-
 	distribution, pgMajor, err := parseImageCoordinates(annotations)
 	if err != nil {
 		return nil, fmt.Errorf("extension image %s: %w", targetExtensionImage, err)
@@ -191,40 +185,28 @@ func (m *Maintenance) GenerateTestingValues(
 
 	locator := imageLocator{
 		ExtensionImage: targetExtensionImage,
-		SQLVersion:     version,
 		Distribution:   distribution,
 		PgMajor:        pgMajor,
 	}
 
-	extensionInfos, err := generateTestingValuesExtensions(ctx, source, metadata, locator,
-		registryUsername, registryPassword)
+	testDependencies, err := readTestDependencies(ctx, source.Directory(target), distribution)
+	if err != nil {
+		return nil, err
+	}
+	extensions, err := generateTestingValuesExtensions(ctx, source, metadata, locator, testDependencies)
 	if err != nil {
 		return nil, err
 	}
 
-	extensions := make([]*ExtensionConfiguration, 0, len(extensionInfos))
-	for _, info := range extensionInfos {
-		if info.Configuration == nil {
-			continue
-		}
-		extensions = append(extensions, info.Configuration)
-	}
-
-	databaseConfig := generateDatabaseConfig(extensionInfos)
-	databaseAssertStatus := generateDatabaseAssertStatus(extensionInfos)
-
 	// Build values.yaml content
 	values := TestingValues{
 		Name:                   metadata.Name,
-		SQLName:                metadata.SQLName,
 		SharedPreloadLibraries: metadata.SharedPreloadLibraries,
 		PostgresqlParameters:   metadata.PostgresqlParameters,
 		PgImage:                pgImage,
-		Version:                version,
-		CreateExtension:        metadata.CreateExtension,
+		PgMajor:                pgMajor,
+		Distribution:           distribution,
 		Extensions:             extensions,
-		DatabaseConfig:         databaseConfig,
-		DatabaseAssertStatus:   databaseAssertStatus,
 	}
 	valuesYaml, err := yaml.Marshal(values)
 	if err != nil {
@@ -352,7 +334,7 @@ func (m *Maintenance) Create(
 	return extDir, nil
 }
 
-// Tests the specified target using Chainsaw
+// Tests the specified target with its vendored upstream test suite.
 func (m *Maintenance) Test(
 	ctx context.Context,
 	// The source directory containing the extension folders. Defaults to the current directory
@@ -365,14 +347,14 @@ func (m *Maintenance) Test(
 	// The target extension to test
 	// +default="all"
 	target string,
-	// Container image to use to run chainsaw
+	// Container image to use to run the shared Chainsaw Cluster setup
 	// renovate: datasource=docker depName=kyverno/chainsaw packageName=ghcr.io/kyverno/chainsaw versioning=docker
 	// +default="ghcr.io/kyverno/chainsaw:v0.2.15@sha256:527f3be2b9ec0580cb0bc84540a0fee99406b011c24ae3a30953e525af60809d"
 	chainsawImage string,
 	// Additional arguments to pass to Chainsaw test command
 	// +optional
 	extraArgs []string,
-) error {
+) (returnErr error) {
 	extDir := source
 	if target != "all" {
 		extDir = source.Filter(dagger.DirectoryFilterOpts{
@@ -393,6 +375,24 @@ func (m *Maintenance) Test(
 	}
 
 	const valuesFile = "values.yaml"
+	keepCluster := slices.Contains(extraArgs, "--skip-delete")
+	var clustersToDelete []string
+	var fixturesToDelete []*dagger.File
+	defer func() {
+		for _, setupFile := range fixturesToDelete {
+			if err := deleteTestingFixtures(ctx, kubeconfig, setupFile); err != nil {
+				returnErr = errors.Join(returnErr, err)
+			}
+		}
+		if keepCluster {
+			return
+		}
+		for _, clusterName := range clustersToDelete {
+			if err := deleteTestingCluster(ctx, kubeconfig, clusterName); err != nil {
+				returnErr = errors.Join(returnErr, err)
+			}
+		}
+	}()
 
 	for _, targetExtension := range targetExtensions {
 		extName, err := targetExtension.Name(ctx)
@@ -407,21 +407,98 @@ func (m *Maintenance) Test(
 		if !hasValues {
 			return fmt.Errorf("cannot execute tests for extension %q, values.yaml file is missing", target)
 		}
+		valuesYAML, err := targetExtension.File(valuesFile).Contents(ctx)
+		if err != nil {
+			return fmt.Errorf("read test values for %s: %w", extName, err)
+		}
+		var values TestingValues
+		if err := yaml.Unmarshal([]byte(valuesYAML), &values); err != nil {
+			return fmt.Errorf("parse test values for %s: %w", extName, err)
+		}
+		if values.Name == "" || values.PgImage == "" || values.PgMajor <= 0 || values.Distribution == "" {
+			return fmt.Errorf("test values for %s must declare name, pg_image, pg_major, and distribution", extName)
+		}
+
+		extensionTestDirectory := targetExtension.Directory("test")
+		provenance, runnerPackages, err := validateUpstreamTestBundle(ctx, extensionTestDirectory)
+		if err != nil {
+			return fmt.Errorf("extension %s: %w", extName, err)
+		}
+		if err := validateRunnerPackages(runnerPackages, extName, values.PgMajor); err != nil {
+			return fmt.Errorf("extension %s: %w", extName, err)
+		}
+		runOnServer, err := extensionTestDirectory.Exists(ctx, "run-on-server")
+		if err != nil {
+			return err
+		}
+		if runOnServer && len(runnerPackages) > 0 {
+			return fmt.Errorf("extension %s: test/run-on-server cannot use runner-only test/packages; use the remote runner for suites needing extra tools", extName)
+		}
+		if len(values.Extensions) == 0 || values.Extensions[0] == nil || values.Extensions[0].ImageVolumeSource.Reference == "" {
+			return fmt.Errorf("test values for %s do not reference the built extension image", extName)
+		}
+		targetImage := values.Extensions[0].ImageVolumeSource.Reference
+		testRoot := path.Join(testRootPath, extName, "test")
+
+		// Chainsaw owns only the setup/readiness gate. The target Cluster is
+		// retained while the upstream suite runs and removed when Test returns.
+		sharedTestDirectory := source.Directory("test")
+		clusterOverrideExists, err := extensionTestDirectory.Exists(ctx, "cluster.yaml")
+		if err != nil {
+			return err
+		}
+		if clusterOverrideExists {
+			baseCluster, err := sharedTestDirectory.File("cluster.yaml").Contents(ctx)
+			if err != nil {
+				return fmt.Errorf("read shared Cluster test manifest: %w", err)
+			}
+			overrideCluster, err := extensionTestDirectory.File("cluster.yaml").Contents(ctx)
+			if err != nil {
+				return fmt.Errorf("read %s Cluster test overlay: %w", extName, err)
+			}
+			mergedCluster, mergedValues, err := mergeClusterSettings(baseCluster, overrideCluster, values)
+			if err != nil {
+				return fmt.Errorf("merge %s Cluster test overlay: %w", extName, err)
+			}
+			sharedTestDirectory = sharedTestDirectory.WithNewFile("cluster.yaml", mergedCluster)
+			values = mergedValues
+		}
+		sharedTestDirectory, setupFile, err := includeOptionalSetupFixture(ctx, sharedTestDirectory, extensionTestDirectory)
+		if err != nil {
+			return fmt.Errorf("extension %s: %w", extName, err)
+		}
+		if setupFile != nil {
+			fixturesToDelete = append(fixturesToDelete, setupFile)
+		}
+		valuesYAMLForTest, err := yaml.Marshal(values)
+		if err != nil {
+			return fmt.Errorf("encode test values for %s: %w", extName, err)
+		}
+		targetForTest := targetExtension.WithNewFile(valuesFile, string(valuesYAMLForTest))
+
+		if !slices.Contains(clustersToDelete, values.Name) {
+			clustersToDelete = append(clustersToDelete, values.Name)
+		}
 
 		ctr := dag.Container().From(chainsawImage).
+			WithUser("root").
 			WithWorkdir("e2e").
 			WithEnvVariable("CACHEBUSTER", time.Now().String()).
-			WithDirectory("test", extDir.Directory("test")).
-			WithDirectory(extName, targetExtension).
-			WithFile("/etc/kubeconfig/config", kubeconfig).
-			WithEnvVariable("KUBECONFIG", "/etc/kubeconfig/config")
+			WithDirectory("test", sharedTestDirectory).
+			WithDirectory(extName, targetForTest).
+			WithFile(testKubeconfigPath, kubeconfig).
+			WithEnvVariable("KUBECONFIG", testKubeconfigPath)
 
 		chainsawTestArgs := []string{
 			"test",
 			"./test",
 			"--values", path.Join(extName, valuesFile),
+			"--namespace=default",
 		}
 		chainsawTestArgs = append(chainsawTestArgs, extraArgs...)
+		if !keepCluster {
+			chainsawTestArgs = append(chainsawTestArgs, "--skip-delete")
+		}
 
 		_, err = ctr.WithExec(
 			chainsawTestArgs,
@@ -433,33 +510,151 @@ func (m *Maintenance) Test(
 		if err != nil {
 			return err
 		}
-
-		hasIndividualTests, err := targetExtension.Exists(ctx, "test")
+		podName, err := getCNPGPrimaryPod(ctx, kubeconfig, values.Name)
 		if err != nil {
 			return err
 		}
-		if !hasIndividualTests {
-			continue
+		allPackages := []string{
+			"build-essential", "ca-certificates", "make",
+			"postgresql-client-" + strconv.Itoa(values.PgMajor),
+			"postgresql-server-dev-" + strconv.Itoa(values.PgMajor),
 		}
+		allPackages = append(allPackages, runnerPackages...)
+		allPackages = slices.Compact(allPackages)
 
-		chainsawTestArgs = []string{
-			"test",
-			path.Join(extName, "test"),
-			"--values", path.Join(extName, valuesFile),
+		toolRunner := dag.Container().From(values.PgImage).
+			WithUser("root").
+			WithExec([]string{"apt-get", "update"}).
+			WithExec(append([]string{"apt-get", "install", "-y", "--no-install-recommends"}, allPackages...))
+
+		regressPath := fmt.Sprintf("/usr/lib/postgresql/%d/lib/pgxs/src/test/regress/pg_regress", values.PgMajor)
+		isolationRegressPath := fmt.Sprintf("/usr/lib/postgresql/%d/lib/pgxs/src/test/isolation/pg_isolation_regress", values.PgMajor)
+		var testResult *dagger.Container
+		if runOnServer {
+			testUtilities := dag.Directory().
+				WithFile("pg_regress", toolRunner.File(regressPath), dagger.DirectoryWithFileOpts{Permissions: 0o755}).
+				WithFile("pg_isolation_regress", toolRunner.File(isolationRegressPath), dagger.DirectoryWithFileOpts{Permissions: 0o755})
+			nativeTestDirectory := extensionTestDirectory.WithDirectory(path.Join(".harness", "bin"), testUtilities)
+			targetPayload := dag.Container().From(targetImage).Rootfs()
+			nativePayload := dag.Directory()
+			hasNativePayload := false
+			for _, payloadPath := range []string{"bin", "usr/bin", "system", "lib"} {
+				exists, err := targetPayload.Exists(ctx, payloadPath)
+				if err != nil {
+					return fmt.Errorf("inspect target image payload directory %s: %w", payloadPath, err)
+				}
+				if exists {
+					nativePayload = nativePayload.WithDirectory(payloadPath, targetPayload.Directory(payloadPath))
+					hasNativePayload = true
+				}
+			}
+			if hasNativePayload {
+				nativeTestDirectory = nativeTestDirectory.WithDirectory(path.Join(".harness", "payload"), nativePayload)
+			}
+			if err := copyNativeTestBundleToCNPG(ctx, kubeconfig, podName, nativeTestDirectory, testRoot); err != nil {
+				return err
+			}
+			testResult, err = kubectlContainer(kubeconfig).WithExec(
+				nativeTestCommandArgs(podName, testRoot, values.PgMajor),
+				dagger.ContainerWithExecOpts{UseEntrypoint: true, Expect: dagger.ReturnTypeAny},
+			).Sync(ctx)
+		} else {
+			if err := copyUpstreamFixturesToCNPG(ctx, kubeconfig, podName, extensionTestDirectory, testRoot); err != nil {
+				return err
+			}
+			password, err := getCNPGSuperuserPassword(ctx, kubeconfig, values.Name)
+			if err != nil {
+				return err
+			}
+			portForward := kubectlContainer(kubeconfig).
+				WithExposedPort(testPGPort).
+				AsService(dagger.ContainerAsServiceOpts{
+					Args: []string{
+						"port-forward", "--address=0.0.0.0", "--namespace=default",
+						"service/" + values.Name + "-rw", fmt.Sprintf("%d:%d", testPGPort, testPGPort),
+					},
+					UseEntrypoint: true,
+				})
+
+			runner := toolRunner.
+				WithWorkdir(testRoot).
+				WithDirectory(testRoot, extensionTestDirectory).
+				WithDirectory(path.Join(testRoot, "payload"), dag.Container().From(targetImage).Rootfs()).
+				WithExec([]string{"chown", "-R", "postgres:postgres", testRoot}).
+				WithUser("postgres").
+				WithExec([]string{"mkdir", "-p", testOutputPath}).
+				WithEnvVariable("PATH", path.Join(testRoot, "payload", "bin")+":$PATH", dagger.ContainerWithEnvVariableOpts{Expand: true}).
+				WithEnvVariable("LD_LIBRARY_PATH", path.Join(testRoot, "payload", "system")+":"+path.Join(testRoot, "payload", "lib")+":$LD_LIBRARY_PATH", dagger.ContainerWithEnvVariableOpts{Expand: true}).
+				WithEnvVariable("PGHOST", "postgres").
+				WithEnvVariable("PGPORT", strconv.Itoa(testPGPort)).
+				WithEnvVariable("PGUSER", "postgres").
+				WithEnvVariable("PGDATABASE", "contrib_regression").
+				WithEnvVariable("PG_MAJOR", strconv.Itoa(values.PgMajor)).
+				WithEnvVariable("PG_REGRESS", regressPath).
+				WithEnvVariable("PG_ISOLATION_REGRESS", isolationRegressPath).
+				WithEnvVariable("TEST_OUTPUT", testOutputPath).
+				WithEnvVariable("PG_EXTENSION_PAYLOAD", path.Join(testRoot, "payload")).
+				WithEnvVariable("PGSSLMODE", "disable").
+				WithEnvVariable("PGGSSENCMODE", "disable").
+				WithEnvVariable("PGSSLROOTCERT", "").
+				WithSecretVariable("PGPASSWORD", password).
+				WithServiceBinding("postgres", portForward).
+				WithEnvVariable("CACHEBUSTER", time.Now().String()).
+				WithExec([]string{"dropdb", "--if-exists", "--maintenance-db=postgres", "contrib_regression"}).
+				WithExec([]string{"createdb", "--maintenance-db=postgres", "contrib_regression"})
+
+			testResult, err = runner.WithExec(
+				[]string{"sh", "./run.sh"},
+				dagger.ContainerWithExecOpts{Expect: dagger.ReturnTypeAny},
+			).Sync(ctx)
 		}
-		chainsawTestArgs = append(chainsawTestArgs, extraArgs...)
-
-		_, err = ctr.WithExec(
-			chainsawTestArgs,
-			dagger.ContainerWithExecOpts{
-				UseEntrypoint: true,
-			}).
-			Sync(ctx)
 		if err != nil {
-			return err
+			return fmt.Errorf("execute upstream test suite for %s (%s): %w", extName, provenance, err)
+		}
+		exitCode, err := testResult.ExitCode(ctx)
+		if err != nil {
+			return fmt.Errorf("read upstream test status for %s: %w", extName, err)
+		}
+		if exitCode != 0 {
+			var detail string
+			if runOnServer {
+				detail = runNativeTestArtifactSummary(ctx, kubeconfig, podName, testResult, path.Join(testRoot, ".harness", "results"), exitCode)
+			} else {
+				detail = runTestArtifactSummary(ctx, testResult, exitCode)
+			}
+			if exitCode == 77 {
+				return fmt.Errorf("upstream test suite for %s is unsupported (exit 77); %s%s", extName, provenance, detail)
+			}
+			return fmt.Errorf("upstream test suite for %s failed with exit status %d; %s%s", extName, exitCode, provenance, detail)
+		}
+		if setupFile != nil {
+			if err := deleteTestingFixtures(ctx, kubeconfig, setupFile); err != nil {
+				return err
+			}
+			fixturesToDelete = slices.DeleteFunc(fixturesToDelete, func(file *dagger.File) bool { return file == setupFile })
+		}
+		if !keepCluster {
+			if err := deleteTestingCluster(ctx, kubeconfig, values.Name); err != nil {
+				return err
+			}
+			clustersToDelete = slices.DeleteFunc(clustersToDelete, func(name string) bool { return name == values.Name })
 		}
 	}
 
+	return nil
+}
+
+func deleteTestingCluster(ctx context.Context, kubeconfig *dagger.File, clusterName string) error {
+	if clusterName == "" {
+		return nil
+	}
+	container := kubectlContainer(kubeconfig).WithExec(
+		[]string{"delete", "cluster", clusterName, "--namespace=default", "--ignore-not-found=true", "--wait=true"},
+		dagger.ContainerWithExecOpts{UseEntrypoint: true},
+	)
+	if _, err := container.Sync(ctx); err != nil {
+		return fmt.Errorf("delete temporary CNPG Cluster %s: %w", clusterName, err)
+	}
 	return nil
 }
 

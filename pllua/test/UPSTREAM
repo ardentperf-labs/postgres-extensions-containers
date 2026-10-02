@@ -1,0 +1,11 @@
+repoURL: https://github.com/pllua/pllua
+tag: pllua-REL_2_0_12
+commit: not-recorded-in-release-tarball
+sourcePackage: postgresql-pllua
+sourceVersion: 1:2.0.12-7.pgdg13+1
+sourceDscSHA256: 1b74333d82c97f1eb16bf2613856f4484c7f8ab2807ed8053fbcc5fd5eb74760
+sourceOrigSHA256: 7b3b4b5d749a2d1e040739c0eaad4b5b37b677866ead7f6a6e349f840c5eb4c3
+copiedpaths: sql, expected, serial_schedule, parallel_schedule, LICENSE
+registeredSuite: serial_schedule; procedures is appended for PostgreSQL >= 11; PGDG source builds against Lua 5.3, so upstream Lua 5.4 suite is disabled
+upstreamVariants: procedures is appended for PG_MAJOR >= 11; lua54 is omitted because PGDG source configures Lua 5.3
+optionalSuiteFlags: procedures added for PG_MAJOR >= 11; lua54 excluded because PGDG source package is configured for Lua 5.3

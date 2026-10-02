@@ -1,0 +1,16 @@
+Extension: pgextwlist
+Upstream repository: https://github.com/dimitri/pgextwlist
+PGDG source package: pgextwlist 1.20-1.pgdg13+2
+Source descriptor: pgextwlist_1.20-1.pgdg13+2.dsc
+Source descriptor SHA256: cfc5b5f57e4d5a274c797048359d0263703faae6f45b7e7c4891baf10b3c6e3c
+Original source archive(s):
+  pgextwlist_1.20.orig.tar.gz SHA256 bfbe21df88b76571849d070d03a1cb1e6d32d6dd610861fdfca5cc26b321dee0
+Copied upstream source paths (relative to the exact extracted PGDG source tree):
+  Makefile
+  sql/
+  expected/
+  test-scripts/
+Copied license/copyright notices:
+  upstream/debian-copyright
+Runner: test/run.sh runs the Makefile REGRESS suite in source order. The suite's setup.sql uses ALTER SYSTEM to configure the exact upstream whitelist and a test-scripts path, so test/cluster.yaml sets `spec.postgresql.enableAlterSystem: true` and the script fixture is copied into the CNPG pod at the same working-tree path as the runner.
+Expected output files are copied byte-for-byte from this source package; no generated or edited expected outputs are vendored.

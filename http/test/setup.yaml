@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: upstream-httpbin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: upstream-httpbin
+  template:
+    metadata:
+      labels:
+        app: upstream-httpbin
+    spec:
+      containers:
+        - name: httpbin
+          image: kennethreitz/httpbin@sha256:599fe5e5073102dbb0ee3dbb65f049dab44fa9fc251f6835c9990f8fb196a72b
+          ports:
+            - name: http
+              containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /status/200
+              port: http
+            initialDelaySeconds: 1
+            periodSeconds: 2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: httpbin
+spec:
+  selector:
+    app: upstream-httpbin
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http

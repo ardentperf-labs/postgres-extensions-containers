@@ -1,0 +1,7 @@
+Repository: http://www.sai.msu.su/~megera/wiki/SkyPixelization
+Source package: postgresql-q3c 2.0.5-1.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-q3c/postgresql-q3c_2.0.5-1.pgdg13+1.dsc
+SHA256: 2fe13dc073c0722feb78b7210c7d62f9103a9c85987d9e141d678c5b9b042a16
+Copied paths: sql, expected, Makefile, gen_data.c, q3c.control; upstream license notices and debian/copyright.
+Suite: packaged Makefile test target, including Debian-selected exclusions of long-running queries. Only the upstream test data generator is compiled; the tested extension is the mounted image.
+Test inputs and expected output are unmodified; update manually.

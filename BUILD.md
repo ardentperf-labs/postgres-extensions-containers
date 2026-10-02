@@ -143,10 +143,14 @@ cluster with CloudNativePG pre-installed.
 
 ### The Fast Path (Automated Testing)
 
-End-to-end (E2E) tests are powered by [Chainsaw](https://github.com/kyverno/chainsaw).
-To simplify the workflow, use the `e2e:test:full` task.
-This single command automates environment setup, image building, and test
-execution:
+End-to-end tests use [Chainsaw](https://github.com/kyverno/chainsaw) to create
+and check a CNPG cluster that mounts the locally built extension image. The
+extension's vendored upstream suite then runs unchanged against that cluster.
+By default, a matching distribution/PostgreSQL test container connects to the
+CNPG service; suites that need shared client/server files can opt into running
+inside the CNPG primary pod. Use the
+`e2e:test:full` task to set up the environment, build the image, and run the
+suite:
 
 ```bash
 # Replace <extension> with the name of the extension (e.g., pgvector)
@@ -234,8 +238,8 @@ task bake TARGET="<extension>" PUSH=true
 
 ### Prepare testing values
 
-Generate configuration values so Chainsaw knows which local image to target for
-the E2E tests:
+Generate configuration values so the CNPG test cluster mounts the locally built
+extension image:
 
 ```bash
 task e2e:generate-values TARGET="<extension>" EXTENSION_IMAGE="<my-local-image>"
@@ -255,15 +259,51 @@ REGISTRY_PASSWORD="your-password" task generate-values \
 
 ### Execute End-to-End tests
 
-Run the test suite using the internal Kubeconfig. This executes both the
-generic tests (global `/test` folder) and extension-specific tests (target
-`/test` folder).
+Run the test suite using the internal Kubeconfig. Chainsaw applies the shared
+cluster setup and readiness checks; the upstream regression suite connects to
+the resulting CNPG service. Extension tests live under `<extension>/test`:
+
+- `UPSTREAM` records the exact Debian/PGDG source package and version used for
+  the vendored files in `upstream/`.
+- `run.sh` invokes the upstream test commands without editing upstream SQL or
+  expected results. It receives `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`,
+  `PGDATABASE`, `PG_MAJOR`, `PG_REGRESS`, `PG_ISOLATION_REGRESS`, and
+  `TEST_OUTPUT` in its environment. The harness invokes only `run.sh`; it does
+  not discover or run extra scripts such as `run-tap.sh` automatically. Include
+  supported upstream commands in `run.sh`, and record any unrun upstream
+  sub-suite explicitly in `UPSTREAM`.
+- Optional `packages` lists extra apt packages needed only by the test runner.
+  It must not install the extension under test. Test sources are vendored; the
+  harness does not fetch them or build/install a replacement extension.
+- Add `run-on-server` when the upstream tests need shared client/server files.
+  The harness copies the suite and PostgreSQL regression executables to the
+  CNPG data volume and runs it inside the pod over the local PostgreSQL socket.
+  This mode cannot use `packages`; tools must already be in the server image or
+  be copied from the exact built extension image into the temporary test tree.
+- Optional `cluster.yaml` adds test-only Cluster settings. Test dependency
+  images can be listed in `dependencies.<distribution>` as repository targets
+  or pinned `name=image-reference` entries; extension path settings in the
+  Cluster overlay merge into the generated extension configuration.
+- Optional static `setup.yaml` provisions external test fixtures before the
+  Cluster setup. `setup-assert.yaml` can check their readiness. The harness
+  deletes the resources declared by `setup.yaml` after the suite, including
+  when the suite fails.
+
+The harness uses a disposable `contrib_regression` database and a test-only
+superuser credential. Add `run-on-server` when a suite needs a local socket or
+shared server/client files and can run in the CNPG primary pod. A suite that
+cannot run in either supported mode must exit with status `77`; the harness
+treats that status as a failure, not a pass.
+Failure output and regression diffs are included in the task output.
+The remote runner reaches PostgreSQL through a local Kubernetes port-forward;
+PG SSL/GSS transport is disabled on that test connection, while the Kubernetes
+API connection continues to use the supplied kubeconfig.
 
 ```bash
 task e2e:test TARGET="<extension>" KUBECONFIG_PATH="./kubeconfig"
 ```
 
-#### Pass arguments to chainsaw test
+#### Pass arguments to Chainsaw setup
 
 It is possible to pass arguments to the [Chainsaw test command](https://kyverno.github.io/chainsaw/latest/reference/commands/chainsaw_test/) by using the `EXTRA_ARGS` 
 argument, like:

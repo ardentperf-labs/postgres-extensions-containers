@@ -1,0 +1,829 @@
+load 'plpgsql';
+set client_min_messages to warning;
+create extension if not exists plpgsql_check;
+set client_min_messages to notice;
+
+set plpgsql_check.regress_test_mode = true;
+
+--
+-- tests of plpgsql_make_pragma and "pragmas" option
+-- of check functions
+--
+
+create table gtp_src(a int, b text);
+create type gtp_ct as (x int, y text);
+create domain gtp_dom as int check (value > 0);
+
+-- happy path - CREATE TEMP TABLE AS SELECT
+create function gtp_f1()
+returns void as $$
+begin
+  create temp table gtp_t1 as select a, b from gtp_src;
+  insert into gtp_t1 values (10, 'hello');
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f1()');
+
+-- without pragmas the check should detect missing relation
+select * from plpgsql_check_function('gtp_f1()');
+
+-- with generated pragmas the check should be ok
+select * from plpgsql_check_function('gtp_f1()',
+          pragmas => array(select plpgsql_make_pragma('gtp_f1()')));
+
+-- tabular form
+select * from plpgsql_check_function_tb('gtp_f1()',
+          pragmas => array(select plpgsql_make_pragma('gtp_f1()')));
+
+-- generator is idempotent - repeated call returns same result,
+-- and doesn't leave any relation in system catalogue
+select * from plpgsql_make_pragma('gtp_f1()');
+
+select count(*) from pg_class where relname in ('gtp_t1');
+
+-- happy path - one and two temporary tables created by AS VALUES and AS TABLE
+create function gtp_f2()
+returns void as $$
+begin
+  create temp table gtp_v1 as values (1, 'x'), (2, 'y');
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f2()');
+
+create function gtp_f3()
+returns void as $$
+begin
+  create temp table gtp_tt1 as table gtp_src;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f3()');
+
+create function gtp_f4()
+returns void as $$
+begin
+  create temp table gtp_v1 as values (1, 'x'), (2, 'y');
+  create temp table gtp_tt1 as table gtp_src;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f4()');
+
+drop function gtp_f2();
+drop function gtp_f3();
+drop function gtp_f4();
+
+-- WITH NO DATA, IF NOT EXISTS and ON COMMIT variants
+create function gtp_f5()
+returns void as $$
+begin
+  create temp table gtp_nd as select a from gtp_src with no data;
+  create temp table if not exists gtp_ine as select b from gtp_src;
+  create temp table gtp_oc1 on commit preserve rows as select a from gtp_src;
+  create temp table gtp_oc2 on commit delete rows as select a from gtp_src;
+  create temp table gtp_oc3 on commit drop as select a from gtp_src;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f5()');
+
+drop function gtp_f5();
+
+-- explicitly entered column names
+create function gtp_f6()
+returns void as $$
+begin
+  create temp table gtp_cn(c1, c2) as select a, b from gtp_src;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f6()');
+
+drop function gtp_f6();
+
+-- star, join, subquery, CTE and recursive CTE
+create function gtp_f7()
+returns void as $$
+begin
+  create temp table gtp_star as select * from gtp_src;
+  create temp table gtp_join as
+    select s1.a, s2.b from gtp_src s1 join gtp_src s2 on s1.a = s2.a;
+  create temp table gtp_sub as
+    select a from gtp_src where a in (select a from gtp_src);
+  create temp table gtp_cte as
+    with x as (select a, b from gtp_src) select * from x;
+  create temp table gtp_rcte as
+    with recursive r(n) as (values (1) union all select n + 1 from r where n < 10)
+    select n from r;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f7()');
+
+drop function gtp_f7();
+
+-- computed columns without aliases have name "?column?". Generated
+-- pragma returns these names without any change (the pragma is not
+-- applicable, and self registration fails with warning like CREATE
+-- TABLE AS would fail).
+create function gtp_f8()
+returns void as $$
+begin
+  create temp table gtp_comp as select a + 1, a + 1 from gtp_src;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f8()');
+
+drop function gtp_f8();
+
+-- unknown type is replaced by text like CREATE TABLE AS does
+create function gtp_f9()
+returns void as $$
+begin
+  create temp table gtp_unk as select null as x;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f9()');
+
+drop function gtp_f9();
+
+-- array, composite, domain types and typmods
+create function gtp_f10()
+returns void as $$
+begin
+  create temp table gtp_types as
+    select array[1,2] as arr,
+           (1, 'x')::gtp_ct as comp,
+           10::gtp_dom as dom,
+           'abc'::varchar(10) as vc,
+           3.14::numeric(12,2) as num;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f10()');
+
+drop function gtp_f10();
+
+-- identifiers that require quoting
+create function gtp_f11()
+returns void as $$
+begin
+  create temp table "MyT" as select 1 as "select", 2 as normal;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f11()');
+
+drop function gtp_f11();
+
+-- resjunk columns (ORDER BY) should not leak to generated pragma
+create function gtp_f12()
+returns void as $$
+begin
+  create temp table gtp_junk as select a from gtp_src order by b;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f12()');
+
+drop function gtp_f12();
+
+-- traversing of nested statements - IF/ELSE branches, loops, nested
+-- blocks, exception handlers and unreachable code
+create function gtp_f13()
+returns void as $$
+declare i int;
+begin
+  if random() > 0.5 then
+    create temp table gtp_n1 as select 1 as x;
+  else
+    create temp table gtp_n2 as select 2 as y;
+  end if;
+  for i in 1..2
+  loop
+    create temp table gtp_n3 as select 3 as z;
+  end loop;
+  declare v int;
+  begin
+    create temp table gtp_n4 as select 4 as w;
+  exception when others then
+    create temp table gtp_n5 as select 5 as e;
+  end;
+  return;
+  create temp table gtp_n6 as select 6 as u;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f13()');
+
+drop function gtp_f13();
+
+-- positional processing - same table name twice (no deduplication),
+-- the following statements see the last definition
+create function gtp_f14()
+returns void as $$
+begin
+  create temp table gtp_dup as select 1 as x;
+  drop table gtp_dup;
+  create temp table gtp_dup as select 'a'::text as y;
+  create temp table gtp_dup2 as select * from gtp_dup;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f14()');
+
+drop function gtp_f14();
+
+-- one temporary table references another one
+create function gtp_f15()
+returns void as $$
+begin
+  create temp table gtp_c1 as select a, b from gtp_src;
+  create temp table gtp_c2 as select * from gtp_c1 where a > 0;
+  create temp table gtp_c3 as
+    select gtp_c1.a, gtp_c2.b from gtp_c1 join gtp_c2 on gtp_c1.a = gtp_c2.a;
+  create temp table gtp_c4 as
+    select a from gtp_src where a in (select a from gtp_c1);
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f15()');
+
+drop function gtp_f15();
+
+-- temporary table shadows an existing table with same name
+create table gtp_shadow(t text);
+
+create function gtp_f16()
+returns void as $$
+begin
+  create temp table gtp_shadow as select 1 as id;
+  create temp table gtp_from_shadow as select * from gtp_shadow;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f16()');
+
+drop function gtp_f16();
+drop table gtp_shadow;
+
+-- explicitly used pg_temp schema
+create function gtp_f17()
+returns void as $$
+begin
+  create temp table pg_temp.gtp_q1 as select 1 as z;
+  create table pg_temp.gtp_q2 as select 2 as w;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f17()');
+
+drop function gtp_f17();
+
+-- these forms are ignored - dynamic SQL, not temporary tables and
+-- materialized views
+create function gtp_f18()
+returns void as $$
+begin
+  execute 'create temp table gtp_s4 as select 1 as x';
+  create table gtp_s5 as select a from gtp_src;
+  create unlogged table gtp_s6 as select a from gtp_src;
+  create table gtp_s8 (id int);
+  create unlogged table gtp_s9 (id int);
+  create materialized view gtp_s7 as select a from gtp_src;
+  drop table gtp_s4, gtp_s5, gtp_s6, gtp_s8, gtp_s9;
+  drop materialized view gtp_s7;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f18()');
+
+drop function gtp_f18();
+
+-- function without temporary tables
+create function gtp_f19()
+returns int as $$
+begin
+  return (select count(*) from gtp_src);
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f19()');
+
+drop function gtp_f19();
+
+-- zero column table - pragma is generated, but the table pragma
+-- mechanism cannot to apply it (warning is expected)
+create function gtp_f20()
+returns void as $$
+begin
+  create temp table gtp_zero as select from gtp_src;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f20()');
+
+drop function gtp_f20();
+
+-- CREATE TABLE AS EXECUTE is ignored
+create function gtp_f21()
+returns void as $$
+begin
+  create temp table gtp_pe as execute some_prepared_stmt;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f21()');
+
+drop function gtp_f21();
+
+-- inner query can use plpgsql variables
+create function gtp_f22()
+returns void as $$
+declare
+  v_id int default 10;
+  v_txt text default 'x';
+begin
+  create temp table gtp_vars as
+    select v_id as id, v_txt as txt, a from gtp_src where a > v_id;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f22()');
+
+drop function gtp_f22();
+
+-- regprocedure argument selects one function from overloaded set,
+-- function can use OUT arguments
+create function gtp_over(p int)
+returns void as $$
+begin
+  create temp table gtp_o1 as select p as x;
+end;
+$$ language plpgsql;
+
+create function gtp_over(p text)
+returns void as $$
+begin
+  create temp table gtp_o2 as select p as y;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_over(int)');
+select * from plpgsql_make_pragma('gtp_over(text)');
+
+drop function gtp_over(int);
+drop function gtp_over(text);
+
+create function gtp_out(in p int, out o1 int, out o2 text)
+as $$
+begin
+  create temp table gtp_ot as select p + 1 as q;
+  o1 := p; o2 := 'x';
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_out(int)');
+
+drop function gtp_out(int);
+
+-- trigger function requires relid argument
+create table gtp_trg_tbl(id int, val text);
+
+create function gtp_trg()
+returns trigger as $$
+begin
+  create temp table gtp_trg_snapshot as select new.id, new.val;
+  return new;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_trg()', 'gtp_trg_tbl');
+
+drop function gtp_trg();
+drop table gtp_trg_tbl;
+
+-- explicitly written pragmas are respected by generator
+create function gtp_f23()
+returns void as $$
+begin
+  execute 'create temp table gtp_dyn(a int, b text)';
+  perform plpgsql_check_pragma('table: gtp_dyn(a int, b text)');
+  create temp table gtp_from_dyn as select * from gtp_dyn;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_f23()');
+
+drop function gtp_f23();
+
+-- CREATE TABLE statement based forms. The temporary table is created
+-- inside the check's subtransaction (and removed by its rollback), and
+-- the pragma is derived from the structure of really created table.
+-- Column definition list form - typmods, quoting, serial, identity and
+-- generated columns, constraints, collation (not carried to pragma),
+-- zero columns
+create function gtp_cs1()
+returns void as $$
+begin
+  create temp table gtp_cl1 (id int, name text);
+  create temp table gtp_cl2 (v varchar(10), n numeric(12,2), t text collate "C");
+  create temp table "GtpQ" ("select" int, normal text);
+  create temp table gtp_cl3 (id serial, iid int generated always as identity,
+                             g int generated always as (id + 1) stored);
+  create temp table gtp_cl4 (id int primary key, v text not null default 'x',
+                             check (id > 0));
+  create temp table gtp_cl5 ();
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_cs1()');
+
+drop function gtp_cs1();
+
+-- LIKE clause and OF type clause
+create function gtp_cs2()
+returns void as $$
+begin
+  create temp table gtp_lk1 (like gtp_src);
+  create temp table gtp_lk2 (like gtp_src including all);
+  create temp table gtp_lk3 (id int, like gtp_src);
+  create temp table gtp_of1 of gtp_ct;
+  create temp table gtp_of2 of gtp_ct (x with options not null);
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_cs2()');
+
+drop function gtp_cs2();
+
+-- inheritance - from a persistent table and from a temporary table
+-- created earlier in same function
+create table gtp_parent(pid int, pval text);
+
+create function gtp_cs3()
+returns void as $$
+begin
+  create temp table gtp_inh1 () inherits (gtp_parent);
+  create temp table gtp_inh2 (own text) inherits (gtp_parent);
+  create temp table gtp_tp (a int, b text);
+  create temp table gtp_inh3 () inherits (gtp_tp);
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_cs3()');
+
+drop function gtp_cs3();
+drop table gtp_parent;
+
+-- partitioning - temporary parent and temporary partitions
+create function gtp_cs4()
+returns void as $$
+begin
+  create temp table gtp_pp (id int, v text) partition by range (id);
+  create temp table gtp_p1 partition of gtp_pp for values from (1) to (100);
+  create temp table gtp_p2 partition of gtp_pp default;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_cs4()');
+
+drop function gtp_cs4();
+
+-- storage options, access method, ON COMMIT variants, IF NOT EXISTS
+-- (the existing table wins - like runtime does), pg_temp qualification
+-- without TEMP keyword
+create function gtp_cs5()
+returns void as $$
+begin
+  create temp table gtp_o1 (a int) with (fillfactor = 70);
+  create temp table gtp_o2 (a int) using heap;
+  create temp table gtp_o3 (a int) on commit preserve rows;
+  create temp table gtp_o4 (a int) on commit delete rows;
+  create temp table gtp_o5 (a int) on commit drop;
+  create temp table if not exists gtp_o6 (a int);
+  create temp table if not exists gtp_o6 (b text);
+  create table pg_temp.gtp_o7 (a int);
+  create table pg_temp.gtp_o8 (like gtp_src);
+  create table pg_temp.gtp_o9 of gtp_ct;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_cs5()');
+
+drop function gtp_cs5();
+
+-- mixed CREATE TABLE AS and CREATE TABLE statements
+create function gtp_mx1()
+returns void as $$
+begin
+  create temp table gtp_mm1 as select a, b from gtp_src;
+  create temp table gtp_mm2 (id int, v text);
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_mx1()');
+
+drop function gtp_mx1();
+
+-- the table created by CREATE TABLE statement is visible for the
+-- following CREATE TABLE AS statements (join, subquery)
+create function gtp_mx2()
+returns void as $$
+begin
+  create temp table gtp_mn1 (a int, b text);
+  create temp table gtp_mn2 as
+    select gtp_mn1.a, s.b from gtp_mn1 join gtp_src s on s.a = gtp_mn1.a
+    where gtp_mn1.a in (select a from gtp_mn1);
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_mx2()');
+
+drop function gtp_mx2();
+
+-- and the reverse order - the table created by CREATE TABLE AS
+-- statement is visible for the following CREATE TABLE statement
+create function gtp_mx3()
+returns void as $$
+begin
+  create temp table gtp_mo1 as select a, b from gtp_src;
+  create temp table gtp_mo2 (like gtp_mo1 including all);
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_mx3()');
+
+drop function gtp_mx3();
+
+-- generator of CREATE TABLE statement based pragmas is idempotent too
+create function gtp_cs6()
+returns void as $$
+begin
+  create temp table gtp_ii (id int, v text);
+  insert into gtp_ii values (1, 'x');
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_cs6()');
+select * from plpgsql_make_pragma('gtp_cs6()');
+
+select count(*) from pg_class where relname in ('gtp_ii');
+
+-- generated pragma is usable by "pragmas" option
+select * from plpgsql_check_function('gtp_cs6()',
+          pragmas => array(select plpgsql_make_pragma('gtp_cs6()')));
+
+drop function gtp_cs6();
+
+-- error cases
+create function gtp_err1()
+returns void as $$
+begin
+  create temp table gtp_e1 as select * from gtp_nonexistent;
+end;
+$$ language plpgsql;
+
+-- generator reports same error like plpgsql_check_function
+select * from plpgsql_check_function('gtp_err1()');
+
+\set VERBOSITY terse
+
+select * from plpgsql_make_pragma('gtp_err1()');
+
+\set VERBOSITY default
+
+do $$
+declare s text; m text;
+begin
+  perform plpgsql_make_pragma('gtp_err1()');
+exception when others then
+  get stacked diagnostics s = returned_sqlstate, m = message_text;
+  raise notice 'sqlstate: %, message: %', s, m;
+end;
+$$;
+
+drop function gtp_err1();
+
+-- error is raised on first failed statement only, but when
+-- fatal_errors is false, then the scanning continues
+create function gtp_err2()
+returns void as $$
+begin
+  create temp table gtp_e21 as select * from gtp_missing1;
+  create temp table gtp_e22 as select * from gtp_missing2;
+  create temp table gtp_e23 as select a from gtp_src;
+end;
+$$ language plpgsql;
+
+do $$
+declare s text; m text;
+begin
+  perform plpgsql_make_pragma('gtp_err2()');
+exception when others then
+  get stacked diagnostics s = returned_sqlstate, m = message_text;
+  raise notice 'sqlstate: %, message: %', s, m;
+end;
+$$;
+
+select * from plpgsql_make_pragma('gtp_err2()', fatal_errors => false);
+
+drop function gtp_err2();
+
+-- temporary table cannot be created in non-temporary schema
+create function gtp_err3()
+returns void as $$
+begin
+  create temporary table public.gtp_e3 as select 1::int, 'JOHN'::text;
+end;
+$$ language plpgsql;
+
+do $$
+declare s text; m text;
+begin
+  perform plpgsql_make_pragma('gtp_err3()');
+exception when others then
+  get stacked diagnostics s = returned_sqlstate, m = message_text;
+  raise notice 'sqlstate: %, message: %', s, m;
+end;
+$$;
+
+drop function gtp_err3();
+
+-- the check of target schema is done before execution for CREATE TABLE
+-- statement forms too (column definition list, LIKE clause, OF type
+-- clause), and it respects fatal_errors option
+create function gtp_err4()
+returns void as $$
+begin
+  create temp table public.gtp_e41 (id int);
+  create temp table public.gtp_e42 (like gtp_src);
+  create temp table public.gtp_e43 of gtp_ct;
+  create temp table gtp_e44 as select a from gtp_src;
+end;
+$$ language plpgsql;
+
+do $$
+declare s text; m text;
+begin
+  perform plpgsql_make_pragma('gtp_err4()');
+exception when others then
+  get stacked diagnostics s = returned_sqlstate, m = message_text;
+  raise notice 'sqlstate: %, message: %', s, m;
+end;
+$$;
+
+select * from plpgsql_make_pragma('gtp_err4()', fatal_errors => false);
+
+drop function gtp_err4();
+
+-- too many column names
+create function gtp_err5()
+returns void as $$
+begin
+  create temp table gtp_e5(c1, c2, c3) as select a, b from gtp_src;
+end;
+$$ language plpgsql;
+
+do $$
+declare s text; m text;
+begin
+  perform plpgsql_make_pragma('gtp_err5()');
+exception when others then
+  get stacked diagnostics s = returned_sqlstate, m = message_text;
+  raise notice 'sqlstate: %, message: %', s, m;
+end;
+$$;
+
+drop function gtp_err5();
+
+-- duplicate table name (usually the pattern CREATE, DROP, CREATE with
+-- same name) is reported as warning only - DROP statements are not
+-- executed by static scanning, so this is not a real error. Pragmas
+-- are returned for both definitions, and the following statements see
+-- the last definition.
+create function gtp_err6()
+returns void as $$
+begin
+  create temp table gtp_dd (x int);
+  drop table gtp_dd;
+  create temp table gtp_dd (y text);
+  create temp table gtp_dd2 (z int);
+  create temp table gtp_dd3 as select * from gtp_dd;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_err6()');
+
+drop function gtp_err6();
+
+-- mixed collisions - CREATE TABLE statement redefined by CREATE TABLE
+-- AS statement and vice versa
+create function gtp_err9()
+returns void as $$
+begin
+  create temp table gtp_md (a int);
+  drop table gtp_md;
+  create temp table gtp_md as select 'x'::text as t;
+  create temp table gtp_md2 as select 1 as b;
+  drop table gtp_md2;
+  create temp table gtp_md2 (c date);
+  create temp table gtp_md3 as select * from gtp_md, gtp_md2;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_err9()');
+
+drop function gtp_err9();
+
+-- CREATE TABLE AS IF NOT EXISTS - the existing table wins like in
+-- runtime
+create function gtp_err10()
+returns void as $$
+begin
+  create temp table gtp_ine2 as select 1 as a;
+  create temp table if not exists gtp_ine2 as select 'x'::text as b;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_err10()');
+
+drop function gtp_err10();
+
+-- runtime errors of CREATE TABLE statement execution respect
+-- fatal_errors option - a temporary partition of persistent table
+create table gtp_ppart (id int) partition by range (id);
+
+create function gtp_err7()
+returns void as $$
+begin
+  create temp table gtp_bp partition of gtp_ppart for values from (1) to (100);
+  create temp table gtp_bp2 (id int);
+end;
+$$ language plpgsql;
+
+do $$
+declare s text; m text;
+begin
+  perform plpgsql_make_pragma('gtp_err7()');
+exception when others then
+  get stacked diagnostics s = returned_sqlstate, m = message_text;
+  raise notice 'sqlstate: %, message: %', s, m;
+end;
+$$;
+
+select * from plpgsql_make_pragma('gtp_err7()', fatal_errors => false);
+
+drop function gtp_err7();
+drop table gtp_ppart;
+
+-- more not executable CREATE TABLE statements - foreign key from
+-- temporary table to persistent table, LIKE of missing table, OF
+-- missing type
+create function gtp_err8()
+returns void as $$
+begin
+  create temp table gtp_fk (id int references gtp_src(a));
+  create temp table gtp_bl (like gtp_not_exists);
+  create temp table gtp_bo of gtp_type_not_exists;
+end;
+$$ language plpgsql;
+
+select * from plpgsql_make_pragma('gtp_err8()', fatal_errors => false);
+
+drop function gtp_err8();
+
+-- "pragmas" option of check functions
+create function gtp_f24()
+returns void as $$
+begin
+  insert into gtp_manual values (1, 'x');
+end;
+$$ language plpgsql;
+
+-- NULL and empty array have no effect
+select * from plpgsql_check_function('gtp_f24()', pragmas => null);
+select * from plpgsql_check_function('gtp_f24()', pragmas => '{}'::text[]);
+
+-- manually written (or fixed) pragma can be used, NULL elements
+-- are ignored
+select * from plpgsql_check_function('gtp_f24()',
+          pragmas => array[null, 'table: gtp_manual(a int, b text)']);
+
+-- broken pragma raises warning only, and check continues
+select * from plpgsql_check_function('gtp_f24()',
+          pragmas => array['table: gtp_manual(int int int)']);
+
+-- any pragma type is allowed
+select * from plpgsql_check_function('gtp_f24()',
+          pragmas => array['disable: check']);
+
+drop function gtp_f24();
+
+drop table gtp_src;
+drop type gtp_ct;
+drop domain gtp_dom;

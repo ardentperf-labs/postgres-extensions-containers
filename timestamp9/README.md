@@ -59,5 +59,5 @@ SELECT '2026-09-29 00:00:00.000000001'::timestamp9 < '2026-09-29 00:00:00.000000
 
 ## Package, dependencies and maintenance
 
-The image installs PGDG package `postgresql-18-timestamp9` at the Debian version recorded in `metadata.hcl`. Package updates are tracked by Renovate; review changes against the package's control file and rerun the target's build. The package is available for PostgreSQL 18 on both Bookworm and Trixie, amd64 and arm64. It depends on the CNPG PostgreSQL 18 base image and libc; no additional runtime package is installed. The timestamp9 module uses MIT licensing. Its Debian copyright file, including upstream attribution and any bundled component notices, is included under `/licenses/`.
+The image installs PGDG package `postgresql-18-timestamp9` at the Debian version recorded in `metadata.hcl`. Package updates are tracked by Renovate; review changes against the package's control file and rerun the target's build and upstream regression suite. The package is available for PostgreSQL 18 on both Bookworm and Trixie, amd64 and arm64. It depends on the CNPG PostgreSQL 18 base image and libc; no additional runtime package is installed. The timestamp9 module uses MIT licensing. Its Debian copyright file, including upstream attribution and any bundled component notices, is included under `/licenses/`.
 

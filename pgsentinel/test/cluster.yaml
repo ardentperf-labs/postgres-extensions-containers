@@ -1,0 +1,9 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: ($values.name)
+spec:
+  postgresql:
+    parameters:
+      pgsentinel.db_name: contrib_regression
+      pgsentinel_pgssh.enable: 'true'

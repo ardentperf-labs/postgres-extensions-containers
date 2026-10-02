@@ -1,0 +1,7 @@
+Repository: https://github.com/fboulnois/pg_uuidv7
+Source package: pg-uuidv7 1.7.0-1.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/pg-uuidv7/pg-uuidv7_1.7.0-1.pgdg13+1.dsc
+SHA256: 292148d14237806ca0ea840b16e75b30f9cd69b8c75fa509c9d3eab14268d1de
+Copied paths: test, Makefile, LICENSE, debian/copyright
+Suite: Makefile REGRESS for PostgreSQL 18, including applicable upstream version variants.
+Test SQL and expected output are unmodified; update manually.

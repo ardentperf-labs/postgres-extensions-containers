@@ -1,0 +1,8 @@
+repoURL: https://github.com/vyruss/pg_statviz
+tag: vyruss-pg_statviz-91d3446
+commit: 91d3446
+sourcePackage: pg-statviz
+sourceVersion: 1.2.1-1.pgdg13+1
+sourceDscSHA256: c72d8b589727404dea9ed5b441576bdde00fc73d12862f8d626ebbef63fac7e2
+sourceOrigSHA256: b125a24d3a98e865d5d4267b9f52e209b5841c326f3b71d73200de0274fb6d0d
+copiedpaths: sql, expected, LICENSE

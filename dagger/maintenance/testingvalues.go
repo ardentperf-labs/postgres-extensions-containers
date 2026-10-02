@@ -3,39 +3,21 @@ package main
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"dagger/maintenance/internal/dagger"
+	"github.com/google/go-containerregistry/pkg/name"
 )
-
-type ExtensionSpec struct {
-	Ensure  string `yaml:"ensure"`
-	Name    string `yaml:"name"`
-	Version string `yaml:"version"`
-}
-
-type DatabaseConfig struct {
-	ExtensionsSpec []ExtensionSpec `yaml:"extensions_spec,omitempty"`
-}
 
 type TestingValues struct {
 	Name                   string                    `yaml:"name"`
-	SQLName                string                    `yaml:"sql_name"`
 	SharedPreloadLibraries []string                  `yaml:"shared_preload_libraries"`
 	PostgresqlParameters   map[string]string         `yaml:"postgresql_parameters"`
 	PgImage                string                    `yaml:"pg_image"`
-	Version                string                    `yaml:"version"`
-	CreateExtension        bool                      `yaml:"create_extension"`
+	PgMajor                int                       `yaml:"pg_major"`
+	Distribution           string                    `yaml:"distribution"`
 	Extensions             []*ExtensionConfiguration `yaml:"extensions"`
-	DatabaseConfig         *DatabaseConfig           `yaml:"database_config"`
-	DatabaseAssertStatus   map[string]any            `yaml:"database_assert_status"`
-}
-
-type testingExtensionInfo struct {
-	Configuration   *ExtensionConfiguration
-	SQLName         string
-	Version         string
-	CreateExtension bool
 }
 
 const baseImageDependencyPrefix = "base-image:"
@@ -43,8 +25,12 @@ const baseImageDependencyPrefix = "base-image:"
 type imageLocator struct {
 	ExtensionImage string
 	PgMajor        int
-	SQLVersion     string
 	Distribution   string
+}
+
+type testDependency struct {
+	Name     string
+	ImageRef string
 }
 
 func generateTestingValuesExtensions(
@@ -52,44 +38,65 @@ func generateTestingValuesExtensions(
 	source *dagger.Directory,
 	metadata *extensionMetadata,
 	locator imageLocator,
-	registryUsername string,
-	registryPassword *dagger.Secret,
-) ([]*testingExtensionInfo, error) {
-	var out []*testingExtensionInfo
+	testDependencies []testDependency,
+) ([]*ExtensionConfiguration, error) {
+	var out []*ExtensionConfiguration
 	configuration, err := generateExtensionConfiguration(metadata, locator.ExtensionImage)
 	if err != nil {
 		return nil, err
 	}
-	out = append(out, &testingExtensionInfo{
-		Configuration:   configuration,
-		SQLName:         metadata.SQLName,
-		Version:         locator.SQLVersion,
-		CreateExtension: metadata.CreateExtension,
-	})
+	out = append(out, configuration)
 
-	for _, requiredDependency := range metadata.RequiredExtensions {
-		dep, isBaseImageDependency, err := parseRequiredDependency(requiredDependency)
+	seen := map[string]struct{}{metadata.Name: {}}
+	type dependency struct {
+		name     string
+		testOnly bool
+	}
+	requiredExtensions := make([]dependency, 0, len(metadata.RequiredExtensions)+len(testDependencies))
+	for _, testDependency := range testDependencies {
+		// Explicit references are useful for one-level external test fixtures
+		// (for example, an upstream PostGIS image). Target names are resolved
+		// only from repository metadata below.
+		if testDependency.ImageRef != "" {
+			if _, ok := seen[testDependency.Name]; ok {
+				continue
+			}
+			out = append(out, &ExtensionConfiguration{
+				Name: testDependency.Name,
+				ImageVolumeSource: ImageVolumeSource{
+					Reference: testDependency.ImageRef,
+				},
+			})
+			seen[testDependency.Name] = struct{}{}
+			continue
+		}
+		requiredExtensions = append(requiredExtensions, dependency{name: testDependency.Name, testOnly: true})
+	}
+	for _, name := range metadata.RequiredExtensions {
+		requiredExtensions = append(requiredExtensions, dependency{name: name})
+	}
+	for _, requiredDependency := range requiredExtensions {
+		dep, isBaseImageDependency, err := parseRequiredDependency(requiredDependency.name)
 		if err != nil {
 			return nil, err
 		}
 		if isBaseImageDependency {
-			out = append(out, &testingExtensionInfo{
-				SQLName:         dep,
-				CreateExtension: true,
-			})
 			continue
 		}
+		if _, ok := seen[dep]; ok {
+			continue
+		}
+		seen[dep] = struct{}{}
 
 		depExists, err := source.Exists(ctx, dep)
 		if err != nil {
 			return nil, err
 		}
 		if !depExists {
-			out = append(out, &testingExtensionInfo{
-				Configuration:   &ExtensionConfiguration{Name: dep},
-				SQLName:         dep,
-				CreateExtension: true,
-			})
+			if requiredDependency.testOnly {
+				return nil, fmt.Errorf("required test extension %q has no target directory or metadata.hcl", dep)
+			}
+			out = append(out, &ExtensionConfiguration{Name: dep})
 			continue
 		}
 
@@ -101,31 +108,107 @@ func generateTestingValuesExtensions(
 		if err != nil {
 			return nil, err
 		}
+		if requiredDependency.testOnly {
+			requiredExtensionImage, err = localTestDependencyImage(
+				locator.ExtensionImage,
+				depMetadata,
+				locator.Distribution,
+				locator.PgMajor,
+				requiredExtensionImage,
+			)
+			if err != nil {
+				return nil, err
+			}
+		}
 		depConfiguration, err := generateExtensionConfiguration(depMetadata, requiredExtensionImage)
 		if err != nil {
 			return nil, err
 		}
 
-		depAnnotations, err := getImageAnnotations(ctx, depConfiguration.ImageVolumeSource.Reference, registryUsername, registryPassword)
-		if err != nil {
-			return nil, err
-		}
-		depVersion := depAnnotations[AnnotationImageSQLVersion]
-		if depVersion == "" {
-			return nil, fmt.Errorf(
-				"extension image %s doesn't have an %q annotation or its value is empty",
-				depConfiguration.ImageVolumeSource.Reference, AnnotationImageSQLVersion)
-		}
-
-		out = append(out, &testingExtensionInfo{
-			Configuration:   depConfiguration,
-			SQLName:         depMetadata.SQLName,
-			Version:         depVersion,
-			CreateExtension: depMetadata.CreateExtension,
-		})
+		out = append(out, depConfiguration)
 	}
 
 	return out, nil
+}
+
+func readTestDependencies(ctx context.Context, extensionDirectory *dagger.Directory, distribution string) ([]testDependency, error) {
+	dependenciesPath := "test/dependencies." + distribution
+	exists, err := extensionDirectory.Exists(ctx, dependenciesPath)
+	if err != nil {
+		return nil, err
+	}
+	if !exists {
+		dependenciesPath = "test/dependencies"
+		exists, err = extensionDirectory.Exists(ctx, dependenciesPath)
+		if err != nil {
+			return nil, err
+		}
+		if !exists {
+			return nil, nil
+		}
+	}
+
+	contents, err := extensionDirectory.File(dependenciesPath).Contents(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("read %s: %w", dependenciesPath, err)
+	}
+	return parseTestDependencies(contents)
+}
+
+func parseTestDependencies(contents string) ([]testDependency, error) {
+	var dependencies []testDependency
+	seen := make(map[string]struct{})
+	for lineNumber, line := range strings.Split(contents, "\n") {
+		line = strings.TrimSpace(strings.SplitN(line, "#", 2)[0])
+		if line == "" {
+			continue
+		}
+		nameAndImage := strings.SplitN(line, "=", 2)
+		dependency := testDependency{Name: strings.TrimSpace(nameAndImage[0])}
+		if !testDependencyName.MatchString(dependency.Name) {
+			return nil, fmt.Errorf("invalid test dependency %q on line %d", line, lineNumber+1)
+		}
+		if len(nameAndImage) == 2 {
+			dependency.ImageRef = strings.TrimSpace(nameAndImage[1])
+			if dependency.ImageRef == "" {
+				return nil, fmt.Errorf("test dependency %q has an empty image reference on line %d", dependency.Name, lineNumber+1)
+			}
+			if _, err := name.ParseReference(dependency.ImageRef, name.Insecure); err != nil {
+				return nil, fmt.Errorf("invalid image reference for test dependency %q on line %d: %w", dependency.Name, lineNumber+1, err)
+			}
+		}
+		if _, ok := seen[dependency.Name]; ok {
+			continue
+		}
+		seen[dependency.Name] = struct{}{}
+		dependencies = append(dependencies, dependency)
+	}
+	return dependencies, nil
+}
+
+var testDependencyName = regexp.MustCompile(`^[a-z0-9][a-z0-9_-]*$`)
+
+func localTestDependencyImage(targetImage string, dependency *extensionMetadata, distribution string, pgMajor int, publishedImage string) (string, error) {
+	targetReference, err := name.ParseReference(targetImage, name.Insecure)
+	if err != nil {
+		return "", fmt.Errorf("parse target test image reference: %w", err)
+	}
+	targetRepository := targetReference.Context().Name()
+	separator := strings.LastIndex(targetRepository, "/")
+	if separator < 0 || !strings.HasSuffix(targetRepository[separator+1:], "-testing") {
+		return publishedImage, nil
+	}
+
+	publishedReference, err := name.ParseReference(publishedImage, name.Insecure)
+	if err != nil {
+		return "", fmt.Errorf("parse published dependency image reference: %w", err)
+	}
+	dependencyRepository := targetRepository[:separator+1] + dependency.ImageName + "-testing"
+	localReference := dependencyRepository + ":" + publishedReference.Identifier()
+	if _, err := name.ParseReference(localReference, name.Insecure); err != nil {
+		return "", fmt.Errorf("build local test dependency image reference %q: %w", localReference, err)
+	}
+	return localReference, nil
 }
 
 func parseRequiredDependency(dependency string) (string, bool, error) {
@@ -162,51 +245,4 @@ func generateExtensionConfiguration(metadata *extensionMetadata, extensionImage 
 		BinPath:              metadata.BinPath,
 		Env:                  envMapToSlice(metadata.Env),
 	}, nil
-}
-
-func generateDatabaseConfig(extensionInfos []*testingExtensionInfo) *DatabaseConfig {
-	var databaseConfig DatabaseConfig
-	for _, info := range extensionInfos {
-		if !info.CreateExtension {
-			continue
-		}
-
-		databaseConfig.ExtensionsSpec = append(databaseConfig.ExtensionsSpec,
-			ExtensionSpec{
-				Ensure:  "present",
-				Name:    info.SQLName,
-				Version: info.Version,
-			},
-		)
-	}
-
-	return &databaseConfig
-}
-
-func generateDatabaseAssertStatus(extensionInfos []*testingExtensionInfo) map[string]any {
-	// observedGeneration is intentionally omitted. CNPG reports the Database
-	// metadata.generation it reconciled, and this fork's catalog-backed E2E
-	// setup can legitimately produce a value other than 1. Upstream retains
-	// the generation-1 assertion because its E2E setup uses imageName and
-	// local dependency images. Keep this fork-local relaxation when syncing
-	// changes from upstream; it is not an upstream CNPG behavior change.
-	status := map[string]any{
-		"applied":            true,
-	}
-
-	var extensions []map[string]any
-	for _, info := range extensionInfos {
-		if !info.CreateExtension {
-			continue
-		}
-		extensions = append(extensions, map[string]any{
-			"applied": true,
-			"name":    info.SQLName,
-		})
-	}
-	if len(extensions) > 0 {
-		status["extensions"] = extensions
-	}
-
-	return status
 }

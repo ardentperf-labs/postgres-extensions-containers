@@ -46,13 +46,18 @@ spec:
 
 PL/Proxy forwards SQL through PostgreSQL connections. Its dynamically linked libpq and transitive libraries are supplied by the matching CNPG minimal base (which includes psql); no runtime installation is needed. Configure connection strings and credentials through SQL and Kubernetes Secrets, and allow only required outbound destinations.
 
+## Verify behavior
+
+The vendored upstream suite is pinned in [test/UPSTREAM](test/UPSTREAM) and
+invoked by [test/run.sh](test/run.sh).
+
 ## Dependencies and updates
 
 The image contains only the PGDG package server payload and license notices.
 The matching CNPG minimal image supplies PostgreSQL, libc and its base runtime.
 Renovate tracks the pinned extension package. For an extension or base-runtime
 security fix, update the affected package/base image, rebuild every advertised
-architecture. SQL versions must be checked against
+architecture and rerun both distro regression suites. SQL versions must be checked against
 the installed control file separately because they need not match package versions.
 
 ## Licenses and ownership

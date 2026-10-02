@@ -1,0 +1,7 @@
+Repository: https://git.postgresql.org/gitweb/?p=pldebugger.git
+Source package: pldebugger 1:1.10-1.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/pldebugger/pldebugger_1.10-1.pgdg13+1.dsc
+SHA256: 7382ad194165cb148d7182b399304230ffe997e7171f75e3480ddc5e0d2b1557
+Copied paths: sql, expected, Makefile, debian/copyright
+Suite: Makefile REGRESS for PostgreSQL 18, including applicable upstream version variants.
+Test SQL and expected output are unmodified; update manually.

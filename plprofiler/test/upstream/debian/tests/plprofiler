@@ -1,0 +1,20 @@
+#!/bin/sh
+
+set -eux
+
+for v in $(pg_buildext installed-versions); do
+echo "### PostgreSQL $v ###"
+pg_virtualenv -v $v <<EOF
+  set -eux
+  rm -f tpcb-test1.html
+  export PGDATABASE=pgbench_plprofiler
+  createdb
+  cd examples
+  sh -eux ./prepdb.sh
+  plprofiler run \
+    --name plprofiler --title plprofiler --desc plprofiler \
+    --command "SELECT tpcb(1, 2, 3, -42)" --output tpcb-test1.html
+  grep 'Function public.tpcb_upd_accounts() oid=' tpcb-test1.html
+EOF
+echo "### End $v ###"
+done

@@ -1,0 +1,8 @@
+repoURL: https://github.com/powa-team/powa-archivist
+tag: powa-team-powa-archivist-1b30dc3
+commit: 1b30dc3
+sourcePackage: powa-archivist
+sourceVersion: 5.3.0-1.pgdg13+2
+sourceDscSHA256: 2587d0bc1ef0f1093b9b15b49a26a18a5b9d121c2394d84c2da51ee89d54bff4
+sourceOrigSHA256: 3ab5e515a29d3f0713dad63a89b41ec81b4906e8be03bc8e061a19767c21225b
+copiedpaths: sql, expected, LICENSE.md

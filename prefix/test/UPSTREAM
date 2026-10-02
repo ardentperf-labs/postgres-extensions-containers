@@ -1,0 +1,16 @@
+Extension: prefix
+Upstream repository: https://github.com/dimitri/prefix
+PGDG source package: prefix 1.2.11-1.pgdg13+1
+Source descriptor: prefix_1.2.11-1.pgdg13+1.dsc
+Source descriptor SHA256: 6b6c3a7abe0f6b6384eabe7ef7b677c0b4565ff47c97462746236535e2815fc3
+Original source archive(s):
+  prefix_1.2.11.orig.tar.gz SHA256 d17017645eae6d0af3d99dc987c231c7a4e98634a93e3566734f807fcdda9efd
+Copied upstream source paths (relative to the exact extracted PGDG source tree):
+  Makefile
+  prefixes.fr.csv
+  sql/
+  expected/
+Copied license/copyright notices:
+  upstream/LICENSE
+Runner: test/run.sh runs the Makefile REGRESS suite in source order, preserving the PG18 explain case.
+Expected output files are copied byte-for-byte from this source package; no generated or edited expected outputs are vendored.

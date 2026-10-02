@@ -1,0 +1,8 @@
+Repository: https://github.com/pgpartman/pg_partman
+Source package: pg-partman 5.5.0-1.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/pg-partman/pg-partman_5.5.0-1.pgdg13+1.dsc
+SHA256: fa43d90294eb84552c9395eda7698a072691ac6e4fc06fb14ed509f35904b4ac
+Copied paths: test, Makefile; upstream license notices and debian/copyright.
+Suite: test/README_test.md top-level pgTAP suite. Procedure/background-worker subdirectories require separate manual orchestration and are preserved but not run. Setup follows the upstream README.
+Test inputs and expected output are unmodified; update manually.
+Test Cluster raises max_locks_per_transaction to 128 as required by test/README_test.md; the pgTAP image is an explicit test-only dependency.

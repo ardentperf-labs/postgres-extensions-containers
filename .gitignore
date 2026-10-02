@@ -16,6 +16,8 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+# Vendored upstream regression expectations are source fixtures.
+!**/test/upstream/**/expected/**/*.out
 
 # editor and IDE paraphernalia
 .idea

@@ -1,0 +1,1 @@
+The upstream shell tests read files written by PostgreSQL and require the client and server to share /tmp.

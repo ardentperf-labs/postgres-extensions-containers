@@ -1,0 +1,89 @@
+\set ECHO none
+SELECT set_sphere_output_precision(8);
+\set ECHO all
+
+-- without idx
+
+SELECT count(*) FROM spheretmp1 WHERE p @ scircle '<(1,1),0.3>';
+
+SELECT count(*) FROM spheretmp1 WHERE p = spoint '(3.09 , 1.25)' ;
+
+SELECT count(*) FROM spheretmp2 WHERE c @ scircle '<(1,1),0.3>';
+
+SELECT count(*) FROM spheretmp2 WHERE c && scircle '<(1,1),0.3>';
+
+SELECT count(*) FROM spheretmp3 WHERE b && scircle '<(1,1),0.3>';
+
+SELECT count(*) FROM spheretmp3 WHERE spoint '(3.09 , 1.25)' @ b ;
+
+SELECT count(*) FROM spheretmp4 WHERE l @  scircle '<(1,1),0.3>';
+
+SELECT count(*) FROM spheretmp4 WHERE l && scircle '<(1,1),0.3>';
+
+
+-- create idx
+
+CREATE TABLE spheretmp1b AS TABLE spheretmp1;
+ANALYZE spheretmp1;
+
+CREATE INDEX aaaidx ON spheretmp1 USING gist ( p );
+
+CREATE INDEX spoint3_idx ON spheretmp1b USING gist (p spoint3);
+
+CREATE INDEX bbbidx ON spheretmp2 USING gist ( c );
+
+CREATE INDEX cccidx ON spheretmp3 USING gist ( b );
+
+CREATE INDEX dddidx ON spheretmp4 USING gist ( l );
+
+--with idx
+
+SET enable_seqscan = OFF ;
+
+SELECT count(*) FROM spheretmp1 WHERE p @ scircle '<(1,1),0.3>';
+SELECT count(*) FROM spheretmp1b WHERE p @ scircle '<(1,1),0.3>';
+SELECT count(*) FROM spheretmp1 WHERE p <@ scircle '<(1,1),0.3>';
+SELECT count(*) FROM spheretmp1b WHERE p <@ scircle '<(1,1),0.3>';
+
+SELECT count(*) FROM spheretmp1 WHERE p = spoint '(3.09 , 1.25)' ;
+SELECT count(*) FROM spheretmp1b WHERE p = spoint '(3.09 , 1.25)' ;
+
+SELECT count(*) FROM spheretmp2 WHERE c @ scircle '<(1,1),0.3>'  ;
+
+SELECT count(*) FROM spheretmp2 WHERE c && scircle '<(1,1),0.3>' ;
+
+SELECT count(*) FROM spheretmp3 WHERE b && scircle '<(1,1),0.3>';
+
+SELECT count(*) FROM spheretmp3 WHERE spoint '(3.09 , 1.25)' @ b ;
+
+SELECT count(*) FROM spheretmp4 WHERE l @  scircle '<(1,1),0.3>' ;
+
+SELECT count(*) FROM spheretmp4 WHERE l && scircle '<(1,1),0.3>' ;
+
+-- test spoint3 operator class with and without index-only scan
+
+SET enable_bitmapscan = OFF;
+SET enable_indexonlyscan = ON;
+
+EXPLAIN (COSTS OFF) SELECT count(*) FROM spheretmp1b WHERE p <@ scircle '<(1,1),0.3>';
+                    SELECT count(*) FROM spheretmp1b WHERE p <@ scircle '<(1,1),0.3>';
+EXPLAIN (COSTS OFF) SELECT count(*) FROM spheretmp1b WHERE p = spoint '(3.09 , 1.25)';
+                    SELECT count(*) FROM spheretmp1b WHERE p = spoint '(3.09 , 1.25)';
+
+SET enable_indexonlyscan = OFF;
+
+EXPLAIN (COSTS OFF) SELECT count(*) FROM spheretmp1b WHERE p <@ scircle '<(1,1),0.3>';
+                    SELECT count(*) FROM spheretmp1b WHERE p <@ scircle '<(1,1),0.3>';
+EXPLAIN (COSTS OFF) SELECT count(*) FROM spheretmp1b WHERE p = spoint '(3.09 , 1.25)';
+                    SELECT count(*) FROM spheretmp1b WHERE p = spoint '(3.09 , 1.25)';
+
+-- test hash opclass
+
+CREATE TABLE spheretmp1c AS TABLE spheretmp1;
+
+SELECT p FROM spheretmp1c WHERE p <@ scircle '<(1,1),0.2>' ORDER BY p::text;
+WITH points AS (SELECT DISTINCT p FROM spheretmp1c WHERE p <@ scircle '<(1,1),0.2>')
+   SELECT p FROM points ORDER BY p::text;
+
+CREATE INDEX spheretmp1c_hash_idx ON spheretmp1c USING hash(p);
+EXPLAIN (COSTS OFF) SELECT * FROM spheretmp1c WHERE p = '(0.67 , 0.97)';
