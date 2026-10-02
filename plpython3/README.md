@@ -59,7 +59,7 @@ spec:
 
 Transforms are optional; the hstore and ltree transforms require their
 corresponding base-image SQL extensions. The image catalog selects `plpython3u`
-by default.
+by default. The vendored upstream PL/Python regression suite is pinned in [test/UPSTREAM](test/UPSTREAM) and selected by [test/run.sh](test/run.sh).
 
 ## Privileges and operation
 
@@ -85,7 +85,8 @@ notices are under `/licenses`. The matching CNPG base supplies glibc and the ELF
 loader.
 
 Renovate tracks the PGDG package pin. Rebuild after interpreter, module,
-native-library or base-image security updates and rerun architecture builds. SQL catalog version 1.0 is reviewed separately from
+native-library or base-image security updates and rerun both distro regression suites and
+architecture builds. SQL catalog version 1.0 is reviewed separately from
 package releases.
 
 Maintained by Jeremy Schneider (@ardentperf).

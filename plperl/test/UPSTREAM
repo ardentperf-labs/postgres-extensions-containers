@@ -1,0 +1,12 @@
+repoURL: https://git.postgresql.org/git/postgresql.git
+tag: postgresql-18.6
+commit: not-recorded-in-release-tarball
+sourcePackage: postgresql-18
+sourceVersion: 18.6-1.pgdg13+2
+sourceDscSHA256: 9eb326e5888e912ca3270f1481add03f8640e1c97464576b64ec0488000263fc
+sourceOrigSHA256: 555610c24d53e4316da5b7d3fc25c279d96856d5e0e23ee308c328c5fa881d9f
+copiedpaths: src/pl/plperl/sql, src/pl/plperl/expected, COPYRIGHT
+coreRelease: PostgreSQL 18.6
+upstreamVariants: plperl_plperlu is included only when Perl usemultiplicity is define, matching the PostgreSQL GNUmakefile condition
+runnerGuard: PG_MAJOR=18 required; suite files are from PostgreSQL 18.6
+upstreamFixtureRequirement: plperl_env uses :'regresslib' to CREATE FUNCTION from the PostgreSQL source-built src/test/regress/regress.so; the CNPG package server image does not contain that regression fixture, so the full upstream schedule currently reaches but fails this test unless the matching PG18 fixture is supplied by the native test lane

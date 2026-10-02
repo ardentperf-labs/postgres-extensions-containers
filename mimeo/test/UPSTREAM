@@ -1,0 +1,12 @@
+repoURL: https://github.com/omniti-labs/mimeo
+tag: mimeo-1.5.1
+commit: not-recorded-in-release-tarball
+sourcePackage: mimeo
+sourceVersion: 1.5.1-20.pgdg13+1
+sourceDscSHA256: 2aa0e7831c054942e6e564704c855b0113ddc72e15f4f154c819b7a828e4e518
+sourceOrigSHA256: ee5f0e9b543eed3a55197b1a73c5ab0c0b1da5f7b46d4b2c8180d3a2ec721529
+copiedpaths: test, README.md license text (LICENSE excerpt)
+requirements: pg_prove; superuser; dblink, mimeo, and pgTAP extensions in schemas dblink, mimeo, and public; localhost authentication for mimeo_test and mimeo_owner on port 5432; America/New_York timezone as assumed by upstream's -04 expression-index expectations; upstream scripts create/drop roles and databases
+testDependencies: pgtap from test/dependencies; pg_prove provided by libtap-parser-sourcehandler-pgtap-perl in test/packages
+setup: run.sh installs the three extensions in the schemas required by upstream test/README_test.md before pg_prove runs the numbered files
+knownSuiteConstraint: test02 creates current-timestamp rows which test03 immediately loads with a 5-second boundary, then sleeps 40 seconds only after those makers; fast executions can exclude initial rows before that sleep, as in upstream's native test sequence

@@ -1,0 +1,3 @@
+#!/usr/bin/python3
+from plprofiler import main
+main()

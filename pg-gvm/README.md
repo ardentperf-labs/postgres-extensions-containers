@@ -56,7 +56,8 @@ Renovate tracks the PGDG package. Rebuild after package or base-image security u
 
 The regex and calendar helpers work without a Greenbone application schema.
 These helpers do not create files; the image adds no listener or background
-service.
+service. The vendored upstream pgTAP suite is pinned in
+[test/UPSTREAM](test/UPSTREAM) and invoked by [test/run.sh](test/run.sh).
 
 The runtime closure is dynamically linked. ICU and PCRE2 are redistributed under
 their permissive notices; the GCC runtime libraries use the GCC Runtime Library

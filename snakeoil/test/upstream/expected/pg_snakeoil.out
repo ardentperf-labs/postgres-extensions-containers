@@ -1,0 +1,64 @@
+CREATE EXTENSION pg_snakeoil;
+-- ------------------------------------------------------------------------
+-- Management Functions
+-- ------------------------------------------------------------------------
+SELECT so_update_signatures();
+ so_update_signatures 
+----------------------
+ f
+(1 row)
+
+-- ------------------------------------------------------------------------
+-- Text Functions
+-- ------------------------------------------------------------------------
+SELECT so_is_infected('the quick brown fox jumps over the lazy dog');
+ so_is_infected 
+----------------
+ t
+(1 row)
+
+SELECT so_virus_name('the quick brown fox jumps over the lazy dog');
+         so_virus_name          
+--------------------------------
+ The Quick Brown Fox.UNOFFICIAL
+(1 row)
+
+SELECT so_is_infected('Hello World!');
+ so_is_infected 
+----------------
+ f
+(1 row)
+
+SELECT so_virus_name('Hello World!');
+ so_virus_name 
+---------------
+ 
+(1 row)
+
+-- ------------------------------------------------------------------------
+-- bytea Functions
+-- ------------------------------------------------------------------------
+SELECT so_is_infected('the quick brown fox jumps over the lazy dog'::bytea);
+ so_is_infected 
+----------------
+ t
+(1 row)
+
+SELECT so_virus_name('the quick brown fox jumps over the lazy dog'::bytea);
+         so_virus_name          
+--------------------------------
+ The Quick Brown Fox.UNOFFICIAL
+(1 row)
+
+SELECT so_is_infected('Hello World!'::bytea);
+ so_is_infected 
+----------------
+ f
+(1 row)
+
+SELECT so_virus_name('Hello World!'::bytea);
+ so_virus_name 
+---------------
+ 
+(1 row)
+

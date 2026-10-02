@@ -1,0 +1,9 @@
+repoURL: https://github.com/postgrespro/pg_wait_sampling
+tag: postgrespro-pg_wait_sampling-7e3a5fc
+commit: 7e3a5fc
+sourcePackage: pg-wait-sampling
+sourceVersion: 1.1.11-1.pgdg13+1
+sourceDscSHA256: 30911a44e7937e53f187e995e7ed7c3984c35c76012ee0a582220581d02fd069
+sourceOrigSHA256: 284dac703d8d8eded6d9409a36c93af11b2056afe04617e61d26939d6e58445b
+copiedpaths: sql, expected, conf.add, LICENSE
+serverConfig: shared_preload_libraries must include pg_wait_sampling before test sessions start

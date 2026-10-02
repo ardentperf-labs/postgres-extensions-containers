@@ -1,0 +1,128 @@
+SELECT pcre 'fo+';
+ pcre 
+------
+ fo+
+(1 row)
+
+SELECT pcre '+';
+ERROR:  PCRE compile error: nothing to repeat
+LINE 1: SELECT pcre '+';
+                    ^
+SELECT 'foo' =~ 'fo+';
+ ?column? 
+----------
+ t
+(1 row)
+
+SELECT 'bar' =~ 'fo+';
+ ?column? 
+----------
+ f
+(1 row)
+
+SELECT 'error' =~ '+';
+ERROR:  PCRE compile error: nothing to repeat
+LINE 1: SELECT 'error' =~ '+';
+                          ^
+SELECT 'foo' ~ pcre 'fo+';
+ ?column? 
+----------
+ t
+(1 row)
+
+SELECT 'bar' ~ pcre 'fo+';
+ ?column? 
+----------
+ f
+(1 row)
+
+SELECT pcre 'fo+' ~ 'foo';
+ ?column? 
+----------
+ t
+(1 row)
+
+SELECT pcre 'fo+' ~ 'bar';
+ ?column? 
+----------
+ f
+(1 row)
+
+SELECT 'foo' !~ pcre 'fo+';
+ ?column? 
+----------
+ f
+(1 row)
+
+SELECT 'bar' !~ pcre 'fo+';
+ ?column? 
+----------
+ t
+(1 row)
+
+SELECT pcre 'fo+' !~ 'foo';
+ ?column? 
+----------
+ f
+(1 row)
+
+SELECT pcre 'fo+' !~ 'bar';
+ ?column? 
+----------
+ t
+(1 row)
+
+SELECT pcre 'fo+' ~ ANY(ARRAY['foo', 'bar']);
+ ?column? 
+----------
+ t
+(1 row)
+
+SELECT 'FOO' ~ pcre 'fo+';
+ ?column? 
+----------
+ f
+(1 row)
+
+SELECT 'FOO' ~ pcre '(?i)fo+';
+ ?column? 
+----------
+ t
+(1 row)
+
+SELECT pcre_match('fo+', 'foobar');
+ pcre_match 
+------------
+ foo
+(1 row)
+
+SELECT pcre_match('fo+', 'barbar');
+ pcre_match 
+------------
+ 
+(1 row)
+
+SELECT pcre_captured_substrings('(fo+)(b..)', 'foobar');
+ pcre_captured_substrings 
+--------------------------
+ {foo,bar}
+(1 row)
+
+SELECT pcre_captured_substrings('(fo+)(b..)', 'abcdef');
+ pcre_captured_substrings 
+--------------------------
+ 
+(1 row)
+
+SELECT pcre_captured_substrings('(a|(z))(bc)', 'abc');
+ pcre_captured_substrings 
+--------------------------
+ {a,NULL,bc}
+(1 row)
+
+SELECT pcre_captured_substrings('(abc)(x(yz)?)?', 'abc');
+ pcre_captured_substrings 
+--------------------------
+ {abc,NULL,NULL}
+(1 row)
+

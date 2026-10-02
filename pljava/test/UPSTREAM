@@ -1,0 +1,10 @@
+repoURL: https://github.com/tada/pljava
+tag: pljava-1_6_10
+commit: not-recorded-in-release-tarball
+sourcePackage: postgresql-pljava
+sourceVersion: 1.6.10-1.pgdg13+1
+sourceDscSHA256: 2207b4db99999c42f59d61369f7bba5c2a6ae06e514ac8f788598ae358e19e51
+sourceOrigSHA256: 443ac3add92351cb2b46ed17dd80b0f2cad5bc6c31eef8e7be7ef52937365085
+copiedpaths: root and module pom.xml files; pljava-api, pljava, and pljava-pgxs src/test trees; COPYRIGHT
+runnerStatus: 77 (no mounted-binary integration suite)
+reason: native Maven/JUnit tests run against freshly compiled PL/Java source, not the installed package payload

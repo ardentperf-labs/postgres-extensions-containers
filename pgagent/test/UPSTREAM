@@ -1,0 +1,7 @@
+Repository: https://www.pgadmin.org/docs/pgadmin4/latest/pgagent.html
+Source package: pgagent 4.2.3-5.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/pgagent/pgagent_4.2.3-5.pgdg13+1.dsc
+SHA256: 2f50fbf09c2ad987577b1981001ecf46e01baa377a41d04df7226524405913db
+Copied paths: test, CMakeLists.txt; upstream license notices and debian/copyright.
+Suite: test/Makefile REGRESS. The job test uses the packaged pgagent client and waits 80 seconds.
+Test inputs and expected output are unmodified; update manually.

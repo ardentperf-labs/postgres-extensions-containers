@@ -65,7 +65,8 @@ AS $$ return [expr {$1 + $2}] $$ LANGUAGE pltcl;
 SELECT tcl_add(19, 23); -- 42
 ```
 
-`pltcl` uses Tcl's safe interpreter, which omits commands such as `exec` and `open`; it cannot access the host filesystem or launch processes directly. To install the untrusted variant, a superuser runs `CREATE EXTENSION pltclu;`. Only superusers can create `pltclu` functions. Those functions run as the PostgreSQL operating-system user with its available filesystem, process and network access. Review untrusted function code and privileges carefully. The included examples perform SQL-only work.  Before enabling `pltclu` functions that produce persistent files, declaratively provide a volume with suitable ownership/access, retention, and cleanup; the image does not define an application data-storage lifecycle.
+`pltcl` uses Tcl's safe interpreter, which omits commands such as `exec` and `open`; it cannot access the host filesystem or launch processes directly. To install the untrusted variant, a superuser runs `CREATE EXTENSION pltclu;`. Only superusers can create `pltclu` functions. Those functions run as the PostgreSQL operating-system user with its available filesystem, process and network access. Review untrusted function code and privileges carefully. The included examples perform SQL-only work. The vendored upstream suite is pinned in [test/UPSTREAM](test/UPSTREAM) and
+invoked by [test/run.sh](test/run.sh). Before enabling `pltclu` functions that produce persistent files, declaratively provide a volume with suitable ownership/access, retention, and cleanup; the image does not define an application data-storage lifecycle.
 
 The extension configuration adds the image's `/system` directory to the loader path, sets `TCL_LIBRARY` to the packaged Tcl 8.6 scripts, and sets `TCL8_6_TM_PATH` to its modules, including `msgcat` used by date functions. Users need no package installation or filesystem changes in the database container.
 
@@ -73,7 +74,7 @@ The extension configuration adds the image's `/system` directory to the loader p
 
 PGDG `postgresql-pltcl-18` provides both language control/SQL sets and `pltcl.so`. Debian `libtcl8.6` is the dynamically linked interpreter, with its script library copied to the extension image and native dependencies under `/system`. Package copyright notices are under `/licenses`.
 
-Renovate tracks `postgresql-pltcl-18`; Debian Tcl updates are reviewed separately. Rebuild when either changes.
+Renovate tracks `postgresql-pltcl-18`; Debian Tcl updates are reviewed separately. Rebuild and rerun both trusted and untrusted tests when either changes.
 
 ## Contributors
 

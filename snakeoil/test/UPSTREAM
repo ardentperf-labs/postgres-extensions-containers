@@ -1,0 +1,7 @@
+Repository: https://github.com/df7cb/pg_snakeoil
+Source package: pg-snakeoil 1.4-4.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/pg-snakeoil/pg-snakeoil_1.4-4.pgdg13+1.dsc
+SHA256: 11f21277309bb9ae2f5e36d5ad774b5619decc4037a1dd6ea2389afa9a1a83c1
+Copied paths: sql, expected, Makefile, LICENSE, debian/copyright
+Suite: Makefile REGRESS for PostgreSQL 18, including applicable upstream version variants.
+Test SQL and expected output are unmodified; update manually.

@@ -1,0 +1,8 @@
+Repository: https://github.com/pgsentinel/pgsentinel
+Source package: pgsentinel 1.5.1-1.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/pgsentinel/pgsentinel_1.5.1-1.pgdg13+1.dsc
+SHA256: 9e7c66cb1bade0f08fa31f04f89094581c064934f8927ecafb6fd4c97e12349f
+Copied paths: src/sql, src/expected, src/Makefile, src/pgsentinel.conf, src/pgsentinel-disabled.conf, Makefile, LICENSE, debian/copyright
+Suite: src/Makefile REGRESS (pgsentinel-test) for PostgreSQL 18.
+The native Debian installcheck configures pgsentinel.db_name=contrib_regression and pgsentinel_pgssh.enable=true; test/cluster.yaml carries those server-start settings while metadata supplies the shared preloads. pgSentinel's separate disabled-mode SQL/expected files are retained but are not registered in src/Makefile's REGRESS list.
+Test SQL and expected output are unmodified; update manually.

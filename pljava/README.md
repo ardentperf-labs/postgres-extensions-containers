@@ -73,7 +73,7 @@ PL/Java creates the trusted `java` language and untrusted `javaU` language. `jav
 
 The image includes the PL/Java native module, SQL/control files, both PL/Java JARs, the complete selected OpenJDK headless runtime, and the PGDG default policy. The OpenJDK runtime is under `/jvm`; the example uses CNPG's `/extensions/pljava` mount path. System libraries absent from the matching CNPG base are placed under `/system`. Package copyright notices are under `/licenses`.
 
-Renovate tracks the PGDG `postgresql-18-pljava` package. The Debian base suite selects OpenJDK 17 or 21; rebuild after either package changes.
+Renovate tracks the PGDG `postgresql-18-pljava` package. The Debian base suite selects OpenJDK 17 or 21; rebuild after either package changes. The current runner reports the upstream source tests as unsupported because they rebuild PL/Java instead of testing the mounted package; see [test/UPSTREAM](test/UPSTREAM) and [test/run.sh](test/run.sh).
 
 ## Contributors
 

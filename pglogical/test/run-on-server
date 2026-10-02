@@ -1,0 +1,1 @@
+Run pg_regress inside the extension image's CNPG PostgreSQL pod. Upstream's Makefile uses --temp-instance and regress-postgresql.conf for this suite.
