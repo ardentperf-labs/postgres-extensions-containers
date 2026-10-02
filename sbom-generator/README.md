@@ -142,17 +142,10 @@ native `type=sbom` generator. Set it to a generator image reference to use the
 custom generator. Use `--builder NAME` to select a configured builder, or
 `--print` to inspect the Bake definition.
 
-The separate `sbom-generator.yml` workflow builds the generator when anything
-under `sbom-generator/` or the publishing workflow changes. Pull requests validate
-the build; changes on `main` publish multi-platform `latest` and `sha-<commit>` tags.
-
-Extension CI consumes the image reference in `bake_targets.yml`. Renovate's
-existing Docker digest-pinning configuration tracks `latest`, adding its first
-digest after publication and proposing digest updates for subsequent builds.
-Generator source changes do not rebuild extensions directly; updating the image
-reference in `bake_targets.yml` triggers those builds. When adopting this workflow
-in another repository, update both the image reference and its Renovate
-`depName` to the publishing owner's GHCR namespace.
+The release workflow and consumer update process are described in
+[Generator release and test builds](#generator-release-and-test-builds).
+Extension CI consumes its selected, digest-pinned generator reference through
+`bake_targets.yml`.
 
 Immediately before Bake, CI edits the checked-out extension Dockerfile to insert
 `ARG BUILDKIT_SBOM_SCAN_STAGE=builder` as line 2, after the syntax directive
@@ -165,6 +158,88 @@ To test custom SBOM generation locally, publish a generator image accessible
 to BuildKit, add the same declaration to your extension Dockerfile, and set
 `sbom_generator` to the image reference when running Bake. Ordinary local
 builds need neither preparation step.
+
+## Generator release and test builds
+
+The repository publishes one image per owner at
+`ghcr.io/<lowercase-owner>/cnpg-sbom-generator`. Its full source commit and
+index digest identify each checked build. `sha-<full-commit>` is an immutable
+artifact locator by workflow convention; the digest is the content identity.
+GHCR does not make the commit tag inherently immutable, so the publisher reuses
+an existing commit tag rather than overwriting it.
+
+```mermaid
+flowchart TD
+    PR[Pull request] --> CHECK[Read-only generator checks]
+    MAIN[Relevant push to main] --> CHECK
+    MANUAL[Manual run with publish=true] --> CHECK
+    CHECK -->|main push or manual publish| PUB[Publish or reuse sha-commit image]
+    PUB --> VERIFY[Check both platforms and smoke-test exact digest]
+    VERIFY --> ROUTE{Trigger and freshness}
+    ROUTE -->|Current main push| LATEST[Promote checked digest to latest]
+    ROUTE -->|Manual publication| TEST[Promote checked digest to test]
+    LATEST --> RENOVATE[Renovate proposes latest@sha256 digest update]
+    RENOVATE --> DOWN[Downstream Debian and PGRX build checks]
+    TEST --> TRIAL[Temporary consumer branch pins test@sha256 digest]
+    TRIAL --> DOWN
+    DOWN --> REVIEW[Review SPDX, Trivy licenses, and shipped notices]
+    READY[Generator ready for adoption] --> FIRST[First adopter: cnpg-extensions]
+    READY --> UPPR[Parallel PR: cloudnative-pg]
+    FIRST --> DOWN
+    UPPR -->|if accepted| UPBUILD[Upstream publishes its own image and runs its Debian builds]
+```
+
+Pull requests run checks without GHCR writes; the smoke fixture uses a disposable local registry. A relevant push to `main`
+publishes or reuses the commit image, checks its exact multi-platform index
+digest, then points `latest` to that digest only if the build is still current
+with `main`. A manual run with `publish=false` only checks; one with
+`publish=true` publishes or reuses the commit image and points `test` to the
+checked digest, even when the selected branch is `main`. Failed checks leave
+both aliases unchanged. A manual test never moves `latest`.
+
+To publish a branch build for testing, ensure the dispatch workflow exists on
+the repository's default branch, then select the reviewed branch as the run
+ref. For this development repository:
+
+```bash
+gh workflow run sbom-generator.yml \
+  --repo ardentperf-labs/postgres-extensions-containers \
+  --ref work/sbom-validation \
+  -f publish=true
+```
+
+Open the run's summary to copy its source SHA, tested architecture, immutable
+reference, `test` reference, and index digest. Use the digest-pinned test
+reference on a temporary consumer branch, for example:
+
+```text
+ghcr.io/ardentperf-labs/cnpg-sbom-generator:test@sha256:<index-digest>
+```
+
+This reference belongs to the development repository. To test the first
+adopter, run the same workflow from its reviewed branch and use its own
+`ghcr.io/cnpg-extensions/cnpg-sbom-generator:test@sha256:...` reference.
+
+Run the existing affected extension build workflows and review their SPDX,
+Trivy license output, and shipped notices. Do not merge a `test` reference into
+the stable consumer pin. A later manual run can move the `test` tag, but the
+captured digest remains fixed.
+
+Stable consumers retain the tracking tag alongside its fixed digest, for
+example `ghcr.io/cnpg-extensions/cnpg-sbom-generator:latest@sha256:<digest>`.
+Renovate tracks the `latest` tag and opens a reviewed digest-update PR; that PR
+is the step that changes which generator extension builds consume. Keep the
+annotated Docker `depName` aligned with the publishing owner's GHCR package.
+Do not pin stable consumers to a `sha-...` tag, since that would stop tracking
+new checked main builds.
+
+Adopt the generator first in `cnpg-extensions/postgres-extensions-containers`:
+that repository publishes its own image, updates both Debian and PGRX pins, and
+runs its existing package checks. In parallel, open a separate core-generator
+PR to `cloudnative-pg/postgres-extensions-containers`. If accepted, upstream
+publishes its own image and uses it for its Debian builds. Each repository owns
+its GHCR package, digest updates, and consumer builds; upstream acceptance does
+not switch the downstream pins. PGRX integration remains downstream.
 
 ## Attestation layout
 
@@ -270,9 +345,6 @@ members whose OCI subject points to a platform image, and the in-toto subject
 and descriptor digests bind each statement and blob to that graph. Trivy then
 scans the extracted SPDX content; it does not verify the signature.
 
-For the first hosted rollout, publish the generator before running extension
-CI, then let Renovate pin the published `latest` manifest digest. GHCR must be
-readable by the consuming workflows and Renovate (through package visibility
-or configured credentials). The initial reference has no digest until that
-publication; subsequent digest updates select the generator used by extension
-builds. Local validation does not exercise hosted OIDC/publication jobs.
+GHCR must be readable by the consuming workflows and Renovate through package
+visibility or configured credentials. Local validation does not exercise
+hosted OIDC or publication jobs.

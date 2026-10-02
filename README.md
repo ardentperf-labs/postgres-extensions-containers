@@ -276,7 +276,8 @@ Published images carry platform-specific BuildKit SPDX and provenance
 attestations. See the [SBOM and authenticity guide](./sbom-generator/README.md)
 for digest-pinned Cosign verification, Buildx extraction, platform-specific
 Trivy scanning, and the distinction between payload inventory and direct image
-scans.
+scans. The guide also describes [generator publication and test builds](./sbom-generator/README.md#generator-release-and-test-builds),
+including commit tags and Renovate-managed digest updates.
 
 ## Image catalogs
 
