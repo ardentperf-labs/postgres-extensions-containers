@@ -14,15 +14,22 @@ ARG SCANCODE_VERSION=32.5.0
 
 COPY requirements-validation.txt /tmp/requirements-validation.txt
 
+# ScanCode's bundled native libraries are not available on every architecture.
+# Use Debian's libraries and an explicit path for ExtractCode's libarchive lookup.
+ENV EXTRACTCODE_LIBARCHIVE_PATH=/usr/local/lib/libarchive.so.13 \
+    TYPECODE_LIBMAGIC_DB_PATH=/usr/share/misc/magic.mgc
+
 RUN apt-get update \
-    && apt-get install --no-install-recommends -y ca-certificates curl gcc g++ libxml2-dev libxslt1-dev pkg-config \
+    && apt-get install --no-install-recommends -y ca-certificates curl gcc g++ libarchive13 libmagic1 libxml2-dev libxslt1-dev pkg-config \
+    && ln -s /usr/lib/*-linux-gnu/libarchive.so.13 /usr/local/lib/libarchive.so.13 \
     && rm -rf /var/lib/apt/lists/* \
     && curl --fail --silent --show-error --location \
       "https://github.com/anchore/syft/releases/download/v${SYFT_VERSION}/syft_${SYFT_VERSION}_linux_${TARGETARCH}.tar.gz" \
       | tar -xz -C /usr/local/bin syft \
     && python -m pip install --no-cache-dir \
       "scancode-toolkit==${SCANCODE_VERSION}" -r /tmp/requirements-validation.txt \
-    && syft version
+    && syft version \
+    && scancode --version
 
 WORKDIR /opt/cnpg-sbom-generator
 COPY compose.py generator.py hooks.py spdx_validation.py ./

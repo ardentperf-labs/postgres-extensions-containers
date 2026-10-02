@@ -13,6 +13,7 @@ registry=${SBOM_SMOKE_REGISTRY:-localhost:5000}
 trivy_image=${TRIVY_IMAGE:-}
 python=${PYTHON:-python3}
 builder=${BUILDX_BUILDER:-}
+platform=${SBOM_SMOKE_PLATFORM:-linux/amd64}
 script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 repo_root=$(cd "$script_dir/../../.." && pwd)
 fixture_context="$script_dir/fixture"
@@ -30,7 +31,7 @@ if [[ -z "$trivy_image" ]]; then
 fi
 docker buildx version >/dev/null
 
-build_args=(buildx build --platform linux/amd64 --tag "$fixture_image"
+build_args=(buildx build --platform "$platform" --tag "$fixture_image"
   --attest "type=sbom,generator=$generator_image"
   --metadata-file "$artifact_dir/build-metadata.json"
   --push)

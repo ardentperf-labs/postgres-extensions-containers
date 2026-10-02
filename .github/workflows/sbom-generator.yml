@@ -26,11 +26,21 @@ env:
 
 jobs:
   check:
-    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    env:
+      SBOM_SMOKE_PLATFORM: linux/${{ matrix.arch }}
     permissions:
       contents: read
     concurrency:
-      group: sbom-generator-check-${{ github.ref }}
+      group: sbom-generator-check-${{ github.ref }}-${{ matrix.arch }}
       cancel-in-progress: true
     services:
       registry:
@@ -59,7 +69,7 @@ jobs:
 
       - name: Build local generator
         run: |
-          docker buildx build --platform linux/amd64 \
+          docker buildx build --platform "$SBOM_SMOKE_PLATFORM" \
             --build-arg "SBOM_GENERATOR_REVISION=$GITHUB_SHA" \
             --label "org.opencontainers.image.source=https://github.com/$GITHUB_REPOSITORY" \
             --tag localhost:5000/cnpg-sbom-generator:check --push sbom-generator
@@ -73,7 +83,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: sbom-generator-check
+          name: sbom-generator-check-${{ matrix.arch }}
           path: ${{ runner.temp }}/sbom-check
           if-no-files-found: ignore
 
