@@ -1,0 +1,14 @@
+Extension: table-log
+Upstream repository: https://github.com/df7cb/table_log
+PGDG source package: tablelog 0.6.4-4.pgdg13+2
+Source descriptor: tablelog_0.6.4-4.pgdg13+2.dsc
+Source descriptor SHA256: 0f96b1caf06c90b84378a93adc19c2ee51a983e8371b873d7e8f4060d4ece362
+Original source archive(s):
+  tablelog_0.6.4.orig.tar.gz SHA256 80c5fbfa162d2e856609468867474440006025b055c523cf03d383e7138aacb2
+Copied upstream source paths (relative to the exact extracted PGDG source tree):
+  sql/
+  expected/
+Copied license/copyright notices:
+  upstream/debian-copyright
+Runner: test/run.sh invokes the native PG_REGRESS suite with its source-defined cases and options.
+Expected output files are copied byte-for-byte from this source package; no generated or edited expected outputs are vendored.

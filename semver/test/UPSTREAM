@@ -1,0 +1,16 @@
+Extension: semver
+Upstream repository: https://salsa.debian.org/debian/postgresql-semver
+PGDG source package: postgresql-semver 0.41.0-1.pgdg13+1
+Source descriptor: postgresql-semver_0.41.0-1.pgdg13+1.dsc
+Source descriptor SHA256: 00d4626c74c08d036ed7a9585c44416343794597737ecff8a98dbc9232addc2e
+Original source archive(s):
+  postgresql-semver_0.41.0.orig.tar.gz SHA256 51e284f68eaa1ac230899254aa2211fffe1dadc45c47f8d114246cb04f4c03f9
+Copied upstream source paths (relative to the exact extracted PGDG source tree):
+  Makefile
+  test/sql/
+  test/expected/
+  test/pgtap-core.sql
+Copied license/copyright notices:
+  upstream/LICENSE
+Runner: test/run.sh runs the PGXS wildcard REGRESS files in source order with inputdir=test; both SQL tests include the exact source test/pgtap-core.sql helper.
+Expected output files are copied byte-for-byte from this source package; no generated or edited expected outputs are vendored.

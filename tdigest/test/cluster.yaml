@@ -1,0 +1,7 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: ($values.name)
+  annotations:
+    cnpg.io/podPatch: >-
+      [{"op":"add","path":"/spec/volumes/-","value":{"name":"upstream-test-tmp","emptyDir":{}}},{"op":"add","path":"/spec/containers/0/volumeMounts/-","value":{"name":"upstream-test-tmp","mountPath":"/tmp"}}]

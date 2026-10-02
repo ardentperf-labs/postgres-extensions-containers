@@ -1,0 +1,8 @@
+repoURL: https://github.com/dverite/icu_ext
+tag: dverite-icu_ext-707adfc
+commit: 707adfc
+sourcePackage: icu-ext
+sourceVersion: 1.11.0-1.pgdg13+2
+sourceDscSHA256: 1087ed9146824648bf04e2ec00d2d7c7ebc2e9b86a77ece4ed91c715cacdaa71
+sourceOrigSHA256: 5a17463bc6bbc1fed0addab622d82cae6ff922451411f9d7b7ea89601e500072
+copiedpaths: sql, expected, LICENSE.md

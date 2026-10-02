@@ -1,0 +1,8 @@
+Repository: https://github.com/ossc-db/pg_hint_plan
+Source package: pg-hint-plan-18 1.8.0-3.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/pg-hint-plan-18/pg-hint-plan-18_1.8.0-3.pgdg13+1.dsc
+SHA256: 2ee16a5a8768af4eba529ef54a9e789568f59d2cf357ee2ebf9dbc42fecf29f3
+Copied paths: sql, expected, Makefile, COPYRIGHT.postgresql, COPYRIGHT, debian/copyright
+Suite: Makefile REGRESS for PostgreSQL 18, including applicable upstream version variants.
+Test SQL and expected output are unmodified; update manually.
+Test Cluster preload adds pg_stat_statements as required by debian/tests/installcheck; the image metadata already preloads pg_hint_plan.

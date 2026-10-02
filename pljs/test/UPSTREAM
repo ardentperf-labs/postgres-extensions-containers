@@ -1,0 +1,8 @@
+repoURL: https://github.com/plv8/pljs
+tag: pljs-1.0.5
+commit: not-recorded-in-release-tarball
+sourcePackage: pljs
+sourceVersion: 1.0.5-1.pgdg13+1
+sourceDscSHA256: aafaf81c90a47c8a4bc2ac4a4b22c47d0e1b747a69253653f1f96ad951a20f2d
+sourceOrigSHA256: a57ce788bc447b652a6c307c636d9c371497c57857bbdcafb017459d91fb9993
+copiedpaths: sql, expected, LICENSE

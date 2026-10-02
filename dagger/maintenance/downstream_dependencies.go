@@ -8,6 +8,13 @@ import (
 	"dagger/maintenance/internal/dagger"
 )
 
+type testingExtensionInfo struct {
+	Configuration   *ExtensionConfiguration
+	SQLName         string
+	Version         string
+	CreateExtension bool
+}
+
 const baseImageDependencyPrefix = "base-image:"
 
 // resolveTestingDependencies uses the cluster catalog for every bare dependency

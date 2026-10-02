@@ -1,0 +1,7 @@
+Repository: https://github.com/Natureshadow/pg_rrule
+Source package: pg-rrule 0.3.0-1.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/pg-rrule/pg-rrule_0.3.0-1.pgdg13+1.dsc
+SHA256: 03ef7384dbfda9777787549362493bbe1e3b1c524bc8841be98236db9e642281
+Copied paths: test, Makefile, LICENSE, debian/copyright
+Suite: Makefile REGRESS for PostgreSQL 18, including applicable upstream version variants.
+Test SQL and expected output are unmodified; update manually.

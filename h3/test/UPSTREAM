@@ -1,0 +1,8 @@
+Repository: https://github.com/postgis/h3-pg
+Source package: h3-pg 4.2.3-4.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/h/h3-pg/h3-pg_4.2.3-4.pgdg13+1.dsc
+SHA256: aa0cbaa69ad80834d97ed617707baeaa95b3d77e6f7a0dd794a3cbcb4f85220c
+Copied paths: h3/test, h3_postgis/test, CMakeLists.txt; upstream license notices and debian/copyright.
+Suite: both CMake-registered SQL suites. Optional pg_validate_extupgrade and build-time inlining checks are not run by this SQL adapter.
+Test inputs and expected output are unmodified; update manually.
+The h3_postgis SQL suite uses explicitly pinned official PostGIS extension images for each Debian distribution, with their system library directory enabled by the test-only Cluster overlay.

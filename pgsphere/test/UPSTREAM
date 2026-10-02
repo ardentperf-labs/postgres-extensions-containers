@@ -1,0 +1,7 @@
+Repository: https://pgsphere.github.io/
+Source package: pgsphere 1.5.2-1.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/pgsphere/pgsphere_1.5.2-1.pgdg13+1.dsc
+SHA256: 3b2c62bcf8366ae413cd7a450fbe3526f9f7a141654b13523b0f6184788cdec4
+Copied paths: sql, expected, Makefile, COPYRIGHT.pg_sphere, debian/copyright
+Suite: Makefile REGRESS for PostgreSQL 18, including applicable upstream version variants.
+Test SQL and expected output are unmodified; update manually.

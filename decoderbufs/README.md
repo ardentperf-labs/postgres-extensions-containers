@@ -45,7 +45,11 @@ SELECT * FROM pg_create_logical_replication_slot('application_changes', 'decoder
 ```
 
 Consume the slot with a compatible client that decodes decoderbufs protobuf
-messages. Tables need suitable replica identity for UPDATE and DELETE.
+messages. Tables need suitable replica identity for UPDATE and DELETE. The
+upstream `decoderbufs` regression case is invoked by [test/run.sh](test/run.sh);
+its source and exact package version are recorded in [test/UPSTREAM](test/UPSTREAM).
+This suite does not include a separate protobuf consumer that decodes replication
+messages. The harness uses a test-only superuser against a disposable CNPG cluster.
 
 Unconsumed replication slots retain WAL on the database's data volume. Monitor
 consumer lag and disk use, configure an appropriate `max_slot_wal_keep_size`, and
@@ -61,6 +65,6 @@ serialization code follows the decoderbufs package's update lifecycle;
 protobuf-c is dynamically linked and updated separately.
 
 Renovate tracks the PGDG package pin. Rebuild for protobuf-c or base-runtime
-security updates and repeat architecture builds.
+security updates and repeat both distro runtime tests and architecture builds.
 
 Maintained by Jeremy Schneider (@ardentperf).

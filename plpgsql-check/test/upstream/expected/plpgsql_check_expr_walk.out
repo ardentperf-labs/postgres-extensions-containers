@@ -1,0 +1,962 @@
+set client_min_messages to warning;
+create extension if not exists plpgsql_check;
+set client_min_messages to notice;
+--
+-- checks of the format() function
+--
+-- the format string is parsed when it is a constant, the number of the
+-- placeholders is compared against the number of the arguments and the
+-- syntax of the format specifiers is validated
+--
+create table ew_tab1(a int, b text);
+-- correct format strings - a simple placeholder, a doubled percent,
+-- an explicit argument position, a direct width, the minus flag,
+-- the identifier and the literal placeholders
+create function ew_f1(p text)
+returns void as $$
+begin
+  raise notice '%', format('%s %s', p, p);
+  raise notice '%', format('100%% %s', p);
+  raise notice '%', format('%1$s %1$s %2$s', p, p);
+  raise notice '%', format('[%10s][%-10s]', p, p);
+  raise notice '%', format('%I = %L', p, p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f1', fatal_errors => false);
+ plpgsql_check_function 
+------------------------
+(0 rows)
+
+-- an indirect width - the width is taken from the next argument or from
+-- the argument on the given position
+create function ew_f2(p text, w int)
+returns void as $$
+begin
+  raise notice '%', format('[%*s]', w, p);
+  raise notice '%', format('[%2$*1$s]', w, p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f2', fatal_errors => false);
+ plpgsql_check_function 
+------------------------
+(0 rows)
+
+-- the arguments are numbered from one
+create function ew_f3(p text)
+returns void as $$
+begin
+  raise notice '%', format('%0$s', p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f3', fatal_errors => false);
+                               plpgsql_check_function                               
+------------------------------------------------------------------------------------
+ error:22023:3:RAISE:format specifies argument 0, but arguments are numbered from 1
+ Query: format('%0$s', p)
+ --            ^
+(3 rows)
+
+-- the same for the position of the width argument
+create function ew_f4(p text, w int)
+returns void as $$
+begin
+  raise notice '%', format('%0$*s', w, p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f4', fatal_errors => false);
+                               plpgsql_check_function                               
+------------------------------------------------------------------------------------
+ error:22023:3:RAISE:format specifies argument 0, but arguments are numbered from 1
+ Query: format('%0$*s', w, p)
+ --            ^
+(3 rows)
+
+-- the position of the width argument has to be closed by a dollar
+create function ew_f5(p text, w int)
+returns void as $$
+begin
+  raise notice '%', format('%*1s', w, p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f5', fatal_errors => false);
+                      plpgsql_check_function                      
+------------------------------------------------------------------
+ error:22023:3:RAISE:width argument position must be ended by "$"
+ Query: format('%*1s', w, p)
+ --            ^
+(3 rows)
+
+-- the parsed number has to fit into an integer
+create function ew_f6(p text)
+returns void as $$
+begin
+  raise notice '%', format('%99999999999999$s', p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f6', fatal_errors => false);
+           plpgsql_check_function           
+--------------------------------------------
+ error:22003:3:RAISE:number is out of range
+ Query: format('%99999999999999$s', p)
+ --            ^
+(3 rows)
+
+-- only s, I and L are known specifiers
+create function ew_f7(p text)
+returns void as $$
+begin
+  raise notice '%', format('%d', p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f7', fatal_errors => false);
+                    plpgsql_check_function                    
+--------------------------------------------------------------
+ error:22023:3:RAISE:unrecognized format() type specifier "d"
+ Query: format('%d', p)
+ --            ^
+(3 rows)
+
+-- the format string cannot end by an unfinished specifier - the parser
+-- can stop at any part of the specifier
+create function ew_f8(p text, w int)
+returns void as $$
+begin
+  raise notice '%', format('value %', p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f8', fatal_errors => false);
+                  plpgsql_check_function                  
+----------------------------------------------------------
+ error:22023:3:RAISE:unterminated format() type specifier
+ Query: format('value %', p)
+ --            ^
+ Hint: For a single "%%" use "%%%%".
+ warning extra:00000:unused parameter "w"
+(5 rows)
+
+create function ew_f8a(p text)
+returns void as $$
+begin
+  raise notice '%', format('value %1', p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f8a', fatal_errors => false);
+                  plpgsql_check_function                  
+----------------------------------------------------------
+ error:22023:3:RAISE:unterminated format() type specifier
+ Query: format('value %1', p)
+ --            ^
+ Hint: For a single "%%" use "%%%%".
+(4 rows)
+
+create function ew_f8b(p text)
+returns void as $$
+begin
+  raise notice '%', format('value %1$', p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f8b', fatal_errors => false);
+                  plpgsql_check_function                  
+----------------------------------------------------------
+ error:22023:3:RAISE:unterminated format() type specifier
+ Query: format('value %1$', p)
+ --            ^
+ Hint: For a single "%%" use "%%%%".
+(4 rows)
+
+create function ew_f8c(p text)
+returns void as $$
+begin
+  raise notice '%', format('value %-', p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f8c', fatal_errors => false);
+                  plpgsql_check_function                  
+----------------------------------------------------------
+ error:22023:3:RAISE:unterminated format() type specifier
+ Query: format('value %-', p)
+ --            ^
+ Hint: For a single "%%" use "%%%%".
+(4 rows)
+
+create function ew_f8d(p text)
+returns void as $$
+begin
+  raise notice '%', format('value %*', p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f8d', fatal_errors => false);
+                  plpgsql_check_function                  
+----------------------------------------------------------
+ error:22023:3:RAISE:unterminated format() type specifier
+ Query: format('value %*', p)
+ --            ^
+ Hint: For a single "%%" use "%%%%".
+(4 rows)
+
+create function ew_f8e(p text, w int)
+returns void as $$
+begin
+  raise notice '%', format('value %*1$', w, p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f8e', fatal_errors => false);
+                  plpgsql_check_function                  
+----------------------------------------------------------
+ error:22023:3:RAISE:unterminated format() type specifier
+ Query: format('value %*1$', w, p)
+ --            ^
+ Hint: For a single "%%" use "%%%%".
+(4 rows)
+
+-- the position of the width argument is numbered from one too, and the
+-- number of the direct width has to fit into an integer
+create function ew_f8f(p text, w int)
+returns void as $$
+begin
+  raise notice '%', format('value %*0$s', w, p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f8f', fatal_errors => false);
+                               plpgsql_check_function                               
+------------------------------------------------------------------------------------
+ error:22023:3:RAISE:format specifies argument 0, but arguments are numbered from 1
+ Query: format('value %*0$s', w, p)
+ --            ^
+(3 rows)
+
+create function ew_f8g(p text, w int)
+returns void as $$
+begin
+  raise notice '%', format('value %*99999999999999$s', w, p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f8g', fatal_errors => false);
+             plpgsql_check_function              
+-------------------------------------------------
+ error:22003:3:RAISE:number is out of range
+ Query: format('value %*99999999999999$s', w, p)
+ --            ^
+(3 rows)
+
+create function ew_f8h(p text)
+returns void as $$
+begin
+  raise notice '%', format('value %99999999999999s', p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f8h', fatal_errors => false);
+           plpgsql_check_function           
+--------------------------------------------
+ error:22003:3:RAISE:number is out of range
+ Query: format('value %99999999999999s', p)
+ --            ^
+(3 rows)
+
+create function ew_f8i(p text)
+returns void as $$
+begin
+  raise notice '%', format('value %1$99999999999999s', p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f8i', fatal_errors => false);
+            plpgsql_check_function            
+----------------------------------------------
+ error:22003:3:RAISE:number is out of range
+ Query: format('value %1$99999999999999s', p)
+ --            ^
+(3 rows)
+
+-- there have to be enough arguments for all the placeholders
+create function ew_f9(p text)
+returns void as $$
+begin
+  raise notice '%', format('%s %s', p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f9', fatal_errors => false);
+               plpgsql_check_function               
+----------------------------------------------------
+ error:22023:3:RAISE:too few arguments for format()
+ Query: format('%s %s', p)
+ --            ^
+(3 rows)
+
+-- the same for the indirect width
+create function ew_f10(w int)
+returns void as $$
+begin
+  raise notice '%', format('[%*s]', w);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f10', fatal_errors => false);
+               plpgsql_check_function               
+----------------------------------------------------
+ error:22023:3:RAISE:too few arguments for format()
+ Query: format('[%*s]', w)
+ --            ^
+(3 rows)
+
+create function ew_f11(w int)
+returns void as $$
+begin
+  raise notice '%', format('[%2$*3$s]', w, w);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f11', fatal_errors => false);
+               plpgsql_check_function               
+----------------------------------------------------
+ error:22023:3:RAISE:too few arguments for format()
+ Query: format('[%2$*3$s]', w, w)
+ --            ^
+(3 rows)
+
+-- the arguments that are not used by the format string are reported
+create function ew_f12(p text)
+returns void as $$
+begin
+  raise notice '%', format('%s', p, p, p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f12', fatal_errors => false);
+                    plpgsql_check_function                    
+--------------------------------------------------------------
+ warning:00000:3:RAISE:unused parameters of function "format"
+ Query: format('%s', p, p, p)
+ --            ^
+(3 rows)
+
+--
+-- the format() function as a source of a dynamic query
+--
+-- when the format string and all the arguments are constants, the result
+-- is known and it is checked like a static query
+--
+create function ew_f13()
+returns void as $$
+begin
+  execute format('select %I from %I', 'a', 'ew_tab1');
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f13', fatal_errors => false);
+ plpgsql_check_function 
+------------------------
+(0 rows)
+
+-- an identifier placeholder with an unknown value is replaced by a
+-- constant name, so the query cannot be executed, but its syntax is
+-- still checked
+create function ew_f14(p text)
+returns void as $$
+begin
+  execute format('select a from %I', p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f14', fatal_errors => false);
+ plpgsql_check_function 
+------------------------
+(0 rows)
+
+-- a literal placeholder with an unknown value is replaced by NULL
+create function ew_f15(p text)
+returns void as $$
+begin
+  execute format('select a from ew_tab1 where b = %L', p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f15', fatal_errors => false);
+ plpgsql_check_function 
+------------------------
+(0 rows)
+
+-- a value placeholder with an unknown value makes the result unknown
+create function ew_f16(p text)
+returns void as $$
+begin
+  execute format('select a from ew_tab1 where b = %s', p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f16', fatal_errors => false, security_warnings => true);
+                           plpgsql_check_function                            
+-----------------------------------------------------------------------------
+ security:00000:3:EXECUTE:text type variable is not sanitized
+ Query: format('select a from ew_tab1 where b = %s', p)
+ --                                                  ^
+ Detail: The EXECUTE expression is SQL injection vulnerable.
+ Hint: Use quote_ident, quote_literal or format function to secure variable.
+(5 rows)
+
+-- the same with an explicit argument position and with an indirect width
+create function ew_f17(p text, w int)
+returns void as $$
+begin
+  execute format('select %1$I from ew_tab1', 'a');
+  execute format('select %*s from ew_tab1', w, 'a');
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f17', fatal_errors => false, security_warnings => true);
+          plpgsql_check_function          
+------------------------------------------
+ warning extra:00000:unused parameter "p"
+(1 row)
+
+-- a format string that cannot be evaluated makes the dynamic query
+-- unknown - the string ends by an unfinished specifier, it contains an
+-- unknown specifier, it needs more arguments than it gets, or it refers
+-- to an argument or to a width argument behind the last one
+create function ew_f18(p text)
+returns void as $$
+begin
+  execute format('select %s %s', p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f18', fatal_errors => false, security_warnings => true);
+                           plpgsql_check_function                            
+-----------------------------------------------------------------------------
+ error:22023:3:EXECUTE:too few arguments for format()
+ Query: format('select %s %s', p)
+ --            ^
+ security:00000:3:EXECUTE:text type variable is not sanitized
+ Query: format('select %s %s', p)
+ --                            ^
+ Detail: The EXECUTE expression is SQL injection vulnerable.
+ Hint: Use quote_ident, quote_literal or format function to secure variable.
+(8 rows)
+
+create function ew_f18a()
+returns void as $$
+begin
+  execute format('select 1 %');
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f18a', fatal_errors => false);
+                   plpgsql_check_function                   
+------------------------------------------------------------
+ error:22023:3:EXECUTE:unterminated format() type specifier
+ Query: format('select 1 %')
+ --            ^
+ Hint: For a single "%%" use "%%%%".
+(4 rows)
+
+create function ew_f18b()
+returns void as $$
+begin
+  execute format('select 1 -- 100%%');
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f18b', fatal_errors => false);
+ plpgsql_check_function 
+------------------------
+(0 rows)
+
+create function ew_f18c()
+returns void as $$
+begin
+  execute format('select %d', 1);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f18c', fatal_errors => false);
+                     plpgsql_check_function                     
+----------------------------------------------------------------
+ error:22023:3:EXECUTE:unrecognized format() type specifier "d"
+ Query: format('select %d', 1)
+ --            ^
+(3 rows)
+
+create function ew_f18d()
+returns void as $$
+begin
+  execute format('select %2$*5$s', 'a', 'b');
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f18d', fatal_errors => false);
+                plpgsql_check_function                
+------------------------------------------------------
+ error:22023:3:EXECUTE:too few arguments for format()
+ Query: format('select %2$*5$s', 'a', 'b')
+ --            ^
+(3 rows)
+
+create function ew_f18e()
+returns void as $$
+begin
+  execute format('select %*s');
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f18e', fatal_errors => false);
+                plpgsql_check_function                
+------------------------------------------------------
+ error:22023:3:EXECUTE:too few arguments for format()
+ Query: format('select %*s')
+ --            ^
+(3 rows)
+
+create function ew_f18f()
+returns void as $$
+begin
+  execute format('select %3$s', 'a');
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f18f', fatal_errors => false);
+                plpgsql_check_function                
+------------------------------------------------------
+ error:22023:3:EXECUTE:too few arguments for format()
+ Query: format('select %3$s', 'a')
+ --            ^
+(3 rows)
+
+create function ew_f18g()
+returns void as $$
+begin
+  execute format('select %s %s', 'a');
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f18g', fatal_errors => false);
+                plpgsql_check_function                
+------------------------------------------------------
+ error:22023:3:EXECUTE:too few arguments for format()
+ Query: format('select %s %s', 'a')
+ --            ^
+(3 rows)
+
+-- an argument of the format string which is not a string is not a source
+-- of a SQL injection
+create function ew_f18h(n int)
+returns void as $$
+begin
+  execute format('select %s', n);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f18h', fatal_errors => false, security_warnings => true);
+ plpgsql_check_function 
+------------------------
+(0 rows)
+
+--
+-- detection of the SQL injection in the dynamic queries
+--
+-- the format string itself is a variable, so nothing can be checked
+create function ew_f19(p text, q text)
+returns void as $$
+begin
+  execute format(p, q);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f19', security_warnings => true);
+                           plpgsql_check_function                            
+-----------------------------------------------------------------------------
+ security:00000:3:EXECUTE:text type variable is not sanitized
+ Query: format(p, q)
+ --            ^
+ Detail: The EXECUTE expression is SQL injection vulnerable.
+ Hint: Use quote_ident, quote_literal or format function to secure variable.
+(5 rows)
+
+-- the arguments of a function are not sanitized
+create function ew_f20(p text)
+returns void as $$
+begin
+  execute upper(p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f20', security_warnings => true);
+                           plpgsql_check_function                            
+-----------------------------------------------------------------------------
+ security:00000:3:EXECUTE:text type variable is not sanitized
+ Query: upper(p)
+ --           ^
+ Detail: The EXECUTE expression is SQL injection vulnerable.
+ Hint: Use quote_ident, quote_literal or format function to secure variable.
+(5 rows)
+
+-- a named argument is checked like a positional one
+create function ew_id(val text)
+returns text as $$ begin return val; end $$ language plpgsql;
+create function ew_f21(p text)
+returns void as $$
+begin
+  execute ew_id(val => p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f21', security_warnings => true);
+                           plpgsql_check_function                            
+-----------------------------------------------------------------------------
+ security:00000:3:EXECUTE:text type variable is not sanitized
+ Query: ew_id(val => p)
+ --                  ^
+ Detail: The EXECUTE expression is SQL injection vulnerable.
+ Hint: Use quote_ident, quote_literal or format function to secure variable.
+(5 rows)
+
+-- a function whose arguments are not strings is safe
+create function ew_f22(n int)
+returns void as $$
+begin
+  execute ew_id(n::text);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f22', security_warnings => true);
+ plpgsql_check_function 
+------------------------
+(0 rows)
+
+-- an expression that the walker does not know is considered safe
+create function ew_f23(p text)
+returns void as $$
+begin
+  execute case when p is null then 'select 1' else 'select 2' end;
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f23', security_warnings => true);
+ plpgsql_check_function 
+------------------------
+(0 rows)
+
+-- a sanitized value is safe
+create function ew_f24(p text)
+returns void as $$
+begin
+  execute 'select * from ' || quote_ident(p);
+  execute 'select ' || quote_literal(p);
+  execute 'select ' || quote_nullable(p);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f24', security_warnings => true);
+ plpgsql_check_function 
+------------------------
+(0 rows)
+
+--
+-- detection of an implicit cast of a table attribute
+--
+-- the type of the variable is wider than the type of the attribute, so
+-- the attribute is casted and the index on it cannot be used
+create function ew_f25(p bigint)
+returns int as $$
+declare r int;
+begin
+  select a into r from ew_tab1 where a = p;
+  return r;
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f25', performance_warnings => true);
+                                 plpgsql_check_function                                  
+-----------------------------------------------------------------------------------------
+ performance:00000:routine is marked as VOLATILE, should be STABLE
+ Hint: When you fix this issue, please, recheck other functions that uses this function.
+(2 rows)
+
+-- an explicit cast written by the user is not reported
+create function ew_f26(p bigint)
+returns int as $$
+declare r int;
+begin
+  select a into r from ew_tab1 where a::bigint = p;
+  return r;
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f26', performance_warnings => true);
+                                 plpgsql_check_function                                  
+-----------------------------------------------------------------------------------------
+ performance:00000:routine is marked as VOLATILE, should be STABLE
+ Hint: When you fix this issue, please, recheck other functions that uses this function.
+(2 rows)
+
+-- the casted expression is not a plain attribute
+create function ew_f27(p bigint)
+returns int as $$
+declare r int;
+begin
+  select a into r from ew_tab1 where abs(a) = p;
+  return r;
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f27', performance_warnings => true);
+                                 plpgsql_check_function                                  
+-----------------------------------------------------------------------------------------
+ performance:00000:routine is marked as VOLATILE, should be STABLE
+ Hint: When you fix this issue, please, recheck other functions that uses this function.
+(2 rows)
+
+--
+-- collecting of the dependencies
+--
+-- an operator that is not in pg_catalog is a dependency of the routine,
+-- a prefix operator has no type on its left side
+create function ew_neg(int)
+returns int as $$ select -$1 $$ language sql immutable;
+create operator @# (function = ew_neg, rightarg = int);
+create function ew_f29(n int)
+returns int as $$
+begin
+  return @# n;
+end;
+$$ language plpgsql;
+select type, schema, name, params from plpgsql_show_dependency_tb('ew_f29');
+   type   | schema | name |   params    
+----------+--------+------+-------------
+ OPERATOR | public | @#   | (-,integer)
+(1 row)
+
+-- Explicit VARIADIC arrays supply their elements, not one array argument.
+create function ew_f30(p text)
+returns void as $$
+begin
+  raise notice '%', format('%s %s', variadic array['a', p]);
+  raise notice '%', format('%s %s', variadic '{a,b}'::text[]);
+  raise notice '%', format('%s %s', variadic '[0:1]={a,b}'::text[]);
+  raise notice '%', format('%s %s', variadic array[1, 2]);
+  raise notice '%', format('%s %s %s %s', variadic array[['a', p], ['b', p]]);
+  raise notice '%', format('plain', variadic array[]::text[]);
+  raise notice '%', format('plain', variadic null::text[]);
+  raise notice '%', format('%s%L', variadic array[null, null]::text[]);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f30', fatal_errors => false);
+ plpgsql_check_function 
+------------------------
+(0 rows)
+
+-- Unknown array lengths do not disable format syntax validation.
+create function ew_f31(args text[])
+returns text as $$
+begin
+  return format('%s %s', variadic args);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f31');
+ plpgsql_check_function 
+------------------------
+(0 rows)
+
+create function ew_f32()
+returns text as $$
+begin
+  return format('%s %s', variadic array['a']);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f32');
+               plpgsql_check_function                
+-----------------------------------------------------
+ error:22023:3:RETURN:too few arguments for format()
+ Query: format('%s %s', variadic array['a'])
+ --            ^
+(3 rows)
+
+create function ew_f33(args text[])
+returns text as $$
+begin
+  return format('%s %Q', variadic args);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f33');
+                    plpgsql_check_function                     
+---------------------------------------------------------------
+ error:22023:3:RETURN:unrecognized format() type specifier "Q"
+ Query: format('%s %Q', variadic args)
+ --            ^
+(3 rows)
+
+create function ew_f34()
+returns text as $$
+begin
+  return format('%s', variadic null::text[]);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f34');
+               plpgsql_check_function                
+-----------------------------------------------------
+ error:22023:3:RETURN:too few arguments for format()
+ Query: format('%s', variadic null::text[])
+ --            ^
+(3 rows)
+
+-- Constant synthesis uses the same expanded arguments, including NULLs.
+create function ew_f35()
+returns int as $$
+declare r record;
+begin
+  execute format('select %s%L::int as n', variadic array[null, '7']) into r;
+  return r.n;
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f35');
+ plpgsql_check_function 
+------------------------
+(0 rows)
+
+select ew_f35();
+ ew_f35 
+--------
+      7
+(1 row)
+
+create function ew_f36()
+returns int as $$
+declare r record;
+begin
+  execute format('select %L::int as n', variadic array[null]::text[]) into r;
+  return r.n;
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f36');
+ plpgsql_check_function 
+------------------------
+(0 rows)
+
+select ew_f36() is null;
+ ?column? 
+----------
+ t
+(1 row)
+
+-- An explicit position resets subsequent implicit argument consumption.
+create function ew_f37(a text, b text)
+returns text as $$
+begin
+  return format('%s %s %1$s %s', a, b);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f37');
+ plpgsql_check_function 
+------------------------
+(0 rows)
+
+select ew_f37('a', 'b');
+ ew_f37  
+---------
+ a b a b
+(1 row)
+
+create function ew_f38()
+returns text as $$
+begin
+  return format('%s %s %*1$s', 3, 'a');
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f38');
+ plpgsql_check_function 
+------------------------
+(0 rows)
+
+select ew_f38();
+ ew_f38  
+---------
+ 3 a   a
+(1 row)
+
+create function ew_f39(a text, b text)
+returns text as $$
+begin
+  return format('%2$s %s', a, b);
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f39');
+               plpgsql_check_function                
+-----------------------------------------------------
+ error:22023:3:RETURN:too few arguments for format()
+ Query: format('%2$s %s', a, b)
+ --            ^
+(3 rows)
+
+-- Synthesis must follow the same cursor for ordinary and VARIADIC calls.
+create function ew_f40()
+returns int as $$
+declare a int; b int;
+begin
+  execute format('select %s + %s + %1$s + %s', '1', '2') into a;
+  execute format('select %s + %s + %1$s + %s', variadic array['1', '2']) into b;
+  return a + b;
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f40');
+ plpgsql_check_function 
+------------------------
+(0 rows)
+
+select ew_f40();
+ ew_f40 
+--------
+     12
+(1 row)
+
+create function ew_f41()
+returns int as $$
+declare a int;
+begin
+  execute format('select %s + %s + %*1$s', 1, 2) into a;
+  return a;
+end;
+$$ language plpgsql;
+select * from plpgsql_check_function('ew_f41');
+ plpgsql_check_function 
+------------------------
+(0 rows)
+
+select ew_f41();
+ ew_f41 
+--------
+      5
+(1 row)
+
+drop function ew_f37(text, text);
+drop function ew_f38();
+drop function ew_f39(text, text);
+drop function ew_f40();
+drop function ew_f41();
+drop function ew_f30(text);
+drop function ew_f31(text[]);
+drop function ew_f32();
+drop function ew_f33(text[]);
+drop function ew_f34();
+drop function ew_f35();
+drop function ew_f36();
+drop function ew_f1(text);
+drop function ew_f2(text, int);
+drop function ew_f3(text);
+drop function ew_f4(text, int);
+drop function ew_f5(text, int);
+drop function ew_f6(text);
+drop function ew_f7(text);
+drop function ew_f8(text, int);
+drop function ew_f8a(text);
+drop function ew_f8b(text);
+drop function ew_f8c(text);
+drop function ew_f8d(text);
+drop function ew_f8e(text, int);
+drop function ew_f8f(text, int);
+drop function ew_f8g(text, int);
+drop function ew_f8h(text);
+drop function ew_f8i(text);
+drop function ew_f9(text);
+drop function ew_f10(int);
+drop function ew_f11(int);
+drop function ew_f12(text);
+drop function ew_f13();
+drop function ew_f14(text);
+drop function ew_f15(text);
+drop function ew_f16(text);
+drop function ew_f17(text, int);
+drop function ew_f18(text);
+drop function ew_f18a();
+drop function ew_f18b();
+drop function ew_f18c();
+drop function ew_f18d();
+drop function ew_f18e();
+drop function ew_f18f();
+drop function ew_f18g();
+drop function ew_f18h(int);
+drop function ew_f19(text, text);
+drop function ew_f20(text);
+drop function ew_f21(text);
+drop function ew_f22(int);
+drop function ew_f23(text);
+drop function ew_f24(text);
+drop function ew_f25(bigint);
+drop function ew_f26(bigint);
+drop function ew_f27(bigint);
+drop function ew_f29(int);
+drop function ew_id(text);
+drop operator @# (none, int);
+drop function ew_neg(int);
+drop table ew_tab1;

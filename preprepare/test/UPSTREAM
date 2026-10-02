@@ -1,0 +1,16 @@
+Extension: preprepare
+Upstream repository: https://github.com/dimitri/preprepare
+PGDG source package: preprepare 0.9-10.pgdg13+1
+Source descriptor: preprepare_0.9-10.pgdg13+1.dsc
+Source descriptor SHA256: 3bc52b143340bf66946d5df6fa0f9a5a07e3627e61652ee3ec680542f932680e
+Original source archive(s):
+  preprepare_0.9.orig.tar.gz SHA256 77c03cc0159bfba37e70620185cd383c83c956558a663996df4bee3a439b365e
+Copied upstream source paths (relative to the exact extracted PGDG source tree):
+  Makefile
+  pre_prepare.sql
+  sql/
+  expected/
+Copied license/copyright notices:
+  upstream/debian-copyright
+Runner: test/run.sh creates pre_prepare--0.4.sql using the source Makefile's DATA_built copy rule, then runs the exact source REGRESS case(s) for PG_MAJOR.
+Expected output files are copied byte-for-byte from this source package; no generated or edited expected outputs are vendored.

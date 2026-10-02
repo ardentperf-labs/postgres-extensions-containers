@@ -59,5 +59,5 @@ SELECT rb_cardinality(rb_build(ARRAY[1,2,3])) = 3;
 
 ## Package, dependencies and maintenance
 
-The image installs PGDG package `postgresql-18-roaringbitmap` at the Debian version recorded in `metadata.hcl`. Package updates are tracked by Renovate; review changes against the package's control file and rerun the target's build. The package is available for PostgreSQL 18 on both Bookworm and Trixie, amd64 and arm64. It depends on the CNPG PostgreSQL 18 base image and libc; no additional runtime package is installed. The roaringbitmap module uses Apache-2.0 licensing. Its Debian copyright file is included under `/licenses/`. The extension statically includes CRoaring 4.3.11 (Apache-2.0).
+The image installs PGDG package `postgresql-18-roaringbitmap` at the Debian version recorded in `metadata.hcl`. Package updates are tracked by Renovate; review changes against the package's control file and rerun the target's build and upstream regression suite. The package is available for PostgreSQL 18 on both Bookworm and Trixie, amd64 and arm64. It depends on the CNPG PostgreSQL 18 base image and libc; no additional runtime package is installed. The roaringbitmap module uses Apache-2.0 licensing. Its Debian copyright file is included under `/licenses/`. The extension statically includes CRoaring 4.3.11 (Apache-2.0).
 

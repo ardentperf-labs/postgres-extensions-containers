@@ -1,0 +1,10 @@
+repoURL: https://github.com/pramsey/pgsql-http
+tag: pramsey-pgsql-http-ee52345
+commit: ee52345
+sourcePackage: pgsql-http
+sourceVersion: 1.7.2-2.pgdg13+2
+sourceDscSHA256: 2c5aad2e6841f7fabf040a2c8104f12f3f15ba856eb53032a7f217f2f5eaab96
+sourceOrigSHA256: aaa792612eb81b59f00a74a250cf04ba1d19e84542cb0c973ac3c4c8d3cc8b9b
+copiedpaths: sql, expected, LICENSE.md
+requirements: upstream SQL defaults to public httpbin.org; test/cluster.yaml directs it to the test-only httpbin Service declared in test/setup.yaml
+fixture: upstream CI uses kennethreitz/httpbin; setup uses its verified amd64 manifest sha256:599fe5e5073102dbb0ee3dbb65f049dab44fa9fc251f6835c9990f8fb196a72b, serves container port 80 behind Service port 8080, and readiness is asserted separately by Chainsaw

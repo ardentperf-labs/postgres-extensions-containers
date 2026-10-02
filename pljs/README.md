@@ -59,7 +59,8 @@ LANGUAGE pljs AS $$ return a * 2; $$;
 SELECT js_double(21); -- 42
 ```
 
-The language is trusted, but the extension itself must be installed by a database superuser. Continue to apply PostgreSQL's normal function and schema privileges to JavaScript functions. The included example performs SQL-only work.  If application functions are extended to write files through other installed interfaces, declaratively provide a volume with suitable ownership/access, retention, and cleanup before enabling that workflow.
+The language is trusted, but the extension itself must be installed by a database superuser. Continue to apply PostgreSQL's normal function and schema privileges to JavaScript functions. The included example performs SQL-only work. The vendored upstream suite is pinned in [test/UPSTREAM](test/UPSTREAM) and
+invoked by [test/run.sh](test/run.sh). If application functions are extended to write files through other installed interfaces, declaratively provide a volume with suitable ownership/access, retention, and cleanup before enabling that workflow.
 
 ## Package, dependency and license notes
 

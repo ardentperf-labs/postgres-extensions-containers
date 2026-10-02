@@ -1,0 +1,3 @@
+# The local Kind registry is plain HTTP; this exception applies only to it.
+[registry."registry.pg-extensions:5000"]
+  http = true

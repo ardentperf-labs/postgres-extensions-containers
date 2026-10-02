@@ -1,0 +1,7 @@
+Repository: https://github.com/tds-fdw/tds_fdw
+Source package: tds-fdw 2.0.5-2.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/t/tds-fdw/tds-fdw_2.0.5-2.pgdg13+1.dsc
+SHA256: 13b4ab5308afdcaeb4fa870a2acd2e0f9ad1aa78e8f9babb6c57522a341189a9
+Copied paths: debian/tests/script.sql, debian/tests/create-extension, Makefile; upstream license notices and debian/copyright.
+Suite: Debian source package create-extension test; upstream has no REGRESS suite. This only checks the extension and foreign-server definitions and does not connect to SQL Server.
+Test inputs and expected output are unmodified; update manually.

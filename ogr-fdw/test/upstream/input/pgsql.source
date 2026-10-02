@@ -1,0 +1,179 @@
+----------------------------------------------------------------------
+-- Create local table
+
+CREATE TABLE bytea_local (
+  fid serial primary key,
+  geom bytea,
+  name varchar,
+  age bigint,
+  size integer,
+  value float8,
+  num numeric(6,2),
+  dt date,
+  tm time,
+  dttm timestamp,
+  varch char(8),
+  yn char
+);
+
+----------------------------------------------------------------------
+-- Populate local table
+
+INSERT INTO bytea_local (name, geom, age, size, value, num, dt, tm, dttm, varch, yn) VALUES
+  ('Jim', '14232'::bytea, 23, 1, 4.3, 5.5, '2010-10-10'::date, '13:23:21'::time, '2010-10-10 13:23:21'::timestamp, 'this', 'y' ),
+  ('Marvin', '55555'::bytea, 34, 2, 5.4, 10.13, '2011-11-11'::date, '15:21:45'::time, '2011-11-11 15:21:45'::timestamp, 'that', 'n' ),
+  (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+----------------------------------------------------------------------
+-- Create remote table
+
+CREATE SERVER pgserver
+  FOREIGN DATA WRAPPER ogr_fdw
+  OPTIONS (
+    datasource 'PG:dbname=contrib_regression host=localhost',
+    format 'PostgreSQL' );
+
+CREATE FOREIGN TABLE bytea_fdw (
+  fid bigint,
+  geom bytea,
+  name varchar,
+  age bigint,
+  size integer,
+  value float8,
+  num numeric(6,2),
+  dt date,
+  tm time,
+  dttm timestamp,
+  varch char(8),
+  yn char
+) SERVER pgserver OPTIONS (layer 'bytea_local');
+
+SELECT fid, name, geom, age, size, value, num, dt, tm, dttm, varch, yn FROM bytea_fdw;
+
+SELECT a.name, b.name 
+  FROM bytea_local a 
+  JOIN bytea_fdw b 
+  USING (fid);
+
+EXPLAIN VERBOSE 
+  SELECT fid, name, geom, age, size, value, num, dt, tm, dttm, varch, yn
+  FROM bytea_fdw;
+
+----------------------------------------------------------------------
+-- Remote Query and OGR SQL pushdown
+
+SET client_min_messages = DEBUG1;
+
+SELECT fid, name, geom, age, size, value, num, dt, tm, dttm, varch, yn
+  FROM bytea_fdw
+  WHERE fid = 4;
+
+SELECT fid, name, dt
+  FROM bytea_fdw
+  WHERE name IS NULL;
+
+SELECT fid, name
+  FROM bytea_fdw
+  WHERE name = 'Jim' AND age <= 30;
+
+SELECT fid, name, dt
+  FROM bytea_fdw
+  WHERE name = 'Jim' AND age <= 30 AND dt > '2010-10-1'::date;
+
+SELECT fid, name
+  FROM bytea_fdw
+  WHERE name = 'Jim' OR name IS NULL;
+
+----------------------------------------------------------------------
+-- Cached query case, exercised by statement handles or
+-- functions.
+
+CREATE OR REPLACE FUNCTION get_names()
+  RETURNS varchar AS
+  $$
+  BEGIN
+    RETURN (SELECT string_agg(name,',')
+    FROM bytea_fdw
+    WHERE name = 'Jim' OR name IS NULL);
+  END;
+  $$
+  LANGUAGE 'plpgsql';
+
+SELECT get_names();
+DROP FUNCTION get_names();
+
+----------------------------------------------------------------------
+-- Remote Update
+
+INSERT INTO bytea_fdw (name, geom, age, size, value, num, dt, tm, dttm, varch, yn)
+VALUES ('Margaret', '2222'::bytea, 12, 5, 1.4, 19.13, '2001-11-23'::date, '9:12:34'::time, '2001-02-11 09:23:11'::timestamp, 'them', 'y' )
+RETURNING fid, name, geom, age, size, value, num, dt, tm, dttm, varch, yn;
+
+UPDATE bytea_fdw 
+  SET name = 'Maggie', num = 45.34, yn = 'n'
+  WHERE age = 12;
+
+SELECT fid, name, num, yn
+  FROM bytea_fdw
+  WHERE fid = 4;
+
+UPDATE bytea_fdw 
+  SET dt = '2089-12-13', tm = '01:23:45'
+  WHERE num = 45.34;
+
+SELECT fid, dt, tm
+  FROM bytea_fdw
+  WHERE fid = 4;
+
+DELETE FROM bytea_fdw 
+  WHERE fid = 4;
+  
+SELECT a.fid, a.name, b.name 
+  FROM bytea_local a 
+  JOIN bytea_fdw b 
+  USING (fid);
+
+----------------------------------------------------------------------
+-- Populate local array table
+
+SET client_min_messages = NOTICE;
+
+CREATE TABLE array_local (
+  fid integer primary key,
+  geom bytea,
+  txt text[],
+  int int2[],
+  flt float4[],
+  b   boolean[]
+);
+
+INSERT INTO array_local (fid,txt, int, flt, b) VALUES 
+  (1, ARRAY['Jim'], ARRAY[1,2,3], ARRAY[3.4,5.6,7.8], ARRAY[true,false]),
+  (2, ARRAY['Jim',NULL,'Joe'], ARRAY[1,3,NULL,4], ARRAY[4.5,NULL,3.4], ARRAY[false,NULL]),
+  (3, NULL, NULL, NULL, NULL);
+
+----------------------------------------------------------------------
+-- Create remote array table
+
+CREATE FOREIGN TABLE array_fdw (
+  fid bigint,
+  geom bytea,
+  txt text[],
+  int int4[],
+  flt float8[],
+  b boolean[]
+) SERVER pgserver OPTIONS (layer 'array_local');
+
+SELECT fid, txt, int, flt, b FROM array_fdw;
+
+----------------------------------------------------------------------
+-- Update remote array table
+
+UPDATE array_fdw SET 
+  txt = ARRAY['newJim', 'newJoe'],
+  int = ARRAY[-2, -1, 0, 1, 2],
+  flt = ARRAY[-0.1, 0.0, 0.1]
+WHERE fid = 3;
+
+SELECT txt, int, flt FROM array_fdw WHERE fid = 3;
+

@@ -1,0 +1,7 @@
+Repository: https://salsa.debian.org/postgresql/postgresql-debversion
+Source package: postgresql-debversion 1.2.0-3.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-debversion/postgresql-debversion_1.2.0-3.pgdg13+1.dsc
+SHA256: c5b7ffc96b9d144446c4170f1431e712ba3cb208f3d4e2fadb66bc23434e5efd
+Copied paths: sql, expected, Makefile, COPYING, debian/copyright
+Suite: Makefile REGRESS for PostgreSQL 18, including applicable upstream version variants.
+Test SQL and expected output are unmodified; update manually.

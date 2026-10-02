@@ -1,0 +1,17 @@
+Extension: pg-similarity
+Upstream repository: https://github.com/eulerto/pg_similarity
+PGDG source package: pg-similarity 1.0-9.pgdg13+1
+Source descriptor: pg-similarity_1.0-9.pgdg13+1.dsc
+Source descriptor SHA256: b9b6e6b93d46c5b274143475129781fd8477fce6da0a720431e7bc92f40af11f
+Original source archive(s):
+  pg-similarity_1.0.orig.tar.gz SHA256 0d74e5c6ba3dd753da8bb55293ebb0f05484eab342af5c2ee1fd03a1cd876276
+Copied upstream source paths (relative to the exact extracted PGDG source tree):
+  Makefile
+  data/
+  sql/
+  expected/
+Copied license/copyright notices:
+  upstream/COPYRIGHT
+Runner: test/run.sh runs the PGXS Makefile REGRESS suite in source order: test1, test2, test3, test4.
+The source Debian installcheck runs pg_buildext with extra_float_digits=0 to retain the expected decimal rendering; test/cluster.yaml applies the same test-only setting.
+Test data, SQL, and expected output are byte-for-byte source copies; no generated or edited expected outputs are vendored.

@@ -1,0 +1,7 @@
+create extension pgnodemx;
+select openssl_version() ~ 'OpenSSL' as openssl_version;
+ openssl_version 
+-----------------
+ t
+(1 row)
+

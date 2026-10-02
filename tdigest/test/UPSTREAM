@@ -1,0 +1,17 @@
+Extension: tdigest
+Upstream repository: https://github.com/tvondra/tdigest
+PGDG source package: tdigest 1.4.7-1.pgdg13+1
+Source descriptor: tdigest_1.4.7-1.pgdg13+1.dsc
+Source descriptor SHA256: 852b0e8e7e9d3f517d6138d073e835d0700bc8fb950ff90cae1c2f8e8c318c58
+Original source archive(s):
+  tdigest_1.4.7.orig.tar.gz SHA256 13e918c72880e2a575cdc8a359a4f7e8aaa75329a550a9393235ebff3ce3ddce
+Copied upstream source paths (relative to the exact extracted PGDG source tree):
+  test/sql/
+  test/expected/
+  test/parallel_schedule
+Copied license/copyright notices:
+  upstream/LICENSE
+Runner: test/run.sh invokes the native PG_REGRESS suite with its source-defined cases and options.
+Expected output files are copied byte-for-byte from this source package; no generated or edited expected outputs are vendored.
+Requirements / limits:
+  The upstream SQL uses server-side COPY to temporary files in /tmp. The isolated test Cluster uses a scratch emptyDir mount at /tmp because the CNPG server container root filesystem is read-only.

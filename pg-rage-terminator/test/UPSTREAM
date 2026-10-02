@@ -1,0 +1,10 @@
+repoURL: https://github.com/disco-stu/pg_rage_terminator
+tag: pg_rage_terminator-0.1.7
+commit: not-recorded-in-release-tarball
+sourcePackage: pg-rage-terminator
+sourceVersion: 0.1.7-12.pgdg13+1
+sourceDscSHA256: 0346de48342b362b8397b22ae2e547ced88428c1a8973c9ab874bf7fc1c3b0e9
+sourceOrigSHA256: 86fef4ff5d482c7ae42b798330110ee328f8d71d29f06a910d0b0b1551dbe610
+copiedpaths: Makefile README.md COPYRIGHT
+runnerStatus: 77 (no upstream suite)
+reason: upstream 0.1.7 release contains only Makefile, README, COPYRIGHT, and extension C source; no test suite

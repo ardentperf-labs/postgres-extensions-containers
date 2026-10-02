@@ -1,0 +1,14 @@
+Extension: extra-window-functions
+Upstream repository: https://github.com/xocolatl/extra_window_functions
+PGDG source package: extra-window-functions 2.0-1.pgdg13+1
+Source descriptor: extra-window-functions_2.0-1.pgdg13+1.dsc
+Source descriptor SHA256: 90777b68ee96e1d34a7d9202dbd091b9ffde99c55f008cf64f515d0628a5da83
+Original source archive(s):
+  extra-window-functions_2.0.orig.tar.gz SHA256 eb82ac2ab0d1c4ce79aa49e338a7cbf66309915035d4b191eee1ef702b528092
+Copied upstream source paths (relative to the exact extracted PGDG source tree):
+  sql/
+  expected/
+Copied license/copyright notices:
+  upstream/LICENSE
+Runner: test/run.sh invokes the native PG_REGRESS suite with its source-defined cases and options.
+Expected output files are copied byte-for-byte from this source package; no generated or edited expected outputs are vendored.

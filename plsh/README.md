@@ -45,13 +45,18 @@ spec:
 
 PL/sh is an untrusted language: only superusers can create its functions. Commands run as the PostgreSQL OS user and inherit its filesystem and network access. This image supports the `/bin/sh` already supplied by the matching CNPG minimal image, with shell built-ins only. It does not add arbitrary external commands or support file-producing functions. Restrict function EXECUTE grants to trusted administrators.
 
+## Verify behavior
+
+The vendored upstream suite is pinned in [test/UPSTREAM](test/UPSTREAM) and
+invoked by [test/run.sh](test/run.sh).
+
 ## Dependencies and updates
 
 The image contains only the PGDG package server payload and license notices.
 The matching CNPG minimal image supplies PostgreSQL, libc and its base runtime.
 Renovate tracks the pinned extension package. For an extension or base-runtime
 security fix, update the affected package/base image, rebuild every advertised
-architecture. SQL versions must be checked against
+architecture and rerun both distro regression suites. SQL versions must be checked against
 the installed control file separately because they need not match package versions.
 
 ## Licenses and ownership

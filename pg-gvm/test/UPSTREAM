@@ -1,0 +1,10 @@
+repoURL: https://github.com/greenbone/pg-gvm
+tag: greenbone-pg-gvm-e030265
+commit: e030265
+sourcePackage: pg-gvm
+sourceVersion: 22.6.17-1.pgdg13+2
+sourceDscSHA256: 07d725fd542bba24711057112713006c28c9d2d773f54d1cc7663ec91b7b20df
+sourceOrigSHA256: f63f77dae45d3e128798a8857b4358aa429a509ea5e04f48ea4c8e37554c06c9
+copiedpaths: CMakeLists.txt README.md gvmd-tables.sql tests/*.sql LICENSE
+suite: pgTAP tests run by upstream CI and documented as pg_prove -d DATABASE tests/*.sql
+setup: upstream CI creates uuid-ossp, pgcrypto, pgtap, role dba; creates extension "pg-gvm"; loads gvmd-tables.sql

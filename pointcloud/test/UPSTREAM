@@ -1,0 +1,10 @@
+repoURL: https://github.com/pgpointcloud/pointcloud
+tag: pointcloud-1.2.5
+commit: not-recorded-in-release-tarball
+sourcePackage: pgpointcloud
+sourceVersion: 1.2.5-4.pgdg13+1
+sourceDscSHA256: 8e262d8f1b800f39d9f1674e4e31392f3c62290dc99e71198533b32c70b00bc1
+sourceOrigSHA256: f3924f283345f2da46a971e65f0c6ce602640ecf88a2057293443ec2a7a56774
+copiedpaths: pgsql/sql, pgsql/expected, COPYRIGHT
+upstreamVariants: pointcloud_laz is omitted because PGDG source has no laz-perf dependency and its configured LAZPERF_STATUS is disabled
+registeredSuite: PG18 default Makefile list pointcloud pointcloud_columns schema; pointcloud_laz omitted with laz-perf disabled

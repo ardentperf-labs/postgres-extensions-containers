@@ -1,0 +1,8 @@
+repoURL: https://github.com/pramsey/pgsql-ogr-fdw
+tag: pgsql-ogr-fdw-1.1.9
+commit: not-recorded-in-release-tarball
+sourcePackage: pgsql-ogr-fdw
+sourceVersion: 1.1.9-1.pgdg13+1
+sourceDscSHA256: fc585788b5cecf6b082de6676174c49d9ef9b58398161ad6076f88fe2df36011
+sourceOrigSHA256: 47cf1b5ae884f77cf05d98dc55e2bc4165bd828e5b00908aa5ce00f458f7c6b9
+copiedpaths: data, input, output, sql, expected, LICENSE.md

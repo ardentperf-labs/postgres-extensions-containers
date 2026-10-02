@@ -1,7 +1,7 @@
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: verify-extension
+  name: upstream-extension-tests
 spec:
   # Wait for the Cluster's pods before deleting their namespace.
   deletionPropagationPolicy: Foreground
@@ -13,37 +13,12 @@ spec:
     # shutdown window. Allow the subsequent fast shutdown and namespace cleanup.
     cleanup: 5m
   description: >-
-    Validates the end-to-end lifecycle of a PostgreSQL extension, including cluster
-    initialization, database resource creation, and functional verification.
+    Provisions a CloudNativePG Cluster with the built extension image mounted.
+    Upstream tests are run separately by the Dagger harness.
   steps:
   - name: Provision PostgreSQL Cluster
-    description: >-
-      Deploy a Cluster resource using the built extension container image. 
-      This step validates that the custom image is compatible with the operator 
-      and that the instance can initialize and reach a Healthy phase.
     try:
     - apply:
         file: cluster.yaml
     - assert:
         file: cluster-assert.yaml
-
-  - name: Initialize Database and Extension
-    description: Create the Database custom resource and trigger the 'CREATE EXTENSION' logic via CNPG.
-    try:
-    - apply:
-        file: database.yaml
-    - assert:
-        timeout: 30s
-        file: database-assert.yaml
-
-  - name: Functional Verification
-    description: >-
-      Execute a SQL-level check against pg_extension to confirm the extension 
-      is successfully registered in the database catalog.
-    try:
-    - apply:
-        file: check-extension.yaml
-    - assert:
-        timeout: 30s
-        file: check-extension-assert.yaml
-

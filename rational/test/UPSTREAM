@@ -1,0 +1,14 @@
+Extension: rational
+Upstream repository: https://github.com/begriffs/pg_rational
+PGDG source package: pg-rational 0.0.3-1.pgdg13+1
+Source descriptor: pg-rational_0.0.3-1.pgdg13+1.dsc
+Source descriptor SHA256: 215ece18198c0f436e2bfff335f603d5ac859afe77b9336bee57db06353f3ee1
+Original source archive(s):
+  pg-rational_0.0.3.orig.tar.gz SHA256 c1247b11a249bb1a7e31b8a8338e1668b18685e455fbc65dde45a73511ee483c
+Copied upstream source paths (relative to the exact extracted PGDG source tree):
+  sql/
+  expected/
+Copied license/copyright notices:
+  upstream/LICENSE
+Runner: test/run.sh invokes the native PG_REGRESS suite with its source-defined cases and options.
+Expected output files are copied byte-for-byte from this source package; no generated or edited expected outputs are vendored.

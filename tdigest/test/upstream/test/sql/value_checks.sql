@@ -1,0 +1,30 @@
+-- Unlike percentiles passed to tdigest_percentile(), non-finite hypothetical
+-- values passed to tdigest_percentile_of() are accepted and mapped to fixed
+-- results. Input values stored in the digest must still be finite.
+
+\set VERBOSITY terse
+
+-- hypothetical values map to NaN, 0, and 1, respectively
+
+SELECT tdigest_percentile_of(1.0::double precision, 10, 'NaN'::double precision);
+SELECT tdigest_percentile_of(1.0::double precision, 10, '-infinity'::double precision);
+SELECT tdigest_percentile_of(1.0::double precision, 10, 'infinity'::double precision);
+
+SELECT tdigest_percentile_of(1.0::double precision, 10, ARRAY['NaN', '-infinity', 'infinity']::double precision[]);
+SELECT tdigest_percentile_of('flags 1 count 3 compression 10 centroids 3 (1, 1) (2, 1) (3, 1)'::tdigest,
+                             'NaN'::double precision);
+SELECT tdigest_percentile_of('flags 1 count 3 compression 10 centroids 3 (1, 1) (2, 1) (3, 1)'::tdigest,
+                             '-infinity'::double precision);
+SELECT tdigest_percentile_of('flags 1 count 3 compression 10 centroids 3 (1, 1) (2, 1) (3, 1)'::tdigest,
+                             'infinity'::double precision);
+SELECT tdigest_percentile_of('flags 1 count 3 compression 10 centroids 3 (1, 1) (2, 1) (3, 1)'::tdigest,
+                             ARRAY['NaN', '-infinity', 'infinity']::double precision[]);
+
+-- the value/count API has the same handling of non-finite hypothetical values
+SELECT tdigest_percentile_of(1.0::double precision, 2::bigint, 10, 'NaN'::double precision);
+SELECT tdigest_percentile_of(1.0::double precision, 2::bigint, 10, '-infinity'::double precision);
+SELECT tdigest_percentile_of(1.0::double precision, 2::bigint, 10, 'infinity'::double precision);
+
+SELECT tdigest_percentile_of(1.0::double precision, 2::bigint, 10, ARRAY['NaN']::double precision[]);
+SELECT tdigest_percentile_of(1.0::double precision, 2::bigint, 10, ARRAY['-infinity']::double precision[]);
+SELECT tdigest_percentile_of(1.0::double precision, 2::bigint, 10, ARRAY['infinity']::double precision[]);

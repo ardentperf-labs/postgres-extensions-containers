@@ -1,0 +1,18 @@
+Extension: jsquery
+Upstream repository: https://github.com/postgrespro/jsquery
+PGDG source package: jsquery 1.2-3.pgdg13+1
+Source descriptor: jsquery_1.2-3.pgdg13+1.dsc
+Source descriptor SHA256: 65bca3f394f649fd6ffd11fab0305ec44410a5bb8c03b6d970190858eef62816
+Original source archive(s):
+  jsquery_1.2.orig.tar.gz SHA256 a5cd7dbb475ba9974f832fa01d4867febd703d23a9284ef6b162cd1c2f8e6bc5
+Copied upstream source paths (relative to the exact extracted PGDG source tree):
+  Makefile
+  data/
+  sql/
+  expected/
+Copied license/copyright notices:
+  upstream/LICENSE
+Runner: test/run.sh runs the sole PGXS REGRESS case, jsquery, with the source Makefile's required UTF8 database encoding.
+Test data, SQL, and expected output are byte-for-byte source copies; no generated or edited expected outputs are vendored.
+Requirements / limits:
+  The upstream Makefile requires a UTF8 regression database; run.sh passes --encoding=UTF8.

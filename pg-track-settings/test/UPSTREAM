@@ -1,0 +1,15 @@
+Extension: pg-track-settings
+Upstream repository: https://salsa.debian.org/postgresql/pg-track-settings
+PGDG source package: pg-track-settings 2.1.2-5.pgdg13+1
+Source descriptor: pg-track-settings_2.1.2-5.pgdg13+1.dsc
+Source descriptor SHA256: a8f61f8ef13ff8a5ae24f60fffa9c76c05ef057469c8dacb82cc3c03dcbca4d5
+Original source archive(s):
+  pg-track-settings_2.1.2.orig.tar.gz SHA256 80edae0563bcdbe2b74034836cf2a567c8d39d18a3357eb4277ae3629512bd90
+Copied upstream source paths (relative to the exact extracted PGDG source tree):
+  Makefile
+  expected/
+  test/sql/
+Copied license/copyright notices:
+  upstream/LICENSE
+Runner: test/run.sh runs the Makefile wildcard REGRESS suite with inputdir=test and source-root expected output (expected/).
+Expected output files are copied byte-for-byte from this source package; no generated or edited expected outputs are vendored.

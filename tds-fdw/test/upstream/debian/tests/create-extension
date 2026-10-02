@@ -1,0 +1,3 @@
+#!/bin/sh
+
+pg_buildext psql < debian/tests/script.sql

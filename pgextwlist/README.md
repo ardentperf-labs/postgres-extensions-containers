@@ -33,13 +33,18 @@ spec:
 
 This module has no CREATE EXTENSION artifact. Its preload hook allows non-superusers to install administrator-allowlisted extensions that normally require superuser privileges; PostgreSQL trusted extensions retain their ordinary permissions. The example allowlists `dblink`, already present in the minimal PostgreSQL image. Optional custom script execution is not configured or supported by this image.
 
+## Verify behavior
+
+The vendored upstream suite is pinned in [test/UPSTREAM](test/UPSTREAM) and
+invoked by [test/run.sh](test/run.sh).
+
 ## Dependencies and updates
 
 The image contains only the PGDG package server payload and license notices.
 The matching CNPG minimal image supplies PostgreSQL, libc and its base runtime.
 Renovate tracks the pinned extension package. For an extension or base-runtime
 security fix, update the affected package/base image, rebuild every advertised
-architecture. SQL versions must be checked against
+architecture and rerun both distro regression suites. SQL versions must be checked against
 the installed control file separately because they need not match package versions.
 
 ## Licenses and ownership
