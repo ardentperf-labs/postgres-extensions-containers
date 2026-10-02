@@ -154,6 +154,14 @@
       ]
     },
     {
+      "description": "group cnpg-sbom-generator image digest updates and require review",
+      "matchPackageNames": [
+        "/^ghcr\\.io\\/[^/]+\\/cnpg-sbom-generator$/"
+      ],
+      "groupName": "cnpg-sbom-generator image digests",
+      "automerge": false
+    },
+    {
       "description": "require stable release verification for all updates",
       "matchPackageNames": [
         "*"
