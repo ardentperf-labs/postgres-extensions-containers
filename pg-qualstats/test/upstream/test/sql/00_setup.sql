@@ -1,0 +1,30 @@
+-- Install the extension, in a non default schema that requires quoting to
+-- ensure that custom schema works as expected.
+CREATE SCHEMA "PGQS";
+CREATE EXTENSION pg_qualstats WITH SCHEMA "PGQS";
+
+-- based on upstream function of the same name
+CREATE FUNCTION explain_filter(text) RETURNS SETOF text
+LANGUAGE plpgsql as
+$$
+DECLARE
+    ln text;
+BEGIN
+    FOR ln IN EXECUTE $1
+    LOOP
+        -- Replace any numeric word with just 'N'
+        ln := regexp_replace(ln, '-?\m\d+\M', 'N', 'g');
+        -- In sort output, the above won't match units-suffixed numbers
+        ln := regexp_replace(ln, '\m\d+kB', 'NkB', 'g');
+        -- Ignore text-mode buffers output because it varies depending
+        -- on the system state
+        CONTINUE WHEN (ln ~ ' +Buffers: .*');
+        -- Ignore text-mode "Planning:" line because whether it's output
+        -- varies depending on the system state
+        CONTINUE WHEN (ln = 'Planning:');
+        -- Remove the "expr_" name prefix in subplans names, added in pg19
+        ln := regexp_replace(ln, 'SubPlan expr_\d+', 'SubPlan N', 'g');
+        RETURN NEXT ln;
+    END LOOP;
+END;
+$$;

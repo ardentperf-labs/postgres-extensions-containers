@@ -1,0 +1,7 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: upstream-httpbin
+status:
+  readyReplicas: 1
+  availableReplicas: 1

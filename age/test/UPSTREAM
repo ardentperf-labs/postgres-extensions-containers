@@ -1,0 +1,7 @@
+Repository: https://github.com/apache/age
+Source package: postgresql-18-age 1.8.0~rc0-2.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-18-age/postgresql-18-age_1.8.0~rc0-2.pgdg13+1.dsc
+SHA256: cf427b53e00fc67f5d7e1c60a5f61da6979547eb378486182adb6b4ccbbb4dc2
+Copied paths: regress, Makefile; upstream license notices and debian/copyright.
+Suite: upstream installcheck-existing, which excludes the synthetic git-history upgrade test.
+Test inputs and expected output are unmodified; update manually.

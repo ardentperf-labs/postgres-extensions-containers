@@ -44,7 +44,12 @@ spec:
 
 ## Operation and privileges
 
-Backend priority functions require database privileges and are subject to OS permissions. An unprivileged CNPG process can lower its scheduling priority by increasing the nice value; raising priority normally requires CAP_SYS_NICE and is not supported. No extra capability is requested.
+Backend priority functions require database privileges and are subject to OS permissions. An unprivileged CNPG process can lower its scheduling priority by increasing the nice value; raising priority normally requires CAP_SYS_NICE and is not supported. No extra capability is requested. The test changes only its own disposable backend.
+
+## Verify behavior
+
+The vendored upstream suite is pinned in [test/UPSTREAM](test/UPSTREAM) and
+invoked by [test/run.sh](test/run.sh).
 
 ## Dependencies and updates
 
@@ -52,7 +57,7 @@ The image contains only the PGDG package server payload and license notices.
 The matching CNPG minimal image supplies PostgreSQL, libc and its base runtime.
 Renovate tracks the pinned extension package. For an extension or base-runtime
 security fix, update the affected package/base image, rebuild every advertised
-architecture. SQL versions must be checked against
+architecture and rerun both distro regression suites. SQL versions must be checked against
 the installed control file separately because they need not match package versions.
 
 ## Licenses and ownership

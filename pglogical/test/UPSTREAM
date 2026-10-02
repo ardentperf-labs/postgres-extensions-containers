@@ -1,0 +1,14 @@
+repoURL: https://github.com/2ndQuadrant/pglogical
+tag: 2ndQuadrant-pglogical-9a0e182
+commit: 9a0e182
+sourcePackage: pglogical
+sourceVersion: 2.4.8-1.pgdg13+1
+sourceDscSHA256: 06f4f822dc5bed1467ef865397f58778f62a132cc528d03d8ce765743b248582
+sourceOrigSHA256: b93dc45a45bcc3c5c3e8f432bbdb1121f8ecf336dc2d4611a2eed0e3e46ed1a1
+copiedpaths: sql, expected, regress-postgresql.conf, regress-pg_hba.conf, t, COPYRIGHT
+requirements: upstream Makefile runs SQL regressions with --temp-instance and regress-postgresql.conf (wal_level=logical, pglogical DSNs, replication slots/senders, track_commit_timestamp, test HBA); TAP t/ tests start a local provider on fixed port 5431 and use initdb/postgres/pg_ctl
+runLane: SQL suite uses test/run-on-server so the mounted extension package and native server binaries are available to pg_regress --temp-instance
+tapLane: full upstream t/*.pl retained; requires matching PostgreSQL source src/test/perl and a local self-managed server lane (run-tap.sh)
+coverageStatus: shared harness currently invokes only run.sh; TAP t/*.pl are retained but not executed
+nativeVariant: Makefile regresscheck uses one temporary PostgreSQL instance with regression, regression1, sourcedb, and postgres databases; run.sh retains full upstream REGRESS order
+postgres18ConfigAdaptation: temp_config retains the production output_plugin_libraries allowlist so the private upstream regression postmaster can use pglogical_output under PostgreSQL 18

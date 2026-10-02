@@ -1,0 +1,7 @@
+Repository: https://github.com/okbob/plpgsql_check
+Source package: plpgsql-check 2.10.11-1.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/plpgsql-check/plpgsql-check_2.10.11-1.pgdg13+1.dsc
+SHA256: dec2f4398770e6ed5411fb4b084200d4a8787d9e3aae145b270b4214be8265ac
+Copied paths: sql, expected, Makefile, LICENSE, debian/copyright
+Suite: Makefile REGRESS for PostgreSQL 18, including applicable upstream version variants.
+Test SQL and expected output are unmodified; update manually.

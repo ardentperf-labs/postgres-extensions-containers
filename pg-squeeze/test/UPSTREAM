@@ -1,0 +1,7 @@
+Repository: https://www.cybertec-postgresql.com/products/pg_squeeze/
+Source package: pg-squeeze 1.9.4-2.pgdg13+2
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/pg-squeeze/pg-squeeze_1.9.4-2.pgdg13+2.dsc
+SHA256: 4fde187fa2a9d16b0a4a89ee4611b066f12f07f6b2ab4086f6b29d345c3d6ca8
+Copied paths: sql, expected, test, Makefile, LICENSE, debian/copyright
+Suite: Makefile REGRESS for PostgreSQL 18, including applicable upstream version variants.
+Test SQL and expected output are unmodified; update manually.

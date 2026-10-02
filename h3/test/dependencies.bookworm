@@ -1,0 +1,1 @@
+postgis=ghcr.io/cloudnative-pg/postgis-extension:3.6.4-18-bookworm@sha256:27a78d6b2942d5e966f03045ba64b4225ccab7fa17f66f3246ad6dc36e000bac

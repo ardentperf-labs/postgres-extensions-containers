@@ -1,0 +1,7 @@
+CREATE EXTENSION pldbgapi;
+SELECT pldbg_create_listener();
+ pldbg_create_listener 
+-----------------------
+                     1
+(1 row)
+

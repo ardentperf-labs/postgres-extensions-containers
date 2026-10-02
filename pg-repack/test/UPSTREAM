@@ -1,0 +1,13 @@
+repoURL: https://github.com/reorg/pg_repack
+tag: pg_repack-ver_1.5.3
+commit: not-recorded-in-release-tarball
+sourcePackage: pg-repack
+sourceVersion: 1.5.3-1.pgdg13+2
+sourceDscSHA256: 42745700e60503be6925a3c4a16f5633e3f79f8d458b3ec69b8cc1f02f727d87
+sourceOrigSHA256: 9439892c0b7c7575677f61133e5692f3e8cfd5c6688c5db4fb202320c668c745
+copiedpaths: regress/sql, regress/expected, regress/create_tablespaces.sh, COPYRIGHT
+nativeFixtureSetup: test/setup-tablespaces.sh adapts upstream helper mkdir/CREATE TABLESPACE commands for the existing postgres user; SQL and expected outputs are unchanged
+requirements: pg_repack client on PATH; superuser; contrib_regression database; server-local tablespace fixtures from test/setup-tablespaces.sh; run-on-server lane required for filesystem and pg_repack client
+runLane: test/run-on-server uses native pg_regress and same-pod tablespace filesystem; setup helper keeps upstream SQL/expected untouched
+runnerStatus: 77 (mounted extension image omits pg_repack client executable)
+reason: target image contains pg_repack.so and extension SQL/control files but no pg_repack CLI; run.sh reports unsupported until the matching packaged client is available in the native lane

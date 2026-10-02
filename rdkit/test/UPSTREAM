@@ -1,0 +1,12 @@
+repoURL: https://github.com/rdkit/rdkit
+tag: rdkit-Release_2025_03_1
+commit: not-recorded-in-release-tarball
+sourcePackage: rdkit
+sourceVersion: 202503.1-5.pgdg13+1
+sourceDscSHA256: b201f66ae22346a87a3213e4331b871ed2783a3962bda226ddc36ec1301f8e24
+sourceOrigSHA256: 1c4cca2eef824f77d7dd1421f5a35f700fa66b83dbdd79a43116af29b564a0df
+copiedpaths: Code/PgSQL/rdkit/sql, Code/PgSQL/rdkit/expected, Code/PgSQL/rdkit/data, license.txt
+upstreamVariants: optional inchi and avalon tests are omitted with USE_INCHI=0 and USE_AVALON=0, the upstream Makefile defaults
+registeredSuite: upstream default list rdkit-91 props btree molgist bfpgist-91 bfpgin sfpgist slfpgist fps reaction
+optionalSuiteFlags: INCHIREGRESS and AVALONREGRESS only when USE_INCHI=1 or USE_AVALON=1; both upstream defaults are 0
+runnerCompatibility: bfpgin.sql omits the extra_float_digits=0 setting present in other similarity regression files; run.sh supplies this session setting so PostgreSQL's default float formatting does not change the exact upstream expected output

@@ -1,0 +1,335 @@
+-- test input and output
+SELECT '1'::unit; -- unit_in
+ unit 
+------
+ 1
+(1 row)
+
+SELECT unit(1); -- dbl2unit
+ unit 
+------
+ 1
+(1 row)
+
+CREATE TEMP TABLE u (u unit);
+INSERT INTO u VALUES ('1');
+SELECT * FROM u;
+ u 
+---
+ 1
+(1 row)
+
+-- test constructors
+SELECT meter();
+ meter 
+-------
+ 1 m
+(1 row)
+
+SELECT meter(2.0) AS two_meters;
+ two_meters 
+------------
+ 2 m
+(1 row)
+
+SELECT kilogram();
+ kilogram 
+----------
+ 1 kg
+(1 row)
+
+SELECT kilogram(3.0) AS three_kilogram;
+ three_kilogram 
+----------------
+ 3 kg
+(1 row)
+
+SELECT second();
+ second 
+--------
+ 1 s
+(1 row)
+
+SELECT second(4.0) AS four_seconds;
+ four_seconds 
+--------------
+ 4 s
+(1 row)
+
+SELECT ampere();
+ ampere 
+--------
+ 1 A
+(1 row)
+
+SELECT ampere(5.0) AS five_ampere;
+ five_ampere 
+-------------
+ 5 A
+(1 row)
+
+SELECT kelvin();
+ kelvin 
+--------
+ 1 K
+(1 row)
+
+SELECT kelvin(6.0) AS six_kelvin;
+ six_kelvin 
+------------
+ 6 K
+(1 row)
+
+SELECT mole();
+ mole  
+-------
+ 1 mol
+(1 row)
+
+SELECT mole(7.0) AS seven_mole;
+ seven_mole 
+------------
+ 7 mol
+(1 row)
+
+SELECT candela();
+ candela 
+---------
+ 1 cd
+(1 row)
+
+SELECT candela(8.0) AS eight_candela;
+ eight_candela 
+---------------
+ 8 cd
+(1 row)
+
+SELECT byte();
+ byte 
+------
+ 1 B
+(1 row)
+
+SELECT byte(9.0) AS nine_byte;
+ nine_byte 
+-----------
+ 9 B
+(1 row)
+
+-- test dimensionless scales
+SELECT unit(0) AS zero, unit(1e-6) AS "1e-6", unit(0.001) AS "0.001", unit(1.0) AS "1", unit(1000.0) AS "1000";
+ zero | 1e-6  | 0.001 | 1 | 1000 
+------+-------+-------+---+------
+ 0    | 1e-06 | 0.001 | 1 | 1000
+(1 row)
+
+-- test SI prefixes
+SELECT meter(0) AS zero, meter(1e-6) AS "µm", meter(0.001) AS mm, meter(1.0) AS m, meter(1000.0) AS km;
+ zero |  µm  |  mm  |  m  |  km  
+------+------+------+-----+------
+ 0 m  | 1 µm | 1 mm | 1 m | 1 km
+(1 row)
+
+SELECT kilogram(0) AS zero, kilogram(1e-6) AS mg, kilogram(0.001) AS g, kilogram(1.0) AS kg, kilogram(1000.0) AS "Mg";
+ zero |  mg  |  g  |  kg  |  Mg  
+------+------+-----+------+------
+ 0 kg | 1 mg | 1 g | 1 kg | 1 Mg
+(1 row)
+
+-- test combined units (exactly one unit with exponent 1 in numerator)
+SELECT meter(0)/second() AS zero, meter(1e-6)/second() AS "µm", meter(0.001)/second() AS mm, meter(1.0)/second() AS m, meter(1000.0)/second() AS km;
+ zero  |   µm   |   mm   |   m   |   km   
+-------+--------+--------+-------+--------
+ 0 m/s | 1 µm/s | 1 mm/s | 1 m/s | 1 km/s
+(1 row)
+
+SELECT kilogram(0)/second() AS zero, kilogram(1e-6)/second() AS mg, kilogram(0.001)/second() AS g, kilogram(1.0)/second() AS kg, kilogram(1000.0)/second() AS "Mg";
+  zero  |   mg   |   g   |   kg   |   Mg   
+--------+--------+-------+--------+--------
+ 0 kg/s | 1 mg/s | 1 g/s | 1 kg/s | 1 Mg/s
+(1 row)
+
+-- test parser
+SELECT '1 m'::unit;
+ unit 
+------
+ 1 m
+(1 row)
+
+SELECT '-1 m/s'::unit;
+  unit  
+--------
+ -1 m/s
+(1 row)
+
+SELECT '10 dm^3'::unit, '10l'::unit;
+   unit   |   unit   
+----------+----------
+ 0.01 m^3 | 0.01 m^3
+(1 row)
+
+SELECT '9.81 kg*m/s^2'::unit, '9.81 kg*m/s*s'::unit, '9.81 kg*m/s/s'::unit;
+  unit  |  unit  |  unit  
+--------+--------+--------
+ 9.81 N | 9.81 N | 9.81 N
+(1 row)
+
+SELECT '1 foobar'::unit AS error;
+ERROR:  unit "foobar" is not known
+LINE 1: SELECT '1 foobar'::unit AS error;
+               ^
+-- special values
+SELECT '-0'::unit, -'0'::unit, '-0 m'::unit, -'0 m'::unit;
+ unit | ?column? | unit | ?column? 
+------+----------+------+----------
+ -0   | -0       | -0 m | -0 m
+(1 row)
+
+SELECT 'infinity'::unit, 'Infinity m'::unit, 'inf A'::unit;
+   unit   |    unit    |    unit    
+----------+------------+------------
+ Infinity | Infinity m | Infinity A
+(1 row)
+
+SELECT '-infinity'::unit, '-Infinity m'::unit, 'Inf A'::unit;
+   unit    |    unit     |    unit    
+-----------+-------------+------------
+ -Infinity | -Infinity m | Infinity A
+(1 row)
+
+SELECT 'nan'::unit, 'NaN'::unit;
+ unit | unit 
+------+------
+ NaN  | NaN
+(1 row)
+
+-- test parser arithmetic
+SELECT '1|10'::unit, '1|10 m'::unit;
+ unit |  unit  
+------+--------
+ 0.1  | 100 mm
+(1 row)
+
+SELECT '2 m + 3 m - 4 m'::unit, '6 m - 3 m - 2 m'::unit, '6 m - 3 m + 1 m'::unit;
+ unit | unit | unit 
+------+------+------
+ 1 m  | 1 m  | 4 m
+(1 row)
+
+SELECT '2 m * 3 m'::unit, '2 m / 3 m'::unit, '10 m / 5 m / 2 m'::unit;
+ unit  |       unit        |  unit  
+-------+-------------------+--------
+ 6 m^2 | 0.666666666666667 | 1 m^-1
+(1 row)
+
+SELECT '2 m^2 + 3 m * 4 m'::unit, '2 m * 3 m / 4 m * 5 m'::unit;
+  unit  | unit 
+--------+------
+ 14 m^2 | 0.3
+(1 row)
+
+SELECT '2 m * (1 m + 3 m)'::unit;
+ unit  
+-------
+ 8 m^2
+(1 row)
+
+SELECT '- m'::unit, '/ m'::unit;
+ unit |  unit  
+------+--------
+ -1 m | 1 m^-1
+(1 row)
+
+SELECT '4+5'::unit, '4-5'::unit, '4(-5)'::unit, '4*5'::unit, '4/5'::unit;
+ unit | unit | unit | unit | unit 
+------+------+------+------+------
+ 9    | -1   | -20  | 20   | 0.8
+(1 row)
+
+-- problematic cases
+SELECT '1 cd'::unit AS candela; -- candela vs centiday
+ candela 
+---------
+ 1 cd
+(1 row)
+
+SELECT '1 Pa'::unit AS pascal; -- pascal vs petayear
+ pascal 
+--------
+ 1 Pa
+(1 row)
+
+SELECT '1 yg'::unit AS yoctogram, '1.00001 yg'::unit AS actual_yoctogram; -- "yg" had rounding problems in the past
+ yoctogram | actual_yoctogram 
+-----------+------------------
+ 1 yg      | 1.00001 yg
+(1 row)
+
+SELECT '1 min'::unit AS minute; -- minute vs milliinch
+   minute   
+------------
+ 00:01:00 s
+(1 row)
+
+SELECT '1 ft'::unit AS foot; -- foot vs femtotonne
+   foot   
+----------
+ 304.8 mm
+(1 row)
+
+SELECT '1 yd'::unit AS yard; -- yard vs yoctoday
+   yard   
+----------
+ 914.4 mm
+(1 row)
+
+-- units whose definition changed between v2 and 3
+SELECT 'a'::unit AS are;
+   are   
+---------
+ 100 m^2
+(1 row)
+
+SELECT 'da'::unit AS day;
+ day 
+-----
+ 1 d
+(1 row)
+
+SELECT 'rad'::unit AS radiation;
+ radiation 
+-----------
+ 10 mGy
+(1 row)
+
+-- check which prefix/unit combinations produce other dimensions (parser conflicts)
+SELECT
+  p, u, (p||u)::unit
+FROM
+  prefixes CROSS JOIN units
+WHERE
+  u <> 'kg' AND
+  dimension(u::unit) != dimension((p||u)::unit) AND
+  p||u NOT IN ('dat') -- skip ambiguous unit
+ORDER BY lower(p) COLLATE "C", lower(u) COLLATE "C";
+ p |  u  |             unit              
+---+-----+-------------------------------
+ a | t   | 98.0665 kPa
+ c | d   | 1 cd
+ d | a   | 1 d
+ f | t   | 304.8 mm
+ G | s   | 100 µT
+ h | bar | 1.05457181764616e-34 m^2*kg/s
+ h | d   | 0.238480942392 m^3
+ k | in  | 600 g
+ m | in  | 00:01:00 s
+ n | t   | 1 N
+ P | a   | 1 Pa
+ p | a   | 1 Pa
+ p | in  | 0.020457405 m^3
+ p | t   | 0.000473176473 m^3
+ q | t   | 0.000946352946 m^3
+ r | d   | 5.0292 m
+ y | d   | 914.4 mm
+(17 rows)
+

@@ -1,0 +1,8 @@
+repoURL: https://github.com/cybertec-postgresql/pg_pwhash
+tag: pg_pwhash-1.0
+commit: not-recorded-in-release-tarball
+sourcePackage: pg-pwhash
+sourceVersion: 1.0-2.pgdg13+3
+sourceDscSHA256: 86a05a1b210280bf270fd01dfce8a843206e3af147f8b44657d85b9bf7ea9465
+sourceOrigSHA256: a3a223e0d717cb4c582dfc4463dab058097bea424a69d4519bfd43265e83af69
+copiedpaths: sql, expected, LICENSE

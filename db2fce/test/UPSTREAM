@@ -1,0 +1,15 @@
+Extension: db2fce
+Upstream repository: https://github.com/credativ/db2fce
+PGDG source package: db2fce 0.0.17-1.pgdg13+1
+Source descriptor: db2fce_0.0.17-1.pgdg13+1.dsc
+Source descriptor SHA256: 63c80b9abd5998491c21b669162022d551b5ec3580c501a331de451e18d69949
+Original source archive(s):
+  db2fce_0.0.17.orig.tar.gz SHA256 4de3a4c4e1366a1bba5246ee26d321036c169901b4a5bc0e68621c2766193e5a
+Copied upstream source paths (relative to the exact extracted PGDG source tree):
+  sql/
+  expected/
+  parallel_schedule
+Copied license/copyright notices:
+  upstream/COPYRIGHT.db2fce
+Runner: test/run.sh runs the PGXS Makefile REGRESS suite in source order: init, date_time, misc, numeric, operator, string_text.
+The two-argument case-conversion functions intentionally delegate to PostgreSQL upper/lower, so test/cluster.yaml initializes the scratch server with UTF8 and ICU de-DE casing to match upstream's Unicode expectations. Test SQL and expected output remain byte-for-byte source copies.

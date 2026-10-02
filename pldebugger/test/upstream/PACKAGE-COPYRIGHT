@@ -1,0 +1,8 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: pldebugger
+Source: https://git.postgresql.org/gitweb/?p=pldebugger.git
+
+Files: *
+Copyright: Copyright (c) 2004-2017 EnterpriseDB Corporation. All Rights Reserved.
+License: Artistic
+ On Debian systems, the Artistic license is located in /usr/share/common-licenses/Artistic

@@ -1,0 +1,1 @@
+Run this upstream regression suite inside the CNPG PostgreSQL pod so the native pg_repack client and tablespace paths share the server filesystem.

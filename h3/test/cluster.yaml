@@ -1,0 +1,9 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: ($values.name)
+spec:
+  postgresql:
+    extensions:
+      - name: postgis
+        ld_library_path: [system]

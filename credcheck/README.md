@@ -48,7 +48,12 @@ spec:
 
 CNPG reconciles role credentials using precomputed SCRAM verifiers. Set `credcheck.encrypted_password_allowed: "on"` so those updates succeed. Plaintext password policy cannot inspect precomputed verifiers; enforce equivalent policy where Kubernetes password Secrets are generated. SQL role changes using plaintext passwords remain checked.
 
-Credential checks apply to role creation and password changes. Configure policy settings in `postgresql.parameters`; only administrators should change them.
+Credential checks apply to role creation and password changes. Configure policy settings in `postgresql.parameters`; only administrators should change them. The test enforces a minimum plaintext password length and proves that a weak password is rejected.
+
+## Verify behavior
+
+The vendored upstream suite is pinned in [test/UPSTREAM](test/UPSTREAM) and
+invoked by [test/run.sh](test/run.sh).
 
 ## Dependencies and updates
 
@@ -56,7 +61,7 @@ The image contains only the PGDG package server payload and license notices.
 The matching CNPG minimal image supplies PostgreSQL, libc and its base runtime.
 Renovate tracks the pinned extension package. For an extension or base-runtime
 security fix, update the affected package/base image, rebuild every advertised
-architecture. SQL versions must be checked against
+architecture and rerun both distro regression suites. SQL versions must be checked against
 the installed control file separately because they need not match package versions.
 
 ## Licenses and ownership

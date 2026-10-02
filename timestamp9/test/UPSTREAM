@@ -1,0 +1,21 @@
+Extension: timestamp9
+Upstream repository: https://github.com/optiver/timestamp9
+PGDG source package: timestamp9 1.4.0-2.pgdg13+1
+Source descriptor: timestamp9_1.4.0-2.pgdg13+1.dsc
+Source descriptor SHA256: 550aa1c0f822261d75359f5878ac057b40c3a53d504f736b204160a96a0df313
+Original source archive(s):
+  timestamp9_1.4.0.orig.tar.gz SHA256 eb313b9d57abab158e48f994034150d7345f3a34d86300196bf9aff3f98ed1bb
+Copied upstream source paths (relative to the exact extracted PGDG source tree):
+  tests/sql/
+  tests/expected/
+  tests/CMakeLists.txt
+  tests/test-defs.cmake
+  tests/pg_regress.sh
+  tests/runner.sh
+  version.config
+Copied license/copyright notices:
+  upstream/LICENSE
+Runner: test/run.sh invokes the native PG_REGRESS suite with its source-defined cases and options.
+Expected output files are copied byte-for-byte from this source package; no generated or edited expected outputs are vendored.
+Requirements / limits:
+  The upstream CMake regresschecklocal target runs one case, basics, through tests/pg_regress.sh and tests/runner.sh. The runner creates per-test databases and passwordless test roles, installs timestamp9, and passes temporary tablespace paths shared by the pg_regress client and server. test/run-on-server uses the scratch PostgreSQL pod for that shared filesystem; test/cluster.yaml permits passwordless loopback role connections as in the native local-server tests.

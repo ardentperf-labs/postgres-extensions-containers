@@ -58,7 +58,14 @@ Call `pglogical.create_node` for each endpoint, register tables with
 on the subscriber. Set `synchronize_structure := false`. Optional schema
 synchronization is unsupported until its temporary-file storage, access,
 retention and cleanup are designed. Apply schema changes through your normal
-migration process.
+migration process. Initial data synchronization is covered by the test.
+
+The vendored upstream SQL regression suite is pinned in
+[test/UPSTREAM](test/UPSTREAM) and invoked by [test/run.sh](test/run.sh). The
+wrapper starts a private temporary PostgreSQL instance inside the CNPG pod and
+runs the upstream pg_regress cases; it does not provision a separate CNPG
+replication Job. The separate upstream TAP suite is retained but is not run by
+the shared harness.
 
 Monitor replication lag and retained WAL on the PostgreSQL data volume. Plan
 slot limits and disk capacity; remove unused subscriptions with
@@ -72,7 +79,7 @@ The image contains only the PGDG package server payload and license notices.
 The matching CNPG minimal image supplies PostgreSQL, libc and its base runtime.
 Renovate tracks the pinned extension package. For an extension or base-runtime
 security fix, update the affected package/base image, rebuild every advertised
-architecture. SQL versions must be checked against
+architecture and rerun both distro regression suites. SQL versions must be checked against
 the installed control file separately because they need not match package versions.
 
 ## Licenses and ownership

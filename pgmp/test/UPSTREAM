@@ -1,0 +1,7 @@
+Repository: https://github.com/dvarrazzo/pgmp
+Source package: postgresql-pgmp 1.0.6-1.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-pgmp/postgresql-pgmp_1.0.6-1.pgdg13+1.dsc
+SHA256: da1fe7d37e3bcf2413bf5be46c844ff4387646e890b17b83eaf1fca7a578ff1e
+Copied paths: test, Makefile, COPYING, debian/copyright
+Suite: Makefile REGRESS for PostgreSQL 18, including applicable upstream version variants.
+Test SQL and expected output are unmodified; update manually.

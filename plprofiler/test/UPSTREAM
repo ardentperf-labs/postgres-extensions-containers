@@ -1,0 +1,7 @@
+Repository: https://github.com/bigsql/plprofiler
+Source package: plprofiler 4.2.5-4.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/plprofiler/plprofiler_4.2.5-4.pgdg13+1.dsc
+SHA256: 0b9f19968b285229e8daebbd21b091477ac46b476bb08e0bd4b6ddd50ca33295
+Copied paths: examples, python-plprofiler, debian/tests/plprofiler, Makefile; upstream license notices and debian/copyright.
+Suite: Debian package plprofiler test heredoc, unchanged commands and success criterion. Existing CNPG supplies the server in place of pg_virtualenv. The vendored Python client drives the mounted server extension; no replacement extension is built or installed.
+Test inputs and expected output are unmodified; update manually.

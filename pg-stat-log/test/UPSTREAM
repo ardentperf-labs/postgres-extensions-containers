@@ -1,0 +1,11 @@
+repoURL: https://github.com/fabriziomello/pg_stat_log
+tag: fabriziomello-pg_stat_log-0a8b782
+commit: 0a8b782
+sourcePackage: pg-stat-log
+sourceVersion: 0.2-1.pgdg13+2
+sourceDscSHA256: c31fb3d76a8545aa1560bfe7c87bbdd3fabddfed2c1b30c9905f744f621feb3c
+sourceOrigSHA256: dfd6ee473ca3061d5fc19771146f55ce27b70fa01f91984ed02030db44ff949c
+copiedpaths: sql, expected, pg_stat_log.conf, t, LICENSE
+serverConfig: shared_preload_libraries must include pg_stat_log before test sessions start
+tapLane: full upstream t/*.pl retained; requires matching PostgreSQL source src/test/perl and a local self-managed server lane (run-tap.sh)
+coverageStatus: shared harness currently invokes only run.sh; TAP t/*.pl are retained but not executed

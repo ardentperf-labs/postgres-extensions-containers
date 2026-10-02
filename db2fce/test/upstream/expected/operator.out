@@ -1,0 +1,51 @@
+SET search_path = db2,pg_catalog,public;
+-- VALUE()
+SELECT VALUE(1) FROM SYSIBM.SYSDUMMY1; -- DB2 ERROR
+ value 
+-------
+     1
+(1 row)
+
+SELECT VALUE(NULL) FROM SYSIBM.SYSDUMMY1; -- DB2 ERROR
+ value 
+-------
+ 
+(1 row)
+
+SELECT VALUE(NULL, NULL) FROM SYSIBM.SYSDUMMY1; -- DB2 ERROR
+ value 
+-------
+ 
+(1 row)
+
+SELECT VALUE(NULL, 1, NULL) FROM SYSIBM.SYSDUMMY1; -- DB2 ERROR
+ value 
+-------
+     1
+(1 row)
+
+SELECT VALUE(NULL, '1', NULL) FROM SYSIBM.SYSDUMMY1; -- DB2 ERROR
+ value 
+-------
+ 1
+(1 row)
+
+-- ^= operator
+SELECT 1 FROM SYSIBM.SYSDUMMY1 WHERE 1 ^= 2;
+ ?column? 
+----------
+        1
+(1 row)
+
+SELECT 1 FROM SYSIBM.SYSDUMMY1 WHERE 1 ^= 1;
+ ?column? 
+----------
+(0 rows)
+
+-- !! operator
+SELECT 'FOO' !! ' BAR' FROM SYSIBM.SYSDUMMY1;
+ ?column? 
+----------
+ FOO BAR
+(1 row)
+

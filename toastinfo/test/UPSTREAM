@@ -1,0 +1,7 @@
+Repository: https://github.com/df7cb/toastinfo
+Source package: toastinfo 1.7-1.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/t/toastinfo/toastinfo_1.7-1.pgdg13+1.dsc
+SHA256: 0dba99ed67ffbe4946f35f4ab633cc9615c1386956c8ba808d975021a8101567
+Copied paths: sql, expected, Makefile, LICENSE, debian/copyright
+Suite: Makefile REGRESS for PostgreSQL 18, including applicable upstream version variants.
+Test SQL and expected output are unmodified; update manually.

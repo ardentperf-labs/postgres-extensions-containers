@@ -1,0 +1,8 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: ($values.name)
+spec:
+  postgresql:
+    parameters:
+      cron.database_name: contrib_regression

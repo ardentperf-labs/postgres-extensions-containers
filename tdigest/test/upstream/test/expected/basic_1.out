@@ -1,0 +1,226 @@
+-- validation of percentile values
+-- correct values
+SELECT tdigest_percentile(1.0, 10, 0.0);
+ tdigest_percentile 
+--------------------
+                  1
+(1 row)
+
+SELECT tdigest_percentile(1.0, 10, 0.1);
+ tdigest_percentile 
+--------------------
+                  1
+(1 row)
+
+SELECT tdigest_percentile(1.0, 10, 0.5);
+ tdigest_percentile 
+--------------------
+                  1
+(1 row)
+
+SELECT tdigest_percentile(1.0, 10, 0.9);
+ tdigest_percentile 
+--------------------
+                  1
+(1 row)
+
+SELECT tdigest_percentile(1.0, 10, 1.0);
+ tdigest_percentile 
+--------------------
+                  1
+(1 row)
+
+SELECT tdigest_percentile(1.0, 10, ARRAY[0.0, 0.1, 0.5, 0.9, 1.0]);
+ tdigest_percentile 
+--------------------
+ {1,1,1,1,1}
+(1 row)
+
+-- out of range values
+SELECT tdigest_percentile(1.0, 10, -1.0);
+ERROR:  invalid percentile value -1.000000, should be in [0.0, 1.0]
+SELECT tdigest_percentile(1.0, 10, 1.5);
+ERROR:  invalid percentile value 1.500000, should be in [0.0, 1.0]
+SELECT tdigest_percentile(1.0, 10, ARRAY[0.0, -1.0, 0.5, 0.9, 1.0]);
+ERROR:  invalid percentile value -1.000000, should be in [0.0, 1.0]
+SELECT tdigest_percentile(1.0, 10, ARRAY[0.0, 0.1, 0.5, 0.9, 1.5]);
+ERROR:  invalid percentile value 1.500000, should be in [0.0, 1.0]
+-- NaN
+SELECT tdigest_percentile(1.0, 10, 'NaN'::double precision);
+ERROR:  invalid percentile value nan, should be in [0.0, 1.0]
+SELECT tdigest_percentile(1.0, 10, ARRAY[0.0, 'NaN'::double precision, 0.5, 0.9, 1.0]);
+ERROR:  invalid percentile value nan, should be in [0.0, 1.0]
+-- infinite values
+SELECT tdigest_percentile(1.0, 10, 'infinity'::double precision);
+ERROR:  invalid percentile value inf, should be in [0.0, 1.0]
+SELECT tdigest_percentile(1.0, 10, '-infinity'::double precision);
+ERROR:  invalid percentile value -inf, should be in [0.0, 1.0]
+SELECT tdigest_percentile(1.0, 10, ARRAY[0.0, 'infinity'::double precision, 0.5, 0.9, 1.0]);
+ERROR:  invalid percentile value inf, should be in [0.0, 1.0]
+SELECT tdigest_percentile(1.0, 10, ARRAY[0.0, '-infinity'::double precision, 0.5, 0.9, 1.0]);
+ERROR:  invalid percentile value -inf, should be in [0.0, 1.0]
+-- more tests
+SELECT tdigest_percentile(1.0::double precision, 10, 'NaN'::double precision);
+ERROR:  invalid percentile value nan, should be in [0.0, 1.0]
+SELECT tdigest_percentile(1.0::double precision, 10, '-infinity'::double precision);
+ERROR:  invalid percentile value -inf, should be in [0.0, 1.0]
+SELECT tdigest_percentile(1.0::double precision, 10, 'infinity'::double precision);
+ERROR:  invalid percentile value inf, should be in [0.0, 1.0]
+SELECT tdigest_percentile(1.0::double precision, 10, ARRAY[0.5, 'NaN']::double precision[]);
+ERROR:  invalid percentile value nan, should be in [0.0, 1.0]
+SELECT tdigest_percentile(1.0::double precision, 10, ARRAY[0.5, '-infinity']::double precision[]);
+ERROR:  invalid percentile value -inf, should be in [0.0, 1.0]
+SELECT tdigest_percentile(1.0::double precision, 10, ARRAY[0.5, 'infinity']::double precision[]);
+ERROR:  invalid percentile value inf, should be in [0.0, 1.0]
+SELECT tdigest_percentile('flags 1 count 1 compression 10 centroids 1 (1, 1)'::tdigest, 'NaN'::double precision);
+ERROR:  invalid percentile value nan, should be in [0.0, 1.0]
+SELECT tdigest_percentile('flags 1 count 1 compression 10 centroids 1 (1, 1)'::tdigest, '-infinity'::double precision);
+ERROR:  invalid percentile value -inf, should be in [0.0, 1.0]
+SELECT tdigest_percentile('flags 1 count 1 compression 10 centroids 1 (1, 1)'::tdigest, 'infinity'::double precision);
+ERROR:  invalid percentile value inf, should be in [0.0, 1.0]
+SELECT tdigest_percentile('flags 1 count 1 compression 10 centroids 1 (1, 1)'::tdigest,
+                          ARRAY[0.5, 'NaN']::double precision[]);
+ERROR:  invalid percentile value nan, should be in [0.0, 1.0]
+SELECT tdigest_percentile('flags 1 count 1 compression 10 centroids 1 (1, 1)'::tdigest,
+                          ARRAY[0.5, '-infinity']::double precision[]);
+ERROR:  invalid percentile value -inf, should be in [0.0, 1.0]
+SELECT tdigest_percentile('flags 1 count 1 compression 10 centroids 1 (1, 1)'::tdigest,
+                          ARRAY[0.5, 'infinity']::double precision[]);
+ERROR:  invalid percentile value inf, should be in [0.0, 1.0]
+-- trim thresholds are checked too
+SELECT tdigest_avg(1.0::double precision, 10, 'NaN'::double precision, 1.0);
+ERROR:  invalid low percentile value nan, should be in [0.0, 1.0]
+SELECT tdigest_avg(1.0::double precision, 10, '-infinity'::double precision, 1.0);
+ERROR:  invalid low percentile value -inf, should be in [0.0, 1.0]
+SELECT tdigest_avg(1.0::double precision, 10, 'infinity'::double precision, 1.0);
+ERROR:  invalid low percentile value inf, should be in [0.0, 1.0]
+SELECT tdigest_digest_sum('flags 1 count 1 compression 10 centroids 1 (1, 1)'::tdigest, 0.0, 'NaN'::double precision);
+ERROR:  invalid high percentile value nan, should be in [0.0, 1.0]
+SELECT tdigest_digest_sum('flags 1 count 1 compression 10 centroids 1 (1, 1)'::tdigest, 0.0, '-infinity'::double precision);
+ERROR:  invalid high percentile value -inf, should be in [0.0, 1.0]
+SELECT tdigest_digest_sum('flags 1 count 1 compression 10 centroids 1 (1, 1)'::tdigest, 0.0, 'infinity'::double precision);
+ERROR:  invalid high percentile value inf, should be in [0.0, 1.0]
+-- validation of input values
+-- input functions must reject NaN / infinity means in various places
+SELECT 'flags 1 count 1 compression 10 centroids 1 (NaN, 1)'::tdigest;
+ERROR:  mean value for all centroids in a t-digest must be valid
+LINE 1: SELECT 'flags 1 count 1 compression 10 centroids 1 (NaN, 1)'...
+               ^
+SELECT 'flags 1 count 1 compression 10 centroids 1 (infinity, 1)'::tdigest;
+ERROR:  mean value for all centroids in a t-digest must be valid
+LINE 1: SELECT 'flags 1 count 1 compression 10 centroids 1 (infinity...
+               ^
+SELECT 'flags 1 count 1 compression 10 centroids 1 (-infinity, 1)'::tdigest;
+ERROR:  mean value for all centroids in a t-digest must be valid
+LINE 1: SELECT 'flags 1 count 1 compression 10 centroids 1 (-infinit...
+               ^
+-- the aggregates building the digest have to reject NaN / infinity too
+SELECT tdigest('NaN'::float8, 10);
+ERROR:  all values added to t-digest must be finite
+SELECT tdigest('infinity'::float8, 10);
+ERROR:  all values added to t-digest must be finite
+SELECT tdigest('-infinity'::float8, 10);
+ERROR:  all values added to t-digest must be finite
+-- same for the value/count API
+SELECT tdigest('NaN'::float8, 50::bigint, 10);
+ERROR:  all values added to t-digest must be finite
+SELECT tdigest('NaN'::float8, 200::bigint, 10);
+ERROR:  all values added to t-digest must be finite
+SELECT tdigest('Infinity'::float8, 200::bigint, 10);
+ERROR:  all values added to t-digest must be finite
+SELECT tdigest('-Infinity'::float8, 200::bigint, 10);
+ERROR:  all values added to t-digest must be finite
+-- t-digest extreme enough for the percentile to fall to the right of the last centroid
+SELECT tdigest_percentile('flags 1 count 4611686018427388928 compression 10 centroids 3 (1, 4611686018427387904) (2, 512) (3, 512)'::tdigest,
+                          0.9999999999999998::double precision);
+ tdigest_percentile 
+--------------------
+                  2
+(1 row)
+
+-- same digest, but the percentile falls in between the second and third centroid
+SELECT tdigest_percentile('flags 1 count 4611686018427388928 compression 10 centroids 3 (1, 4611686018427387904) (2, 512) (3, 512)'::tdigest,
+                          ARRAY[0.0, 0.5, 0.9999999999999996, 1.0]::double precision[]);
+ tdigest_percentile 
+--------------------
+ {1,1,2,3}
+(1 row)
+
+-- the same digest with other compressions, to show the compression does not affect this
+-- the compaction leaves the digest alone for all compression values
+SELECT c AS compression,
+       tdigest_percentile(('flags 1 count 4611686018427388928 compression ' || c  || ' centroids 3 (1, 4611686018427387904) (2, 512) (3, 512)')::tdigest,
+                          0.9999999999999998::double precision)
+  FROM (VALUES (10), (100), (1000), (10000)) v(c)
+ GROUP BY c ORDER BY c;
+ compression | tdigest_percentile 
+-------------+--------------------
+          10 |                  2
+         100 |                  2
+        1000 |                  2
+       10000 |                  2
+(4 rows)
+
+-- make sure finite inputs do not produce infinite centroids
+SELECT tdigest_count(tdigest(v, 10))
+FROM (SELECT (CASE WHEN i % 2 = 0 THEN 1e308 ELSE 1e307 END)::float8 AS v
+      FROM generate_series(1,200) i) x;
+ tdigest_count 
+---------------
+           200
+(1 row)
+
+-- make sure finite inputs do not result in NaN means
+WITH x AS (SELECT (CASE i % 4 WHEN 0 THEN -1e308
+                              WHEN 1 THEN -1e307
+                              WHEN 2 THEN 1e307
+                              ELSE 1e308 END)::float8 AS v
+           FROM generate_series(1,400) i)
+SELECT tdigest_percentile(v,10,0.5) FROM x;
+  tdigest_percentile   
+-----------------------
+ 1.82600995507167e+306
+(1 row)
+
+-- extreme digest - make sure we can read the output we produced
+SELECT tdigest_count((SELECT tdigest(v, c, 10)
+        FROM (VALUES (1e307::float8, 1000000::bigint),
+                     (1e308::float8, 1000000::bigint)) x(v, c))::text::tdigest);
+ tdigest_count 
+---------------
+       2000000
+(1 row)
+
+-- extreme digest - overflow/rounding issue in tdigest_compute_quantiles
+SELECT tdigest_percentile('flags 1 count 204745659738676291 compression 100 centroids 3 (5360.6421513780951, 96854112897858161) (5670.4376627340216, 36597233557612361) (5670.4376627340216, 71294313283205769)'::tdigest, 0.56241841621276667);
+ tdigest_percentile 
+--------------------
+   5670.43766273402
+(1 row)
+
+-- extreme digest - overflow/rounding issue in tdigest_compute_quantiles_of
+SELECT tdigest_percentile_of('flags 1 count 467525031770889061 compression 100 centroids 5 (-714.32532319527991, 372151463885287745) (-649.22210009079686, 12983637447676689) (-613.86327584091737, 82389930437924625) (-554.7460856469786, 1) (-497.74083276256061, 1)'::tdigest, -517.61603495911652);
+ tdigest_percentile_of 
+-----------------------
+                     1
+(1 row)
+
+-- most user-facing scalar functions should be strict, except for functions 
+-- that need to accept NULL as initial digest value (e.g. for the incremental
+-- API, or when combining digests)
+SELECT p.proname, p.proisstrict
+  FROM pg_proc p JOIN pg_depend d ON (d.objid = p.oid AND d.deptype = 'e')
+       JOIN pg_extension e ON (e.oid = d.refobjid)
+ WHERE e.extname = 'tdigest'
+   AND p.proargtypes::oid[] && ARRAY['internal'::regtype]::oid[] IS NOT TRUE
+   AND p.prorettype <> 'internal'::regtype
+   AND p.proisstrict <> true
+   AND NOT EXISTS (SELECT 1 FROM pg_aggregate WHERE aggfnoid = p.oid)
+ ORDER BY 1;
+    proname    | proisstrict 
+---------------+-------------
+ tdigest_add   | f
+ tdigest_add   | f
+ tdigest_union | f
+(3 rows)
+

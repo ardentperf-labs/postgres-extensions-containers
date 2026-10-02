@@ -59,5 +59,5 @@ SELECT (SELECT hll_cardinality(hll_add_agg(hll_hash_integer(i))) BETWEEN 95 AND 
 
 ## Package, dependencies and maintenance
 
-The image installs PGDG package `postgresql-18-hll` at the Debian version recorded in `metadata.hcl`. Package updates are tracked by Renovate; review changes against the package's control file and rerun the target's build. The package is available for PostgreSQL 18 on both Bookworm and Trixie, amd64 and arm64. It depends on the CNPG PostgreSQL 18 base image and libc; no additional runtime package is installed. The hll module uses Apache-2.0 licensing. Its Debian copyright file is included under `/licenses/`. The extension includes vendored MurmurHash3 code (public domain, no independent version).
+The image installs PGDG package `postgresql-18-hll` at the Debian version recorded in `metadata.hcl`. Package updates are tracked by Renovate; review changes against the package's control file and rerun the target's build and upstream regression suite. The package is available for PostgreSQL 18 on both Bookworm and Trixie, amd64 and arm64. It depends on the CNPG PostgreSQL 18 base image and libc; no additional runtime package is installed. The hll module uses Apache-2.0 licensing. Its Debian copyright file is included under `/licenses/`. The extension includes vendored MurmurHash3 code (public domain, no independent version).
 

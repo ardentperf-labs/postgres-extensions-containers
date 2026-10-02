@@ -1,0 +1,7 @@
+Repository: https://github.com/cybertec-postgresql/pg_show_plans
+Source package: pg-show-plans 2.1.8-1.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/pg-show-plans/pg-show-plans_2.1.8-1.pgdg13+1.dsc
+SHA256: 8702f56b8df3ddd237ef65bdb7dfddbc097c5bcb5effc40b18b0e9cb26a28f1e
+Copied paths: sql, expected, Makefile, LICENSE, debian/copyright
+Suite: Makefile REGRESS for PostgreSQL 18, including applicable upstream version variants.
+Test SQL and expected output are unmodified; update manually.

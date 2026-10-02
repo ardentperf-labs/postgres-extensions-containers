@@ -207,8 +207,8 @@ task checks:all
 ```
 
 Then run the full E2E tests for the extension. This task will build your image,
-push it to a local registry, spin up a Kind cluster, and run the functional
-tests:
+push it to a local registry, spin up a Kind cluster, and run the vendored
+upstream regression suite against the extension image mounted in CNPG:
 
 ```sh
 task e2e:test:full TARGET="<extension-name>"
@@ -253,11 +253,16 @@ local registry is reachable at `registry.pg-extensions:5000`:
 image: registry.pg-extensions:5000/<extension-name>-testing:<tag>
 ```
 
-### Extending Tests
+### Adding the Upstream Test Suite
 
-While the framework provides a generic smoke test, we highly encourage you to
-add **extension-specific tests** using the Chainsaw framework in the `test/`
-directory.
+Keep extension behavior checks in the upstream project's regression suite.
+Vendor the matching Debian/PGDG source test files under `test/upstream/`, record
+the exact source package and version in `test/UPSTREAM`, and add `test/run.sh`
+to invoke the upstream suite without changing its SQL or expected results.
+Chainsaw is used only to provision and check the CNPG cluster. See the testing
+contract in [`BUILD.md`](./BUILD.md#execute-end-to-end-tests) for optional
+cluster settings, fixtures, runner packages, and suites that must run inside the
+server pod.
 
 ### Cleaning up
 

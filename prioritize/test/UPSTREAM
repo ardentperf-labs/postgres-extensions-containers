@@ -1,0 +1,14 @@
+Extension: prioritize
+Upstream repository: https://salsa.debian.org/postgresql/postgresql-prioritize
+PGDG source package: postgresql-prioritize 1.0.4-13.pgdg13+1
+Source descriptor: postgresql-prioritize_1.0.4-13.pgdg13+1.dsc
+Source descriptor SHA256: fadbf8c7496a3e7ebac82900c2ce0b132a6632323248fad724f6770b3a317d1b
+Original source archive(s):
+  postgresql-prioritize_1.0.4.orig.tar.gz SHA256 7fe2975bf90bafafcd18b2e3fd9b98334c97771778ec957278a0d8739d751000
+Copied upstream source paths (relative to the exact extracted PGDG source tree):
+  sql/
+  expected/
+Copied license/copyright notices:
+  upstream/debian-copyright
+Runner: test/run.sh invokes the native PG_REGRESS suite with its source-defined cases and options.
+Expected output files are copied byte-for-byte from this source package; no generated or edited expected outputs are vendored.

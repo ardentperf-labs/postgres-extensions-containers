@@ -1,0 +1,8 @@
+repoURL: https://github.com/petere/pgpcre
+tag: pgpcre-0.20190509
+commit: not-recorded-in-release-tarball
+sourcePackage: pgpcre
+sourceVersion: 0.20190509-9.pgdg13+1
+sourceDscSHA256: 79e07c9004024e8171a709ed280e13c4bd3607031eb3fdb97e2d14098f2d7f7a
+sourceOrigSHA256: 441d6570bf525b666084d692c09be3266c72958fdf997cac4fa0a075849ddc19
+copiedpaths: test, LICENSE

@@ -1,0 +1,14 @@
+Extension: pg-permissions
+Upstream repository: https://github.com/cybertec-postgresql/pg_permissions
+PGDG source package: pg-permissions 1.4.1-1.pgdg13+1
+Source descriptor: pg-permissions_1.4.1-1.pgdg13+1.dsc
+Source descriptor SHA256: 6c4e680021a638ac3f3091a4fa0472510dac21488a2431edfa8533880272e12b
+Original source archive(s):
+  pg-permissions_1.4.1.orig.tar.gz SHA256 d96867f645e890f648695d88c8e96285d34fbe74204e3312688e5406032c94e9
+Copied upstream source paths (relative to the exact extracted PGDG source tree):
+  sql/
+  expected/
+Copied license/copyright notices:
+  upstream/LICENSE
+Runner: test/run.sh invokes the native PG_REGRESS suite with its source-defined cases and options.
+Expected output files are copied byte-for-byte from this source package; no generated or edited expected outputs are vendored.

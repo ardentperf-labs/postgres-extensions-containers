@@ -1,0 +1,16 @@
+Extension: first-last-agg
+Upstream repository: https://github.com/wulczer/first_last_agg
+PGDG source package: first-last-agg 0.1.4-4-gd63ea3b-9.pgdg13+1
+Source descriptor: first-last-agg_0.1.4-4-gd63ea3b-9.pgdg13+1.dsc
+Source descriptor SHA256: 42209f76d81de6171b1f472c0c00b0b34de83d7907513537430820bf49e5251b
+Original source archive(s):
+  first-last-agg_0.1.4-4-gd63ea3b.orig.tar.gz SHA256 5dd0f82b0a08932e6a19d3f98b5390a9a5c2993b0b397a6bd78f0ac553e0884e
+Copied upstream source paths (relative to the exact extracted PGDG source tree):
+  Makefile
+  sql/first_last_agg.sql
+  test/sql/
+  test/expected/
+Copied license/copyright notices:
+  upstream/debian-copyright
+Runner: test/run.sh runs the source PGXS REGRESS test agg with inputdir=test; the SQL test includes sql/first_last_agg.sql from the source root.
+Expected output files are copied byte-for-byte from this source package; no generated or edited expected outputs are vendored.

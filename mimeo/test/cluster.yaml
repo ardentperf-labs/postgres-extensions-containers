@@ -1,0 +1,11 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: ($values.name)
+spec:
+  postgresql:
+    parameters:
+      timezone: America/New_York
+    pg_hba:
+      - host all mimeo_test,mimeo_owner 127.0.0.1/32 trust
+      - host all mimeo_test,mimeo_owner ::1/128 trust

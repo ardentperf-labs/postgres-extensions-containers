@@ -1,0 +1,134 @@
+VALUES
+	('1 mB'::unit),
+	('1 B'::unit),
+	('1 KiB'::unit),
+	('1 MiB'::unit),
+	('1 GiB'::unit),
+	('1 TiB'::unit),
+	('1 PiB'::unit),
+	('1 EiB'::unit),
+	('1 ZiB'::unit),
+	('1 YiB'::unit),
+	('1 RiB'::unit),
+	('1 QiB'::unit);
+       column1       
+---------------------
+ 1 mB
+ 1 B
+ 1.024 kB
+ 1.048576 MB
+ 1.073741824 GB
+ 1.099511627776 TB
+ 1.12589990684262 PB
+ 1.15292150460685 EB
+ 1.18059162071741 ZB
+ 1.20892581961463 YB
+ 1.23794003928538 RB
+ 1.26765060022823 QB
+(12 rows)
+
+VALUES
+	('1 B'::unit @ 'B'),
+	('1 KiB'::unit @ 'KiB'),
+	('1 MiB'::unit @ 'MiB'),
+	('1 GiB'::unit @ 'GiB'),
+	('1 TiB'::unit @ 'TiB'),
+	('1 PiB'::unit @ 'PiB'),
+	('1 EiB'::unit @ 'EiB'),
+	('1 ZiB'::unit @ 'ZiB'),
+	('1 YiB'::unit @ 'YiB'),
+	('1 RiB'::unit @ 'RiB'),
+	('1 QiB'::unit @ 'QiB');
+ column1 
+---------
+ 1 B
+ 1 KiB
+ 1 MiB
+ 1 GiB
+ 1 TiB
+ 1 PiB
+ 1 EiB
+ 1 ZiB
+ 1 YiB
+ 1 RiB
+ 1 QiB
+(11 rows)
+
+VALUES
+	('1 B'::unit @ 'B'),
+	('1 kB'::unit @ 'KiB'),
+	('1 MB'::unit @ 'MiB'),
+	('1 GB'::unit @ 'GiB'),
+	('1 TB'::unit @ 'TiB'),
+	('1 PB'::unit @ 'PiB'),
+	('1 EB'::unit @ 'EiB'),
+	('1 ZB'::unit @ 'ZiB'),
+	('1 YB'::unit @ 'YiB'),
+	('1 RB'::unit @ 'RiB'),
+	('1 QB'::unit @ 'QiB');
+        column1        
+-----------------------
+ 1 B
+ 0.9765625 KiB
+ 0.95367431640625 MiB
+ 0.931322574615479 GiB
+ 0.909494701772928 TiB
+ 0.888178419700125 PiB
+ 0.867361737988404 EiB
+ 0.8470329472543 ZiB
+ 0.827180612553028 YiB
+ 0.807793566946316 RiB
+ 0.788860905221012 QiB
+(11 rows)
+
+-- errors
+SELECT '1 kiB'::unit;
+ERROR:  unit "kiB" is not known
+LINE 1: SELECT '1 kiB'::unit;
+               ^
+SELECT '1 Ki'::unit;
+ERROR:  unit "Ki" is not known
+LINE 1: SELECT '1 Ki'::unit;
+               ^
+-- used to be an error in v2
+SELECT '1 Kim'::unit AS "1024 m";
+  1024 m  
+----------
+ 1.024 km
+(1 row)
+
+-- binary prefix output
+SET unit.byte_output_iec = 'foobar';
+ERROR:  parameter "unit.byte_output_iec" requires a Boolean value
+SET unit.byte_output_iec = on;
+VALUES
+	('.001 B'::unit, '.001 B'::unit),
+	('1 B'::unit, '1 B'::unit),
+	('1 KiB'::unit, '1 kB'::unit),
+	('1 MiB'::unit, '1 MB'::unit),
+	('1 GiB'::unit, '1 GB'::unit),
+	('1 TiB'::unit, '1 TB'::unit),
+	('1 PiB'::unit, '1 PB'::unit),
+	('1 EiB'::unit, '1 EB'::unit),
+	('1 ZiB'::unit, '1 ZB'::unit),
+	('1 YiB'::unit, '1 YB'::unit),
+	('1 RiB'::unit, '1 RB'::unit),
+	('1 QiB'::unit, '1 QB'::unit),
+	('1024 QiB'::unit, '1000 QB'::unit);
+        column1         |       column2        
+------------------------+----------------------
+ 0.001 B                | 0.001 B
+ 1 B                    | 1 B
+ 1 KiB                  | 1000 B
+ 1 MiB                  | 976.5625 KiB
+ 1 GiB                  | 953.67431640625 MiB
+ 1 TiB                  | 931.322574615479 GiB
+ 1 PiB                  | 909.494701772928 TiB
+ 1 EiB                  | 888.178419700125 PiB
+ 1 ZiB                  | 867.361737988404 EiB
+ 1 YiB                  | 847.0329472543 ZiB
+ 1 RiB                  | 827.180612553028 YiB
+ 1 QiB                  | 807.793566946316 RiB
+ 1.29807421463371e+33 B | 788.860905221012 QiB
+(13 rows)
+

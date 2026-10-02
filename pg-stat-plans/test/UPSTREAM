@@ -1,0 +1,7 @@
+Repository: https://github.com/pganalyze/pg_stat_plans
+Source package: pg-stat-plans 2.1.1-1.pgdg13+1
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/pg-stat-plans/pg-stat-plans_2.1.1-1.pgdg13+1.dsc
+SHA256: e0800caae53c7f39bd6f1dca0bb6ac865e773c7e146fcf2f0af51d71aafd6c38
+Copied paths: sql, expected, compat_18/expected, pg_stat_plans.conf, Makefile, LICENSE, debian/copyright
+Suite: Makefile REGRESS for PostgreSQL 18, including the PostgreSQL 18-specific compat_18 expected output directory.
+Test SQL and expected output are unmodified; update manually.

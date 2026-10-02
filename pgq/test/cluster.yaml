@@ -1,0 +1,9 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: ($values.name)
+spec:
+  postgresql:
+    pg_hba:
+      - host all pgq_test_admin,pgq_test_producer,pgq_test_consumer 0.0.0.0/0 trust
+      - host all pgq_test_admin,pgq_test_producer,pgq_test_consumer ::/0 trust
