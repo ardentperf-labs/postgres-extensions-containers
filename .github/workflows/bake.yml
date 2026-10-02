@@ -191,20 +191,34 @@ jobs:
           digest=$(awk '$1 == "Digest:" {print $2; exit}' "$output/manifest-inspect.txt" | tr -d '\r')
           [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]
           reference="$image@$digest"
-          cosign verify \
-            --output=json \
-            --certificate-oidc-issuer "$ISSUER" \
-            "$reference" > "$output/issuer-verification.json"
-          subject=$(jq -r '.[0].optional.Subject' "$output/issuer-verification.json")
-          issuer=$(jq -r '.[0].optional.Issuer' "$output/issuer-verification.json")
-          jq '[.[] | {issuer:.optional.Issuer,subject:.optional.Subject}]' "$output/issuer-verification.json" > "$output/certificate-identities.json"
-          test "$subject" = "$EXPECTED_IDENTITY"
-          test "$issuer" = "$ISSUER"
-          cosign verify \
+          if ! cosign verify \
             --output=json \
             --certificate-oidc-issuer "$ISSUER" \
             --certificate-identity "$EXPECTED_IDENTITY" \
-            "$reference" > "$output/identity-policy-verification.json"
+            "$reference" > "$output/cosign-verification.json" 2> "$output/cosign-verification.stderr"; then
+            if cosign verify \
+              --output=json \
+              --certificate-oidc-issuer "$ISSUER" \
+              --certificate-identity-regexp '^https://github.com/ardentperf-labs/postgres-extensions-containers/\.github/workflows/(bake_targets|bake)\.yml@refs/heads/work/sbom-validation$' \
+              "$reference" > "$output/diagnostic-verification.json" 2> "$output/diagnostic-verification.stderr"; then
+              subject=$(jq -r '.[0].optional.Subject' "$output/diagnostic-verification.json")
+              issuer=$(jq -r '.[0].optional.Issuer' "$output/diagnostic-verification.json")
+              jq '[.[] | {issuer:.optional.Issuer,subject:.optional.Subject}]' "$output/diagnostic-verification.json" > "$output/certificate-identities.json"
+              jq -n --arg expected "$EXPECTED_IDENTITY" --arg actual "$subject" --arg issuer "$issuer" --arg digest "$digest" \
+                '{index_digest:$digest,issuer:$issuer,expected_subject:$expected,actual_subject:$actual,signature_valid:true,identity_match:false}' \
+                > "$output/summary.json"
+              echo "Signature is valid for unexpected workflow subject: $subject" >&2
+              exit 1
+            fi
+            cat "$output/cosign-verification.stderr" >&2
+            cat "$output/diagnostic-verification.stderr" >&2
+            exit 1
+          fi
+          subject=$(jq -r '.[0].optional.Subject' "$output/cosign-verification.json")
+          issuer=$(jq -r '.[0].optional.Issuer' "$output/cosign-verification.json")
+          jq '[.[] | {issuer:.optional.Issuer,subject:.optional.Subject}]' "$output/cosign-verification.json" > "$output/certificate-identities.json"
+          test "$subject" = "$EXPECTED_IDENTITY"
+          test "$issuer" = "$ISSUER"
           jq -n \
             --arg extension "$EXTENSION" \
             --arg tag "$TAG" \
