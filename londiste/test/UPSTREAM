@@ -1,0 +1,20 @@
+Extension/test target: londiste
+Upstream repository: https://github.com/pgq/londiste-sql (PGDG Debian VCS: https://salsa.debian.org/postgresql/londiste-sql.git)
+PGDG source package: londiste-sql 3.8-9.pgdg13+1
+Source descriptor: londiste-sql_3.8-9.pgdg13+1.dsc
+Source descriptor SHA256: 05f152e8fed0d6e3dc393df5c745fed13894aa4dc732f0a88dd1c7158c075713
+Original source archive(s):
+  londiste-sql_3.8.orig.tar.gz SHA256 7e8426ae37df0c11f3851c1a237e2036a00b2ab4087e7f760fde252e58741fd9
+Copied upstream suite paths (relative to exact extracted source package):
+  sql/
+  expected/
+  Makefile/
+  mk/common-pgxs.mk/
+  debian/tests/control/
+  debian/tests/installcheck/
+Copied license/copyright notices:
+  upstream/debian-copyright
+Native suite selection: Exact PGXS modern-PostgreSQL Extension_regress order: init_ext followed by base_regress.
+Expected output/test inputs are copied byte-for-byte; no custom SQL assertions or edited expected files are included.
+Requirements / limitations:
+  Requires pgq and pgq_node installed in the scratch server; native PGXS extension branch runs init_ext followed by base_regress. Its shared PGXS helper forces database `regression`, which test/run.sh preserves. The Debian installcheck also sets LANG=C.UTF-8.
