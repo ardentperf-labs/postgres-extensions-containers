@@ -74,7 +74,7 @@ PL/Java creates the trusted `java` language and untrusted `javaU` language. `jav
 
 The image includes the PL/Java native module, SQL/control files, both PL/Java JARs, the complete OpenJDK runtime selected by Debian's `default-jre` package, and the PGDG default policy. The OpenJDK runtime is under `/jvm`; the example uses CNPG's `/extensions/pljava` mount path. System libraries absent from the matching CNPG base are placed under `/system`. Package copyright notices are under `/licenses`.
 
-Renovate tracks the PGDG `postgresql-18-pljava` package. The Debian base suite selects OpenJDK 17 or 21; rebuild after either package changes.
+Renovate tracks the PGDG `postgresql-18-pljava` package. The Debian base suite selects OpenJDK 17 or 21; rebuild after either package changes. The Dagger runner installs PL/Java and deploys the PGDG-packaged upstream examples JAR from the mounted image, exercising its deployment descriptor against the installed module and JVM; see [test/UPSTREAM](test/UPSTREAM) and [test/run.sh](test/run.sh). The vendored Maven/JUnit source tests are retained for provenance but are not run because they rebuild PL/Java.
 
 ## Contributors
 

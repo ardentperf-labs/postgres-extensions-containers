@@ -1,0 +1,13 @@
+repoURL: https://git.postgresql.org/git/postgresql.git
+tag: postgresql-18.6
+commit: not-recorded-in-release-tarball
+sourcePackage: postgresql-18
+sourceVersion: 18.6-1.pgdg13+2
+sourceDscSHA256: 9eb326e5888e912ca3270f1481add03f8640e1c97464576b64ec0488000263fc
+sourceOrigSHA256: 555610c24d53e4316da5b7d3fc25c279d96856d5e0e23ee308c328c5fa881d9f
+copiedpaths: src/pl/plperl/sql, src/pl/plperl/expected, src/test/regress/regress.c, COPYRIGHT
+coreRelease: PostgreSQL 18.6
+upstreamVariants: plperl_plperlu is included only when Perl usemultiplicity is define, matching the PostgreSQL GNUmakefile condition
+runnerGuard: PG_MAJOR=18 required; suite files are from PostgreSQL 18.6
+regressionHelper: src/test/regress/regress.c is copied from PostgreSQL 18.6 and built with the runner's matching postgresql-server-dev-18 package; the test runner transfers that upstream test-only module into the CNPG pod through a temporary large object, then removes the large object before running the suite
+regressionHelperSHA256: b22b2b0942f0e9c1818964f42881871e7d519d2d380c529e23cfc0d0da88bc8f

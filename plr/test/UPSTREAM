@@ -1,0 +1,7 @@
+Repository: https://github.com/postgres-plr/plr
+Source package: plr 1:8.4.8.7-1.pgdg13+2
+Source: https://apt.postgresql.org/pub/repos/apt/pool/main/p/plr/plr_8.4.8.7-1.pgdg13+2.dsc
+SHA256: 724f225a417ded5a03411225abe9da1996ee754844749e82709561479e8072aa
+Copied paths: sql, expected, Makefile, LICENSE, debian/copyright
+Suite: Makefile REGRESS for PostgreSQL 18, including applicable upstream version variants.
+Test SQL and expected output are unmodified; update manually.

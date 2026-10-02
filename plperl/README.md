@@ -66,7 +66,7 @@ spec:
 The transforms are optional. hstore transforms require the `hstore` extension
 provided by the PostgreSQL base image. `plperl` is the default extension selected
 by the image catalog; add the other SQL extensions in the Database resource when
-needed.
+needed. The vendored upstream PL/Perl regression suite is pinned in [test/UPSTREAM](test/UPSTREAM) and selected by [test/run.sh](test/run.sh).
 
 ## Privileges and operation
 
@@ -92,7 +92,8 @@ copyright notices are under `/licenses`; the matching CNPG base supplies native
 runtime libraries, glibc and the ELF loader.
 
 Renovate updates the PGDG package pin. Rebuild after interpreter, module,
-native-library or base-image security updates and rerun architecture builds. The catalog version remains 1.0 and must be reviewed
+native-library or base-image security updates and rerun both distro regression suites and
+architecture builds. The catalog version remains 1.0 and must be reviewed
 independently of the package version.
 
 Maintained by Jeremy Schneider (@ardentperf).
