@@ -105,7 +105,9 @@
       "description": "require SQL version review when no verified package mapping covers all shipped extensions",
       "matchPackageNames": [
         "postgresql-*-credcheck",
+        "postgresql-*-documentdb",
         "postgresql-*-jsquery",
+        "postgresql-*-mongo-fdw",
         "postgresql-*-mysql-fdw",
         "postgresql-*-pg-csv",
         "postgresql-*-pgfaceting",
@@ -130,6 +132,15 @@
       "automerge": false,
       "prBodyNotes": [
         "⚠️ SQL versions in this image cannot all be updated by a verified package-version extraction rule. Before merging, inspect every shipped extension control file and SQL upgrade script, including independently versioned bundled extensions. Update metadata.hcl, README.md and affected test expectations where needed. Do not infer SQL versions from the package version or approve solely because CI passed."
+      ]
+    },
+    {
+      "description": "require SQL version review for documentdb updates",
+      "matchPackageNames": [
+        "postgresql-*-documentdb"
+      ],
+      "prBodyNotes": [
+        "DocumentDB package 1.0~RC1 ships SQL version 1.0-0. Before merging, inspect all shipped control files and SQL upgrade scripts, and update metadata.hcl, README.md and affected test expectations where needed. Do not infer SQL versions from the package version or approve solely because CI passed."
       ]
     }
   ]
