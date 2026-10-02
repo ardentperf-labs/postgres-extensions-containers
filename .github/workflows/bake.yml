@@ -3,6 +3,8 @@ name: Build, test and publish extensions
 on:
   push:
     paths-ignore:
+      - '.github/workflows/sbom-generator.yml'
+      - 'sbom-generator/**'
       - '.github/workflows/pgrx.yml'
       - '.github/workflows/pgrx_targets.yml'
   workflow_dispatch:
