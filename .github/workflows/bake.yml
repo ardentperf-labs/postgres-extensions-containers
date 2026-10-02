@@ -17,12 +17,12 @@ on:
         description: Pinned SBOM generator image reference
         required: true
         type: string
-        default: 'ghcr.io/ardentperf-labs/cnpg-sbom-generator:latest@sha256:8ccaccaf223ff4ef12565615d12e6a5dfb099472d8763573bbc6ce8ad4444753'
+        default: 'ghcr.io/ardentperf-labs/cnpg-sbom-generator:latest@sha256:d7762114a3f906d8ba7a5ffcf611d9ea855a4d7fd18b46d3c2939d8d9c7eb135'
       core_source_commit:
         description: Core source commit represented by this validation branch
         required: true
         type: string
-        default: '9a721fec16fa734fe38231a61dfdb83cdc6ae3f0'
+        default: 'd96725d676f07b090b9bd973572ee8e7cf9a04ea'
 
 permissions: {}
 
@@ -70,7 +70,7 @@ jobs:
         env:
           BUILDX_METADATA_PROVENANCE: disabled
           environment: testing
-          registry: ghcr.io/${{ github.repository_owner }}
+          registry: ghcr.io/${{ github.repository_owner }}/debian-licensing-validation
           revision: ${{ inputs.core_source_commit }}
           sbom_generator: ${{ inputs.generator }}
         with:
