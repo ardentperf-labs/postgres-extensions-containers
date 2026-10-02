@@ -7,12 +7,17 @@ on:
       - 'docker-bake-pgrx.hcl'
       - '.github/workflows/pgrx.yml'
       - '.github/workflows/pgrx_targets.yml'
+      - '.github/workflows/bake.yml'
       - '.github/workflows/sbom-generator.yml'
       - 'sbom-generator/**'
   workflow_dispatch:
     inputs:
       extension_name:
         description: "The PostgreSQL extension to build (directory name)"
+        required: true
+        type: string
+      replay_cases:
+        description: "Temporary PGRX smoke replay cases as a JSON array"
         required: true
         type: string
 
@@ -25,6 +30,7 @@ permissions: {}
 jobs:
   # Gather extensions that have been modified
   change-triage:
+    if: ${{ github.ref != 'refs/heads/validation/pgrx-smoke-replay' }}
     name: Check changed files
     runs-on: ubuntu-24.04
     outputs:
@@ -112,7 +118,7 @@ jobs:
       contents: read
       id-token: write
       security-events: write
-    if: ${{ join(fromJSON(needs.change-triage.outputs.matrix)) != '' }}
+    if: ${{ join(fromJSON(needs.change-triage.outputs.matrix)) != '' && github.ref != 'refs/heads/validation/pgrx-smoke-replay' }}
     strategy:
       fail-fast: false
       matrix:
@@ -123,9 +129,86 @@ jobs:
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
+  pgrx-smoke-replay:
+    name: Replay PGRX smoke (${{ matrix.case.extension }}, ${{ matrix.case.target }}, CNPG ${{ matrix.cnpg }})
+    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/validation/pgrx-smoke-replay' && inputs.replay_cases != '[]' }}
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      actions: read
+      contents: read
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        cnpg: ['1.30']
+        case: ${{ fromJSON(inputs.replay_cases) }}
+    steps:
+      - name: Check out replay harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          path: replay-harness
+          persist-credentials: false
+      - name: Check out exact PGRX source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: f3d0af65b9e1a8fd97b1b364c94fe9a699f252a1
+          path: pgrx-source
+          persist-credentials: false
+      - name: Install pinned workflow tools
+        working-directory: pgrx-source
+        run: python3 pgrx/bootstrap_workflow_tools.py --output "$RUNNER_TEMP/pgrx-bin"
+      - name: Download prepared inputs
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: prepared-${{ matrix.case.extension }}
+          path: ${{ runner.temp }}/prepared
+          run-id: ${{ matrix.case.artifact_run_id }}
+          repository: ${{ github.repository }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Download assembled image
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: assembly-${{ matrix.case.target }}
+          path: ${{ runner.temp }}/assembly
+          run-id: ${{ matrix.case.artifact_run_id }}
+          repository: ${{ github.repository }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Prepare the external ARM smoke overlay
+        run: |
+          python3 "$GITHUB_WORKSPACE/replay-harness/.github/pgrx-smoke-adapter/prepare.py" \
+            --source "$GITHUB_WORKSPACE/pgrx-source/pgrx/smoke.py" \
+            --source-root "$GITHUB_WORKSPACE/pgrx-source" \
+            --output "$RUNNER_TEMP/pgrx-smoke-overlay"
+      - name: Replay signed ARM image smoke
+        env:
+          PGRX_SOURCE_ROOT: ${{ github.workspace }}/pgrx-source
+          PGRX_SMOKE_OVERLAY: ${{ runner.temp }}/pgrx-smoke-overlay
+          PGRX_SMOKE_PLATFORM: linux/arm64
+        run: |
+          GITHUB_REF=refs/heads/work/pgrx-validation python3 \
+            "$GITHUB_WORKSPACE/replay-harness/.github/pgrx-smoke-adapter/run.py" smoke \
+            --preparation "$RUNNER_TEMP/prepared" \
+            --assembly "$RUNNER_TEMP/assembly" \
+            --expected-extension "${{ matrix.case.extension }}" \
+            --expected-target "${{ matrix.case.target }}" \
+            --expected-run-id "${{ matrix.case.build_run_id }}" \
+            --cnpg-version "${{ matrix.cnpg }}" \
+            --output "$RUNNER_TEMP/smoke-result"
+      - name: Upload smoke result
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pgrx-smoke-replay-${{ matrix.case.target }}-cnpg-${{ matrix.cnpg }}
+          path: |
+            ${{ runner.temp }}/smoke-result/runtime.json
+            ${{ runner.temp }}/smoke-result/fixtures.json
+            ${{ runner.temp }}/smoke-result/result.json
+            ${{ runner.temp }}/smoke-result/adapter.json
+          if-no-files-found: ignore
+
   automerge-gate:
     name: Automerge gate
-    if: ${{ always() }}
+    if: ${{ always() && github.ref != 'refs/heads/validation/pgrx-smoke-replay' }}
     needs:
       - change-triage
       - Bake
