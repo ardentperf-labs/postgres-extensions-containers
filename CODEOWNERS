@@ -150,3 +150,6 @@
 /plperl/ @ardentperf
 /plpython3/ @ardentperf
 /pltcl/ @ardentperf
+/pgfaceting/ @ardentperf
+/pgq-node/ @ardentperf
+/bucardo/ @ardentperf
