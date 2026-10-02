@@ -1,0 +1,8 @@
+Tests:
+ installcheck,
+Depends:
+ postgresql-common-dev,
+ @,
+Restrictions:
+ allow-stderr,
+ skip-not-installable,
