@@ -22,7 +22,6 @@ metadata = {
         // renovate: suite=bookworm-pgdg depName=postgresql-18-toastinfo
         package = "1.7-1.pgdg12+1"
         // toastinfo's SQL extension version is independent of its package version.
-        // renovate: suite=bookworm-pgdg depName=postgresql-18-toastinfo extractVersion=^(?<version>\d+)
         sql     = "1"
       }
     }
@@ -31,7 +30,6 @@ metadata = {
         // renovate: suite=trixie-pgdg depName=postgresql-18-toastinfo
         package = "1.7-1.pgdg13+1"
         // toastinfo's SQL extension version is independent of its package version.
-        // renovate: suite=trixie-pgdg depName=postgresql-18-toastinfo extractVersion=^(?<version>\d+)
         sql     = "1"
       }
     }

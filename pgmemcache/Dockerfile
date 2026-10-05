@@ -10,26 +10,32 @@ ARG EXT_VERSION
 
 USER 0
 
+# Capture base image libraries before installing extension packages.
+COPY scripts/capture_base_image_libs.sh /usr/local/bin/capture_base_image_libs.sh
+RUN /usr/local/bin/capture_base_image_libs.sh
+
 RUN apt-get update && \
 	apt-get install -y --no-install-recommends "postgresql-${PG_MAJOR}-pgmemcache=${EXT_VERSION}"
+
+# Gather system libraries and their licenses
+COPY scripts/stage_system_libs.sh /usr/local/bin/stage_system_libs.sh
+RUN /usr/local/bin/stage_system_libs.sh /usr/lib/postgresql/${PG_MAJOR}/lib/pgmemcache.so
 
 FROM scratch
 ARG PG_MAJOR
 
 # Licenses
-COPY --parents --from=builder /usr/share/doc/./libhashkit2*/copyright /licenses/
-COPY --parents --from=builder /usr/share/doc/./libmemcached11*/copyright /licenses/
+COPY --from=builder /licenses /licenses/
 COPY --from=builder /usr/share/doc/postgresql-${PG_MAJOR}-pgmemcache/copyright /licenses/postgresql-${PG_MAJOR}-pgmemcache/
 
 # Libraries
 COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/pgmemcache.so /lib/
 COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/bitcode/ /lib/bitcode/
 
-# System libs
-COPY --from=builder /lib/*-linux-gnu/libhashkit.so.2 /system/
-COPY --from=builder /lib/*-linux-gnu/libmemcached.so.11 /system/
-
 # Share
 COPY --from=builder /usr/share/postgresql/${PG_MAJOR}/extension/pgmemcache* /share/extension/
+
+# System libs
+COPY --from=builder /system /system/
 
 USER 65532:65532

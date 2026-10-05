@@ -1,6 +1,6 @@
 header:
   schema-version: 2.2.0
-  last-updated: '2026-08-04'
+  last-updated: '2026-09-30'
   last-reviewed: '2026-08-04'
   url: https://raw.githubusercontent.com/cnpg-extensions/postgres-extensions-containers/main/SECURITY-INSIGHTS.yml
   # Reference the main SECURITY-INSIGHTS file from the CNPG project.
@@ -71,8 +71,6 @@ repository:
         comment: GitHub packages for the pg_stat_plans extension image
       - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pg-uuidv7
         comment: GitHub packages for the pg_uuidv7 extension image
-      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pgagent
-        comment: GitHub packages for the pgagent extension image
       - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pgmemcache
         comment: GitHub packages for the pgmemcache extension image
       - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pgmp
@@ -87,16 +85,128 @@ repository:
         comment: GitHub packages for the plprofiler extension image
       - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/plpgsql-check
         comment: GitHub packages for the plpgsql_check extension image
-      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/plr
-        comment: GitHub packages for the plr extension image
       - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/q3c
         comment: GitHub packages for the q3c extension image
-      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/snakeoil
-        comment: GitHub packages for the pg_snakeoil extension image
       - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/show-plans
         comment: GitHub packages for the pg_show_plans extension image
       - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/tds-fdw
         comment: GitHub packages for the tds_fdw extension image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/asn1oid
+        comment: GitHub packages for the asn1oid server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/credcheck
+        comment: GitHub packages for the credcheck server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/db2fce
+        comment: GitHub packages for the db2fce server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/decoderbufs
+        comment: GitHub packages for the decoderbufs server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/extra-window-functions
+        comment: GitHub packages for the extra_window_functions server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/hll
+        comment: GitHub packages for the hll server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/ip4r
+        comment: GitHub packages for the ip4r server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/jsquery
+        comment: GitHub packages for the jsquery server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/numeral
+        comment: GitHub packages for the numeral server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/orafce
+        comment: GitHub packages for the orafce server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pg-background
+        comment: GitHub packages for the pg_background server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pg-csv
+        comment: GitHub packages for the pg_csv server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pg-dirtyread
+        comment: GitHub packages for the pg_dirtyread server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pg-permissions
+        comment: GitHub packages for the pg_permissions server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pg-rewrite
+        comment: GitHub packages for the pg_rewrite server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pg-similarity
+        comment: GitHub packages for the pg_similarity server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pg-stat-log
+        comment: GitHub packages for the pg_stat_log server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pg-track-settings
+        comment: GitHub packages for the pg_track_settings server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pg-wait-sampling
+        comment: GitHub packages for the pg_wait_sampling server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pgextwlist
+        comment: GitHub packages for the pgextwlist server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pgfincore
+        comment: GitHub packages for the pgfincore server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pglogical
+        comment: GitHub packages for the pglogical server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pgnodemx
+        comment: GitHub packages for the pgnodemx server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pgtap
+        comment: GitHub packages for the pgTAP server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pgtt
+        comment: GitHub packages for the pgtt server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/plproxy
+        comment: GitHub packages for the plproxy server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/plsh
+        comment: GitHub packages for the plsh server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/prefix
+        comment: GitHub packages for the prefix server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/preprepare
+        comment: GitHub packages for the preprepare server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/rational
+        comment: GitHub packages for the rational server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/roaringbitmap
+        comment: GitHub packages for the roaringbitmap server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/rum
+        comment: GitHub packages for the rum server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/semver
+        comment: GitHub packages for the semver server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/set-user
+        comment: GitHub packages for the set_user server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/table-log
+        comment: GitHub packages for the table_log server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/tdigest
+        comment: GitHub packages for the tdigest server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/timestamp9
+        comment: GitHub packages for the timestamp9 server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/unit
+        comment: GitHub packages for the unit server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/http
+        comment: GitHub packages for the http server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/icu-ext
+        comment: GitHub packages for the icu_ext server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/ogr-fdw
+        comment: GitHub packages for the ogr_fdw server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pg-gvm
+        comment: GitHub packages for the pg_gvm server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pg-pwhash
+        comment: GitHub packages for the pg_pwhash server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pgpcre
+        comment: GitHub packages for the pgpcre server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pljs
+        comment: GitHub packages for the pljs server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pllua
+        comment: GitHub packages for the pllua server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pointcloud
+        comment: GitHub packages for the pointcloud server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/rdkit
+        comment: GitHub packages for the rdkit server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pg-repack
+        comment: GitHub packages for the pg_repack server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/powa
+        comment: GitHub packages for the powa server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pg-statviz
+        comment: GitHub packages for the pg_statviz server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/mimeo
+        comment: GitHub packages for the mimeo server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pgq
+        comment: GitHub packages for the pgq server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/first-last-agg
+        comment: GitHub packages for the first_last_agg server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/periods
+        comment: GitHub packages for the periods server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/prioritize
+        comment: GitHub packages for the prioritize server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pg-rage-terminator
+        comment: GitHub packages for the pg_rage_terminator server image
+      - uri: https://github.com/cnpg-extensions/postgres-extensions-containers/pkgs/container/pltcl
+        comment: GitHub packages for the PL/Tcl server image
 
   security:
     tools:
