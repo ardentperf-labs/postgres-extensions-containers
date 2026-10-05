@@ -272,12 +272,11 @@ skopeo inspect docker://<image> | jq '.Labels'
 
 ## SBOMs and authenticity
 
-Published images carry platform-specific BuildKit SPDX and provenance
-attestations. See the [SBOM and authenticity guide](./sbom-generator/README.md)
-for digest-pinned Cosign verification, Buildx extraction, platform-specific
-Trivy scanning, and the distinction between payload inventory and direct image
-scans. The guide also describes [generator publication and test builds](./sbom-generator/README.md#generator-release-and-test-builds),
-including commit tags and Renovate-managed digest updates.
+Use the [SBOM guide](./sbom-generator/README.md) to verify an extension image,
+extract its platform-specific SPDX, and report vulnerabilities and licenses with
+Trivy. See the [example report](./examples/trivy-sbom-examples.txt),
+[architecture and code map](./sbom-generator/README.md#how-it-works--reviewer-guide),
+and [generator release workflow](./sbom-generator/RELEASE-DESIGN.md).
 
 ## Image catalogs
 

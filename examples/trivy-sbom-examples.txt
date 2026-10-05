@@ -1,10 +1,11 @@
-# Trivy SBOM example
+# Trivy SBOM example — historical capture, 2026-09-15
 #
-# This report was generated from the SPDX document extracted from the local
-# OCI attestation for pgagent bookworm. Long Debian copyright files were split
-# at License: sections before ScanCode ran. The image was built locally with
-# BuildKit and pushed to a local registry. GitHub OIDC/cosign attestation
-# verification is omitted because it requires a hosted GitHub runner.
+# Vulnerability and license report from an unsigned local pgAgent Bookworm
+# build, using SPDX extracted from its BuildKit attestation. This illustrates
+# the report format; findings are not current, and pgAgent is no longer in the
+# active extension catalog. The local registry reference below is not public.
+# No signature verification was performed for this local build. Published
+# image signatures can be verified from any machine with Cosign.
 
 $ docker buildx imagetools inspect 127.0.0.1:5000/pgagent-testing:4.2.3-18-bookworm@sha256:ea4735334c2f494b45b4ba50ac44f66bf55e6e4af56599862e6062341e5eb54e --format '{{ json .SBOM.SPDX }}' > /tmp/pgagent-bookworm-amd64.spdx.json
 $ docker run --rm -v /tmp:/work aquasec/trivy:0.74.0 sbom --scanners vuln,license --no-progress --skip-version-check /work/pgagent-bookworm-amd64.spdx.json
