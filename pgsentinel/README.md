@@ -21,7 +21,7 @@ postgresql:
   - name: pgsentinel
     image:
       # renovate: suite=trixie-pgdg depName=postgresql-18-pgsentinel
-      reference: ghcr.io/cnpg-extensions/pgsentinel:1.5.0-18-trixie
+      reference: ghcr.io/cnpg-extensions/pgsentinel:1.5.1-18-trixie
 ~~~
 
 Enable the SQL extension in a Database:
@@ -39,16 +39,15 @@ spec:
   extensions:
   - name: pgsentinel
     # renovate: suite=trixie-pgdg depName=postgresql-18-pgsentinel extractVersion=^(?<version>\d+\.\d+\.\d+)
-    version: '1.5.0'
+    version: '1.5.1'
 ~~~
 
 After the cluster has run for a few seconds, inspect the active session
 history:
 
 ~~~sql
-CREATE EXTENSION pgsentinel;
+CREATE EXTENSION IF NOT EXISTS pgsentinel;
 SELECT * FROM pg_active_session_history LIMIT 5;
-SELECT * FROM pg_stat_statements_history LIMIT 5;
 ~~~
 
 ## Contributors
