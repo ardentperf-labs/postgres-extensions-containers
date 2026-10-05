@@ -8,12 +8,10 @@ BuildKit supplies the attestation manifest and binds it to the platform image.
 
 from __future__ import annotations
 
-import argparse
 import hashlib
 import json
 import os
 import re
-import sys
 from collections import defaultdict
 from copy import deepcopy
 from pathlib import Path
@@ -29,116 +27,6 @@ LICENSE_REF = re.compile(r"LicenseRef-[A-Za-z0-9][A-Za-z0-9.-]*")
 LICENSE_OPERATOR = re.compile(r"\s+(?:AND|OR|WITH)\s+")
 
 
-def read_json(path: Path) -> dict[str, Any]:
-    with path.open(encoding="utf-8") as stream:
-        return json.load(stream)
-
-
-def builder_predicate(document: dict[str, Any], path: Path) -> dict[str, Any]:
-    """Return a raw SPDX document from either Syft or an old attestation.
-
-    The old PR61 fixtures are accepted so the ownership algorithm can be
-    regression-tested without making an in-toto statement part of the
-    generator's input or output contract.
-    """
-
-    if document.get("predicateType") == "https://spdx.dev/Document":
-        predicate = document.get("predicate")
-    else:
-        predicate = document
-    if not isinstance(predicate, dict) or predicate.get("SPDXID") != "SPDXRef-DOCUMENT":
-        raise ValueError(f"{path}: builder evidence is not an SPDX document")
-    for field in ("packages", "files", "relationships"):
-        if not isinstance(predicate.get(field), list):
-            raise ValueError(f"{path}: SPDX {field} must be an array")
-    return predicate
-
-
-def checksum_key(algorithm: str, value: str) -> tuple[str, str]:
-    return algorithm.lower(), value.lower()
-
-
-def final_files(document: dict[str, Any], path: Path) -> list[dict[str, str]]:
-    """Return final file names and checksums from a BuildKit attestation."""
-
-    files: list[dict[str, str]] = []
-    for subject in document["subject"]:
-        name = subject["name"]
-        if name.startswith("pkg:"):
-            raise ValueError(
-                f"{path}: subject {name!r} is an image subject; use a local-export SBOM"
-            )
-        files.append({
-            "name": name.lstrip("/"),
-            "algorithm": "sha256",
-            "value": subject["digest"]["sha256"],
-        })
-    if not files:
-        raise ValueError(f"{path}: final image has no file subjects")
-    return files
-
-
-def final_inventory_files(inventory: dict[str, Any] | list[dict[str, Any]], path: Path) -> list[dict[str, Any]]:
-    """Validate and normalize the generator's direct final-files inventory."""
-
-    records = inventory.get("files") if isinstance(inventory, dict) else inventory
-    if not isinstance(records, list) or not records:
-        raise ValueError(f"{path}: final filesystem has no files")
-
-    files: list[dict[str, Any]] = []
-    seen: set[tuple[str, str, str]] = set()
-    for record in records:
-        if not isinstance(record, dict):
-            raise ValueError(f"{path}: final inventory entry is not an object")
-        name = record.get("name", record.get("fileName"))
-        if not isinstance(name, str) or not name or name.startswith("pkg:"):
-            raise ValueError(f"{path}: final inventory has an invalid file name")
-        checksums = record.get("checksums")
-        if checksums is not None:
-            if not isinstance(checksums, list) or not checksums:
-                raise ValueError(f"{path}: final inventory entries need checksums")
-            normalized_checksums = []
-            for checksum in checksums:
-                if not isinstance(checksum, dict):
-                    raise ValueError(f"{path}: final inventory checksum is not an object")
-                checksum_algorithm = checksum.get("algorithm")
-                checksum_value = checksum.get("checksumValue")
-                if not isinstance(checksum_algorithm, str) or not isinstance(checksum_value, str) or not checksum_value:
-                    raise ValueError(f"{path}: final inventory checksum is incomplete")
-                normalized_checksums.append({
-                    "algorithm": checksum_algorithm.upper(),
-                    "checksumValue": checksum_value.lower(),
-                })
-            sha256_checksum = next(
-                (item for item in normalized_checksums if item["algorithm"] == "SHA256"),
-                None,
-            )
-            primary = sha256_checksum or normalized_checksums[0]
-            algorithm = primary["algorithm"]
-            value = primary["checksumValue"]
-        else:
-            algorithm = record.get("algorithm", "sha256")
-            value = record.get("value")
-            normalized_checksums = [{
-                "algorithm": str(algorithm).upper(),
-                "checksumValue": str(value).lower() if isinstance(value, str) else value,
-            }]
-        if not isinstance(algorithm, str) or not isinstance(value, str) or not value:
-            raise ValueError(f"{path}: final inventory entry has no checksum")
-        normalized = {
-            "name": name.lstrip("/"),
-            "algorithm": algorithm.lower(),
-            "value": value.lower(),
-            "checksums": normalized_checksums,
-        }
-        identity = (normalized["name"], normalized["algorithm"], normalized["value"])
-        if identity not in seen:
-            files.append(normalized)
-            seen.add(identity)
-    files.sort(key=lambda record: (record["name"], record["algorithm"], record["value"]))
-    return files
-
-
 def path_score(candidate: str, final_name: str) -> tuple[int, int]:
     """Prefer an exact path, then the longest shared path suffix."""
 
@@ -152,8 +40,8 @@ def path_score(candidate: str, final_name: str) -> tuple[int, int]:
     return common_suffix, int(candidate_parts == final_parts)
 
 
-def file_id(name: str, algorithm: str, value: str) -> str:
-    identity = f"{name}\0{algorithm.lower()}:{value.lower()}".encode()
+def file_id(name: str, value: str) -> str:
+    identity = f"{name}\0sha256:{value}".encode()
     return f"SPDXRef-File-final-{hashlib.sha256(identity).hexdigest()[:24]}"
 
 
@@ -172,7 +60,7 @@ def scancode_licenses(
         except Exception as error:
             return None, str(error)
 
-    for record in document.get("files", []):
+    for record in document["files"]:
         path = record["path"].lstrip("/")
         for detection in record.get("license_detections", []):
             expression = detection.get("license_expression_spdx")
@@ -288,26 +176,17 @@ def compose(builder_document: dict[str, Any], *,
             extension_name: str,
             builder_path: Path = Path("builder"),
             scancode_report: dict[str, Any] | None = None,
-            final_inventory: dict[str, Any] | list[dict[str, Any]] | None = None,
-            platform: str | None = None,
+            final_inventory: dict[str, Any],
+            platform: str,
             evidence: dict[str, Any] | None = None,
             ) -> dict[str, Any]:
-    """Return one raw, platform-specific SPDX predicate.
+    """Compose raw Syft SPDX and the generator's canonical final inventory."""
 
-    ``final_inventory`` is the normal path.  ``subject`` handling remains as a
-    compatibility fixture for the original composer tests, but the generator
-    never needs a final image/index digest before it writes its predicate.
-    """
-
-    builder = builder_predicate(builder_document, builder_path)
+    builder = builder_document
     licenses_by_file, custom_licenses, license_comments_by_file = scancode_licenses(
-        scancode_report or {}
+        scancode_report if scancode_report is not None else {"files": []}
     )
-    final = (
-        final_inventory_files(final_inventory, builder_path)
-        if final_inventory is not None
-        else final_files(builder_document, builder_path)
-    )
+    final = final_inventory["files"]
     builder_records = builder["files"]
     relationships = builder["relationships"]
     packages = builder["packages"]
@@ -317,14 +196,13 @@ def compose(builder_document: dict[str, Any], *,
         if package.get("filesAnalyzed") is False
     }
 
-    builder_packages = {
-        package["SPDXID"]: package
+    package_ids = {
+        package["SPDXID"]
         for package in packages
         if package.get("primaryPackagePurpose") != "FILE"
     }
 
     all_package_ids = {package["SPDXID"] for package in packages}
-    package_ids = set(builder_packages)
     retained_package_ids: set[str] = set()
     owners_by_source_file: defaultdict[str, set[str]] = defaultdict(set)
     for relationship in relationships:
@@ -339,19 +217,14 @@ def compose(builder_document: dict[str, Any], *,
     all_file_ids = {record["SPDXID"] for record in builder_records}
     for record in builder_records:
         for checksum in record["checksums"]:
-            by_checksum[checksum_key(
-                checksum["algorithm"], checksum["checksumValue"]
-            )].append(record)
+            by_checksum[(checksum["algorithm"].lower(), checksum["checksumValue"].lower())].append(record)
 
     composed_files: list[dict[str, Any]] = []
     source_to_final: defaultdict[str, set[str]] = defaultdict(set)
-    def add_final_file(record: dict[str, Any]) -> None:
+    def add_final_file(record: dict[str, Any], sha256: str) -> None:
         output_record = {
-            "SPDXID": file_id(record["name"], record["algorithm"], record["value"]),
-            "checksums": record.get("checksums", [{
-                "algorithm": record["algorithm"].upper(),
-                "checksumValue": record["value"],
-            }]),
+            "SPDXID": file_id(record["name"], sha256),
+            "checksums": record["checksums"],
             "copyrightText": "NOASSERTION",
             "fileName": record["name"],
             "licenseConcluded": "NOASSERTION",
@@ -360,12 +233,16 @@ def compose(builder_document: dict[str, Any], *,
         composed_files.append(output_record)
 
     for final_record in final:
-        final_name = final_record["name"].lstrip("/")
+        final_name = final_record["name"]
+        sha256 = next(
+            checksum["checksumValue"] for checksum in final_record["checksums"]
+            if checksum["algorithm"] == "SHA256"
+        )
         candidates = by_checksum.get(
-            checksum_key(final_record["algorithm"], final_record["value"]), []
+            ("sha256", sha256), []
         )
         if not candidates:
-            add_final_file(final_record)
+            add_final_file(final_record, sha256)
             continue
 
         owned_candidates = [
@@ -380,18 +257,18 @@ def compose(builder_document: dict[str, Any], *,
         selected.sort(key=lambda record: record["SPDXID"])
         source_names = {record["fileName"].lstrip("/") for record in selected}
         if len(source_names) > 1:
-            add_final_file(final_record)
+            add_final_file(final_record, sha256)
             continue
 
         source = selected[0]
-        new_id = file_id(final_record["name"], final_record["algorithm"], final_record["value"])
+        new_id = file_id(final_name, sha256)
         output_record = source.copy()
         checksums_by_algorithm = {
             checksum["algorithm"].upper(): {
                 "algorithm": checksum["algorithm"].upper(),
                 "checksumValue": checksum["checksumValue"].lower(),
             }
-            for checksum in source.get("checksums", [])
+            for checksum in source["checksums"]
         }
         # Prefer hashes computed from the final payload, while retaining any
         # additional algorithms already supplied by the builder scan.
@@ -400,7 +277,7 @@ def compose(builder_document: dict[str, Any], *,
                 "algorithm": checksum["algorithm"].upper(),
                 "checksumValue": checksum["checksumValue"].lower(),
             }
-            for checksum in final_record.get("checksums", [])
+            for checksum in final_record["checksums"]
         })
         output_record["checksums"] = [
             checksums_by_algorithm[algorithm]
@@ -556,9 +433,6 @@ def compose(builder_document: dict[str, Any], *,
         )
     )
     output["name"] = f"{extension_name}-sbom"
-    if platform is not None:
-        if platform not in {"linux/amd64", "linux/arm64"}:
-            raise ValueError(f"unsupported target platform: {platform!r}")
     creation_info = output.setdefault("creationInfo", {})
     creators = list(creation_info.get("creators", []))
     generator_version = os.getenv("SBOM_GENERATOR_REVISION") or "unknown"
@@ -580,49 +454,5 @@ def compose(builder_document: dict[str, Any], *,
         "comment": json.dumps(metadata, sort_keys=True, separators=(",", ":")),
         "spdxElementId": "SPDXRef-DOCUMENT",
     }]
-    if platform is not None:
-        set_document_namespace(output, extension_name, platform)
+    set_document_namespace(output, extension_name, platform)
     return output
-
-
-def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Compose one platform-specific final-payload SPDX predicate"
-    )
-    parser.add_argument("--builder-sbom", type=Path, required=True)
-    parser.add_argument("--final-inventory", type=Path, required=True)
-    parser.add_argument("--platform", required=True)
-    parser.add_argument(
-        "--scancode-report",
-        type=Path,
-        help="Optional ScanCode JSON report for shipped license files",
-    )
-    parser.add_argument("--evidence", type=Path, help="Optional reproducibility evidence JSON")
-    parser.add_argument("--extension-name", required=True)
-    parser.add_argument("--output", type=Path, required=True)
-    args = parser.parse_args()
-
-    output = compose(
-        read_json(args.builder_sbom),
-        extension_name=args.extension_name,
-        builder_path=args.builder_sbom,
-        final_inventory=read_json(args.final_inventory),
-        platform=args.platform,
-        scancode_report=read_json(args.scancode_report) if args.scancode_report else {},
-        evidence=read_json(args.evidence) if args.evidence else {},
-    )
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    with args.output.open("w", encoding="utf-8") as stream:
-        json.dump(output, stream, indent=2)
-        stream.write("\n")
-    print(
-        f"composed {len(output['packages'])} packages, "
-        f"{len(output['files'])} final files, "
-        f"{len(output['relationships'])} relationships",
-        file=sys.stderr,
-    )
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

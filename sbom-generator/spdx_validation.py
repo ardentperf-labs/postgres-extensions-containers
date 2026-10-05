@@ -7,24 +7,20 @@ import argparse
 import importlib.metadata
 import json
 import sys
-import tempfile
 from pathlib import Path
 from typing import Any
 
-from spdx_tools.spdx.parser.json.json_parser import parse_from_file
+from spdx_tools.spdx.parser.jsonlikedict.json_like_dict_parser import JsonLikeDictParser
 from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
 
 
 def validate_spdx_document(document: dict[str, Any]) -> list[str]:
     """Return full-document SPDX validation findings for a raw SPDX JSON dict."""
 
-    with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", suffix=".spdx.json") as stream:
-        json.dump(document, stream)
-        stream.flush()
-        try:
-            parsed_document = parse_from_file(stream.name)
-        except Exception as error:
-            return [f"SPDX JSON parser rejected the document: {error}"]
+    try:
+        parsed_document = JsonLikeDictParser().parse(document)
+    except Exception as error:
+        return [f"SPDX JSON parser rejected the document: {error}"]
 
     return [
         f"{message.context.spdx_id}: {message.validation_message}"

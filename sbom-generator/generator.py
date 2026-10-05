@@ -52,22 +52,10 @@ def require_directory(value: str | None, variable: str) -> Path:
 def find_builder(extra_root: Path) -> Path:
     """Find the explicitly requested ``builder`` stage in BuildKit extras."""
 
-    candidates = [path for path in extra_root.iterdir() if path.name == "sbom-builder"]
-    if len(candidates) != 1 or not candidates[0].is_dir():
-        names = ", ".join(sorted(path.name for path in extra_root.iterdir()))
-        raise RuntimeError(
-            "BUILDKIT_SCAN_SOURCE_EXTRAS must contain exactly one sbom-builder "
-            f"mount; found [{names}]"
-        )
-    return candidates[0]
-
-
-def sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+    builder = extra_root / "sbom-builder"
+    if not builder.is_dir():
+        raise RuntimeError(f"missing builder mount: {builder}")
+    return builder
 
 
 def file_checksums(path: Path) -> dict[str, str]:
@@ -89,18 +77,13 @@ def final_inventory(root: Path) -> dict[str, Any]:
 
     def add_symlink(path: Path) -> None:
         relative = path.relative_to(root).as_posix()
-        stat = path.lstat()
         target = os.readlink(path).encode()
         records.append({
             "name": relative,
-            "algorithm": "sha256",
-            "value": hashlib.sha256(target).hexdigest(),
             "checksums": [
                 {"algorithm": "SHA1", "checksumValue": hashlib.sha1(target).hexdigest()},
                 {"algorithm": "SHA256", "checksumValue": hashlib.sha256(target).hexdigest()},
             ],
-            "kind": "symlink",
-            "mode": stat.st_mode & 0o7777,
         })
 
     for directory, directory_names, file_names in os.walk(root, followlinks=False):
@@ -116,7 +99,6 @@ def final_inventory(root: Path) -> dict[str, Any]:
         for name in file_names:
             path = Path(directory) / name
             relative = path.relative_to(root).as_posix()
-            stat = path.lstat()
             if path.is_symlink():
                 # Hash the link payload, never its target. This keeps links
                 # outside the mounted filesystem from being followed.
@@ -124,24 +106,18 @@ def final_inventory(root: Path) -> dict[str, Any]:
                 continue
             elif path.is_file():
                 checksums = file_checksums(path)
-                value = checksums["sha256"]
-                kind = "file"
             else:
                 raise RuntimeError(f"unsupported final filesystem entry: {path}")
             records.append({
                 "name": relative,
-                "algorithm": "sha256",
-                "value": value,
                 "checksums": [
                     {"algorithm": "SHA1", "checksumValue": checksums["sha1"]},
                     {"algorithm": "SHA256", "checksumValue": checksums["sha256"]},
                 ],
-                "kind": kind,
-                "mode": stat.st_mode & 0o7777,
             })
     if not records:
         raise RuntimeError(f"final filesystem is empty: {root}")
-    return {"files": records}
+    return {"files": sorted(records, key=lambda record: record["name"])}
 
 
 def progress(message: str) -> None:
@@ -155,15 +131,9 @@ def run_command_with_progress(
 
     progress(f"{label} started")
     started = time.monotonic()
-    try:
-        process = subprocess.Popen(
-            list(command),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-    except FileNotFoundError:
-        raise
+    process = subprocess.Popen(
+        list(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    )
 
     while True:
         try:
@@ -207,28 +177,13 @@ def run_json_command(
 
 
 def scan_builder(builder: Path, temporary: Path) -> dict[str, Any]:
-    fixture = os.getenv("BUILDKIT_BUILDER_SPDX")
-    if fixture:
-        path = Path(fixture)
-        if not path.is_file():
-            raise RuntimeError(f"BUILDKIT_BUILDER_SPDX does not exist: {path}")
-        with path.open(encoding="utf-8") as stream:
-            document = json.load(stream)
-        if not isinstance(document, dict):
-            raise RuntimeError("BUILDKIT_BUILDER_SPDX is not a JSON object")
-        progress("using supplied builder SPDX fixture")
-        return document
-
-    syft = shutil.which("syft")
-    if not syft:
-        raise RuntimeError("syft is required to scan the mounted builder stage")
     output = temporary / "builder.spdx.json"
     document = run_json_command(
-        [syft, f"dir:{builder}", "--scope", "all-layers", "--quiet", "--output"],
+        ["syft", f"dir:{builder}", "--scope", "all-layers", "--quiet", "--output"],
         output,
         "Syft builder scan",
     )
-    progress(f"Syft found {len(document.get('packages', []))} builder packages")
+    progress(f"Syft found {len(document['packages'])} builder packages")
     return document
 
 
@@ -236,15 +191,12 @@ def scan_licenses(final_root: Path, temporary: Path) -> dict[str, Any]:
     licenses = final_root / "licenses"
     if not licenses.exists():
         return {"files": []}
-    scancode = shutil.which("scancode")
-    if not scancode:
-        raise RuntimeError("scancode is required when the final payload has /licenses")
     scan_root = prepare_license_scan_root(final_root, temporary)
     output = temporary / "scancode.json"
     try:
         subprocess.run(
             [
-                scancode,
+                "scancode",
                 "--verbose",
                 "--license",
                 "--license-references",
@@ -266,7 +218,7 @@ def scan_licenses(final_root: Path, temporary: Path) -> dict[str, Any]:
         raise RuntimeError(f"scancode did not produce valid JSON at {output}") from error
     if not isinstance(report, dict):
         raise RuntimeError("scancode output is not a JSON object")
-    normalize_scancode_report_paths(report, scan_root, final_root)
+    normalize_scancode_report_paths(report, scan_root)
     return report
 
 
@@ -329,12 +281,11 @@ def prepare_license_scan_root(final_root: Path, temporary: Path) -> Path:
 
 
 def normalize_scancode_report_paths(
-    report: dict[str, Any], scan_root: Path, final_root: Path
+    report: dict[str, Any], scan_root: Path
 ) -> None:
     """Collapse split-file paths to the original final-image paths."""
 
     scan_prefix = str(scan_root).rstrip("/")
-    final_prefix = str(final_root).rstrip("/")
     chunk_suffix = re.compile(r"/license-[0-9]+$")
 
     def normalize(path: str) -> str:
@@ -342,13 +293,9 @@ def normalize_scancode_report_paths(
             path = scan_root.name
         elif path.startswith(f"{scan_prefix}/"):
             path = f"{scan_root.name}/{path[len(scan_prefix) + 1:]}"
-        elif path == final_prefix:
-            path = final_root.name
-        elif path.startswith(f"{final_prefix}/"):
-            path = f"{final_root.name}/{path[len(final_prefix) + 1:]}"
         return chunk_suffix.sub("", path.lstrip("/"))
 
-    for record in report.get("files", []):
+    for record in report["files"]:
         path = record.get("path")
         if isinstance(path, str):
             record["path"] = normalize(path)
@@ -438,9 +385,6 @@ def generate() -> Path:
         report = scan_licenses(source, temporary)
         progress("composing SPDX document")
         evidence = {
-            "builderSha256": sha256_file(Path(os.getenv("BUILDKIT_BUILDER_SPDX")))
-            if os.getenv("BUILDKIT_BUILDER_SPDX")
-            else "generated-by-syft",
             "platformEvidence": "builder package purl architecture",
             "hostArchitecture": host_platform.machine(),
             "tools": {
@@ -486,7 +430,7 @@ def generate() -> Path:
 def main() -> int:
     try:
         output = generate()
-    except (OSError, RuntimeError, ValueError, json.JSONDecodeError) as error:
+    except (OSError, RuntimeError, ValueError) as error:
         print(f"sbom-generator: {error}", file=sys.stderr)
         return 1
     print(f"wrote {output}", file=sys.stderr)

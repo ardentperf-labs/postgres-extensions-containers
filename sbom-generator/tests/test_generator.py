@@ -31,20 +31,21 @@ class GeneratorTest(unittest.TestCase):
             (root / "outside").symlink_to("/tmp", target_is_directory=True)
             output = final_inventory(root)
         records = {record["name"]: record for record in output["files"]}
-        self.assertEqual(records["lib/ext.so"]["value"], hashlib.sha256(payload).hexdigest())
+        hashes = {name: {c["algorithm"]: c["checksumValue"] for c in record["checksums"]}
+                  for name, record in records.items()}
+        self.assertEqual(hashes["lib/ext.so"]["SHA256"], hashlib.sha256(payload).hexdigest())
         self.assertEqual(
             next(item["checksumValue"] for item in records["lib/ext.so"]["checksums"] if item["algorithm"] == "SHA1"),
             hashlib.sha1(payload).hexdigest(),
         )
-        self.assertEqual(records["lib/alias.so"]["kind"], "symlink")
-        self.assertNotEqual(records["lib/alias.so"]["value"], records["lib/ext.so"]["value"])
+        self.assertNotEqual(hashes["lib/alias.so"]["SHA256"], hashes["lib/ext.so"]["SHA256"])
         alias_sha1 = next(
             item["checksumValue"]
             for item in records["lib/alias.so"]["checksums"]
             if item["algorithm"] == "SHA1"
         )
         self.assertEqual(alias_sha1, hashlib.sha1(b"ext.so").hexdigest())
-        self.assertEqual(records["outside"]["kind"], "symlink")
+        self.assertEqual(hashes["outside"]["SHA256"], hashlib.sha256(b"/tmp").hexdigest())
 
     def test_platform_comes_from_builder_package_architecture(self):
         document = {"packages": [{"externalRefs": [{

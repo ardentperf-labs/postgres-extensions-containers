@@ -11,7 +11,7 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).parents[1]))
 
-from compose import compose, final_inventory_files, set_document_namespace  # noqa: E402
+from compose import compose, set_document_namespace  # noqa: E402
 from spdx_validation import validate_spdx_document  # noqa: E402
 
 
@@ -74,11 +74,9 @@ def inventory(*entries):
         checksums = checksum(contents)
         records.append({
             "name": name,
-            "algorithm": "sha256",
-            "value": checksums[1]["checksumValue"],
             "checksums": checksums,
         })
-    return {"files": records}
+    return {"files": sorted(records, key=lambda record: record["name"])}
 
 
 class ComposeTest(unittest.TestCase):
@@ -355,9 +353,17 @@ class ComposeTest(unittest.TestCase):
         set_document_namespace(first, "demo", "linux/amd64")
         self.assertNotEqual(first["documentNamespace"], original_namespace)
 
-    def test_malformed_final_inventory_fails(self):
-        with self.assertRaises(ValueError):
-            final_inventory_files({"files": [{"name": "lib/ext.so", "checksums": []}]}, Path("inventory"))
+    def test_changed_scanner_output_fails_instead_of_losing_evidence(self):
+        for field in ("packages", "files", "relationships"):
+            with self.subTest(field=field):
+                builder = builder_document()
+                del builder[field]
+                with self.assertRaises(KeyError):
+                    compose(builder, extension_name="demo", platform="linux/amd64",
+                            final_inventory=inventory(("lib/ext.so", "extension")))
+        with self.assertRaises(KeyError):
+            compose(builder_document(), extension_name="demo", platform="linux/amd64",
+                    final_inventory=inventory(("lib/ext.so", "extension")), scancode_report={})
 
     def test_files_from_packages_without_file_analysis_are_not_claimed_as_contained(self):
         document = builder_document()
@@ -400,14 +406,6 @@ class ComposeTest(unittest.TestCase):
             for relationship in output["relationships"]
         ))
 
-    def test_builder_wrapper_is_accepted_only_as_legacy_input(self):
-        wrapped = {
-            "predicateType": "https://spdx.dev/Document",
-            "predicate": builder_document(),
-            "subject": [{"name": "lib/ext.so", "digest": {"sha256": "extension"}}],
-        }
-        output = compose(wrapped, extension_name="plr")
-        self.assertEqual(output["name"], "plr-sbom")
 
 
 if __name__ == "__main__":

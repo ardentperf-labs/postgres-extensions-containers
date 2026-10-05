@@ -54,7 +54,6 @@ def augment_spdx(document, context: HookContext):
                 "BUILDKIT_SCAN_SOURCE": str(source),
                 "BUILDKIT_SCAN_SOURCE_EXTRAS": str(extras),
                 "BUILDKIT_SCAN_DESTINATION": str(destination),
-                "BUILDKIT_BUILDER_SPDX": "",
                 "SBOM_TARGET_PLATFORM": "linux/amd64",
             }), patch.object(generator, "scan_builder", return_value=evidence), \
                     patch.object(generator, "tool_version", return_value="test"):
@@ -88,7 +87,6 @@ def augment_spdx(document, context: HookContext):
                 "BUILDKIT_SCAN_SOURCE": str(source),
                 "BUILDKIT_SCAN_SOURCE_EXTRAS": str(extras),
                 "BUILDKIT_SCAN_DESTINATION": str(destination),
-                "BUILDKIT_BUILDER_SPDX": "",
                 "SBOM_TARGET_PLATFORM": "linux/amd64",
             }), patch.object(generator, "scan_builder", return_value=evidence), \
                     patch.object(generator, "tool_version", return_value="test"):

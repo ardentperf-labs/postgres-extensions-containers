@@ -53,6 +53,21 @@ class SpdxValidationTest(unittest.TestCase):
         self.assertEqual(len(findings), 1)
         self.assertIn("SHA1", findings[0])
 
+    def test_hook_structural_errors_are_reported_by_full_validator(self):
+        cases = []
+        missing_relation = document(self.checksums)
+        missing_relation["relationships"][0]["relatedSpdxElement"] = "SPDXRef-missing"
+        cases.append(missing_relation)
+        missing_license = document(self.checksums)
+        missing_license["files"][0]["licenseInfoInFiles"] = ["LicenseRef-missing"]
+        cases.append(missing_license)
+        malformed_hash = document([{"algorithm": "SHA1", "checksumValue": "invalid"},
+                                   {"algorithm": "SHA256", "checksumValue": "invalid"}])
+        cases.append(malformed_hash)
+        for broken in cases:
+            with self.subTest(document=broken):
+                self.assertTrue(validate_spdx_document(broken))
+
 
 if __name__ == "__main__":
     unittest.main()
