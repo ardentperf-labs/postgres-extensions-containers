@@ -44,10 +44,12 @@ component and has its own Cargo identity; it `DEPENDS_ON` the selected Rust pack
 Cargo packages do not claim file-level analysis or own installed files. The `.so`,
 control and SQL files, and bundled license notices remain individual SPDX file
 records with checksums and scan evidence. The notices remain in the image for
-distribution and compliance needs. Cargo package license expressions come from
-Cargo metadata; missing or unknown expressions remain `NOASSERTION`, even when a
-corresponding notice is shipped. cargo-about license texts remain in the SPDX
-document and are attributed to crate entries by full Cargo identity.
+distribution and compliance needs. Cargo package license expressions come uniformly from cargo-about, preserving
+AND/OR semantics. Missing, unknown or invalid expressions for selected crates
+fail the build. License texts remain in the SPDX document and shipped notices
+are attributed to crate entries by full Cargo identity. The generator performs
+full SPDX validation after the hook returns; the standalone artifact verifier
+also checks downloaded document structure.
 cargo-about 0.9.2's repeated,
 identical Boolean `doctest` field is normalized before report hashing. Other
 duplicate JSON keys and conflicting values are rejected.
