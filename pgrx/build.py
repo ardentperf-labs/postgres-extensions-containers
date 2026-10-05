@@ -24,9 +24,7 @@ def main():
     pins=json.loads((ROOT/'pgrx/dependencies/workflow-tools.json').read_text())
     name='pgrx-'+row['id']
     with tempfile.TemporaryDirectory(prefix='pgrx-builder-') as temp:
-        config=Path(temp)/'buildkit.toml'
-        config.write_text('[worker.oci]\n  max-parallelism = 1\n')
-        command=['docker','buildx','create','--name',name,'--driver','docker-container','--driver-opt','image='+pins['images']['buildkit'],'--buildkitd-config',str(config)]
+        command=['docker','buildx','create','--name',name,'--driver','docker-container','--driver-opt','image='+pins['images']['buildkit']]
         subprocess.run(command,check=True)
         subprocess.run(['docker','buildx','inspect',name,'--bootstrap'],check=True)
         worker=subprocess.check_output(['docker','exec','buildx_buildkit_'+name+'0','uname','-m'],text=True).strip()
