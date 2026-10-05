@@ -29,6 +29,10 @@ you trust. Extraction alone does not verify the publisher. This follows the
 [CloudNativePG signature and attestation guidance](https://cloudnative-pg.io/docs/1.30/security/#image-signatures),
 with the extension publisher's identity.
 
+For downstream builds, use the [common image verification procedure](../pgrx/VERIFYING_IMAGES.md),
+which verifies both Debian and PGRX workflow identities and attestation bindings.
+
+
 Use `linux/arm64` for ARM images. For single-platform Buildx output, use
 `{{ json .SBOM.SPDX }}` instead. Buildx retrieves the embedded BuildKit statement;
 `cosign verify-attestation` is not its retrieval command.

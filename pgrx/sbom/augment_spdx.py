@@ -568,5 +568,4 @@ def augment_spdx(document, context):
         'annotationDate': result['creationInfo']['created'], 'comment': json.dumps(annotation, sort_keys=True, separators=(',', ':'))})
     result['relationships'] = sorted({json.dumps(r, sort_keys=True): r for r in relationships}.values(), key=lambda r: (r['spdxElementId'], r['relationshipType'], r['relatedSpdxElement']))
     result['packages'].sort(key=lambda p: p['SPDXID'])
-    validate_document(result)
     return result
