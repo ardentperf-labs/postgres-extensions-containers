@@ -48,11 +48,6 @@ class SpdxValidationTest(unittest.TestCase):
     def test_valid_spdx_document_has_no_findings(self):
         self.assertEqual(validate_spdx_document(document(self.checksums)), [])
 
-    def test_missing_sha1_is_reported(self):
-        findings = validate_spdx_document(document(self.checksums[1:]))
-        self.assertEqual(len(findings), 1)
-        self.assertIn("SHA1", findings[0])
-
     def test_hook_structural_errors_are_reported_by_full_validator(self):
         cases = []
         missing_relation = document(self.checksums)

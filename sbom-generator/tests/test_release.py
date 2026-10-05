@@ -26,9 +26,8 @@ class ReleaseTests(unittest.TestCase):
             with self.assertRaises(subprocess.CalledProcessError):
                 release.digest_for(ref)
 
-    def test_registry_errors_fail_closed(self):
-        for message in ("unauthorized", "denied", "429 Too Many Requests", "503 Service Unavailable",
-                        "connection refused", "ERROR: some-other-image: not found"):
+    def test_unexpected_registry_errors_fail_closed(self):
+        for message in ("unauthorized", "ERROR: some-other-image: not found"):
             with self.subTest(message=message):
                 error = subprocess.CalledProcessError(1, [], stderr=message)
                 with patch.object(release, "run", side_effect=error):

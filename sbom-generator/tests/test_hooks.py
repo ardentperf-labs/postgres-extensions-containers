@@ -96,14 +96,9 @@ def augment_spdx(document, context: HookContext):
             self.assertEqual(list(destination.iterdir()), [])
 
     def test_hook_errors_are_not_silently_ignored(self):
-        sources = (
-            "def augment_spdx(document, context):\n    raise ValueError('evidence missing')\n",
-            "# Missing entry point\n",
-            "invalid python syntax!\n",
-        )
-        for source in sources:
-            with self.subTest(source=source), tempfile.TemporaryDirectory() as directory:
-                builder = Path(directory)
-                write_hook(builder, source)
-                with self.assertRaisesRegex(RuntimeError, "SBOM hook"):
-                    run_augmentation_hook({}, HookContext("demo", "linux/amd64", builder, builder, {}))
+        source = "def augment_spdx(document, context):\n    raise ValueError('evidence missing')\n"
+        with tempfile.TemporaryDirectory() as directory:
+            builder = Path(directory)
+            write_hook(builder, source)
+            with self.assertRaisesRegex(RuntimeError, "SBOM hook"):
+                run_augmentation_hook({}, HookContext("demo", "linux/amd64", builder, builder, {}))

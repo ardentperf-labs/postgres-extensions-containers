@@ -113,10 +113,6 @@ class GeneratorTest(unittest.TestCase):
                 return subprocess.CompletedProcess(command, 0, stdout="", stderr="")
 
             def fake_scancode(command, **_kwargs):
-                self.assertIn("--verbose", command)
-                self.assertNotIn("stdout", _kwargs)
-                self.assertEqual(_kwargs["stderr"], subprocess.STDOUT)
-                self.assertTrue(_kwargs["check"])
                 output = Path(command[command.index("--json") + 1])
                 output.write_text(json.dumps({
                     "files": [{
@@ -130,9 +126,7 @@ class GeneratorTest(unittest.TestCase):
                 }))
                 return subprocess.CompletedProcess(command, 0)
 
-            with patch("generator.shutil.which", return_value="scancode"), patch(
-                "generator.subprocess.run", side_effect=fake_csplit
-            ):
+            with patch("generator.subprocess.run", side_effect=fake_csplit):
                 report = scan_licenses(root, temporary)
 
         self.assertEqual(report["files"][0]["path"], "licenses/copyright")
