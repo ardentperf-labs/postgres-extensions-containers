@@ -56,7 +56,6 @@ jobs:
       packages: write
     strategy:
       fail-fast: false
-      max-parallel: 1
       matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     steps:
     - *id002

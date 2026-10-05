@@ -60,7 +60,6 @@ jobs:
     if: ${{ needs.discover.outputs.matrix != '[]' }}
     strategy:
       fail-fast: false
-      max-parallel: 1
       matrix:
         extension: ${{ fromJSON(needs.discover.outputs.matrix) }}
     permissions:
