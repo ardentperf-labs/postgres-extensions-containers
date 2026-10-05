@@ -12,7 +12,6 @@ from urllib.parse import quote
 
 NAMESPACE = 'https://github.com/cnpg-extensions/postgres-extensions-containers/pgrx-enrichment/v1'
 TARGETS = {'linux/amd64': ('x86_64-unknown-linux-gnu', 62), 'linux/arm64': ('aarch64-unknown-linux-gnu', 183)}
-LEGACY_PAYLOAD_PACKAGE_ID = 'SPDXRef-Package-extension-payload'
 
 
 def require(condition, message):
@@ -486,14 +485,6 @@ def augment_spdx(document, context):
     require(set(build['features']) <= set(features), 'selected feature missing')
     require(('default' in features) == build['default_features'], 'default feature policy mismatch')
     result = deepcopy(document)
-    # Older versions of the shared generator assign unowned final-image files
-    # to this synthetic package. Remove only that reserved package and its
-    # relationships; keep the file records and any real package ownership.
-    result['packages'] = [p for p in result.get('packages', [])
-                          if p.get('SPDXID') != LEGACY_PAYLOAD_PACKAGE_ID]
-    result['relationships'] = [r for r in result.get('relationships', [])
-                               if LEGACY_PAYLOAD_PACKAGE_ID not in
-                               (r.get('spdxElementId'), r.get('relatedSpdxElement'))]
     files = indexed(result['files'], 'fileName')
     mapped, has_library = set(), False
     for payload in manifest['payload']:
@@ -509,21 +500,13 @@ def augment_spdx(document, context):
             has_library = True
             require(len(final_bytes) >= 20 and final_bytes[:6] == b'\x7fELF\x02\x01' and int.from_bytes(final_bytes[18:20], 'little') == machine, 'ELF architecture mismatch')
     require(has_library, 'missing compiled library binding')
-    existing = {}
-    for package in result['packages']:
-        for ref in package.get('externalRefs', []):
-            if ref.get('referenceType') == 'purl':
-                require(ref['referenceLocator'] not in existing, 'ambiguous existing package purl')
-                existing[ref['referenceLocator']] = package
     ids = {}
     for key, component in packages.items():
         purl = cargo_purl(component, identity['revision'])
-        package = existing.get(purl)
-        if package is None:
-            package = {'SPDXID': 'SPDXRef-Cargo-'+sha256(purl.encode())[:32], 'filesAnalyzed': False,
-                       'downloadLocation': 'NOASSERTION', 'copyrightText': 'NOASSERTION',
-                       'licenseConcluded': 'NOASSERTION'}
-            result['packages'].append(package)
+        package = {'SPDXID': 'SPDXRef-Cargo-'+sha256(purl.encode())[:32], 'filesAnalyzed': False,
+                   'downloadLocation': 'NOASSERTION', 'copyrightText': 'NOASSERTION',
+                   'licenseConcluded': 'NOASSERTION'}
+        result['packages'].append(package)
         package['name'] = component['name']; package['versionInfo'] = component['version']
         # cargo-about resolves package-specific declarations and configured
         # clarifications. This preserves full AND/OR expressions while filling

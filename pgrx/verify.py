@@ -98,26 +98,19 @@ def run(command):
     return subprocess.run(command, check=True, capture_output=True).stdout
 
 
-def signature_command(image, key=None, identity=None, issuer=None, insecure=False, bundle=False):
-    command = ['cosign','verify','--new-bundle-format='+str(bundle).lower(),'--output','json']
-    if key:
-        require(not identity and not issuer, 'choose one trust policy')
-        command += ['--key',str(key),'--insecure-ignore-tlog=true']
-    else:
-        require(identity and issuer, 'explicit publisher identity and OIDC issuer required')
-        command += ['--certificate-identity-regexp',identity,'--certificate-oidc-issuer',issuer]
-    if insecure:
-        command += ['--allow-http-registry']
-    return [*command,image]
+def signature_command(image, identity=None, issuer=None, bundle=False):
+    require(identity and issuer, 'explicit publisher identity and OIDC issuer required')
+    return ['cosign', 'verify', '--new-bundle-format='+str(bundle).lower(), '--output', 'json',
+            '--certificate-identity-regexp', identity, '--certificate-oidc-issuer', issuer, image]
 
 
-def verify_signature(image, key=None, identity=None, issuer=None, insecure=False):
+def verify_signature(image, identity=None, issuer=None):
     # Storage format does not change publisher trust. Current and legacy
-    # signatures are each checked with the same explicit key/issuer/identity.
+    # signatures are each checked with the same explicit issuer/identity.
     errors = []
-    for bundle in ([False, True] if key else [True, False]):
+    for bundle in (True, False):
         try:
-            result = json.loads(run(signature_command(image,key,identity,issuer,insecure,bundle)))
+            result = json.loads(run(signature_command(image,identity,issuer,bundle)))
             require(isinstance(result,list) and result, 'signature verification returned no signatures')
             require(all(s['critical']['image']['docker-manifest-digest'] == image.rpartition('@')[2] for s in result), 'signature digest mismatch')
             return result
@@ -126,17 +119,16 @@ def verify_signature(image, key=None, identity=None, issuer=None, insecure=False
     raise errors[-1]
 
 
-def verify(image, platform, output, key=None, identity=None, issuer=None, insecure=False):
+def verify(image, platform, output, identity=None, issuer=None):
     output = Path(output)
     fresh_output(output)
     repository, sep, digest = image.rpartition('@')
     require(sep and repository and DIGEST.fullmatch(digest), 'image must be digest-qualified')
-    signature = verify_signature(image,key,identity,issuer,insecure)
+    signature = verify_signature(image,identity,issuer)
     output.parent.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='.verify-',dir=output.parent) as temporary:
         root = Path(temporary); layout = root/'layout'
         command = ['skopeo','copy','--all','--preserve-digests']
-        if insecure: command += ['--src-tls-verify=false']
         run([*command,'docker://'+image,'oci:'+str(layout)+':verified'])
         raw = parse_json(read_blob(layout,{'digest':digest}))
         platforms = [d['platform']['os']+'/'+d['platform']['architecture'] for d in raw['manifests'] if d.get('platform',{}).get('os') != 'unknown']
@@ -163,10 +155,9 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--image',required=True);parser.add_argument('--platform',required=True,choices=['linux/amd64','linux/arm64'])
     parser.add_argument('--output-directory',required=True,type=Path)
-    parser.add_argument('--key',type=Path);parser.add_argument('--certificate-identity-regexp');parser.add_argument('--certificate-oidc-issuer')
-    parser.add_argument('--insecure-registry',action='store_true',help='Local HTTP registry only')
+    parser.add_argument('--certificate-identity-regexp', required=True);parser.add_argument('--certificate-oidc-issuer', required=True)
     args=parser.parse_args()
-    verify(args.image,args.platform,args.output_directory,args.key,args.certificate_identity_regexp,args.certificate_oidc_issuer,args.insecure_registry)
+    verify(args.image,args.platform,args.output_directory,args.certificate_identity_regexp,args.certificate_oidc_issuer)
 
 if __name__ == '__main__':
     main()

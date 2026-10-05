@@ -12,7 +12,6 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from prepare import digest
 from record import assert_provenance, load_preparation
 from refresh_lock import tool_url, check_sources, check_apt, fixtures_lock, operator_manifest_url, check_operator_manifest
-from local.receipts import verify_receipt
 from verify import signature_command, validate_document
 from workflow import ROOT
 
@@ -120,7 +119,6 @@ class ConsumerPolicyTest(unittest.TestCase):
         command=signature_command('image@sha256:'+'a'*64,identity=policy,issuer='https://token.actions.githubusercontent.com')
         self.assertIn(policy,command);self.assertIn('--certificate-oidc-issuer',command)
         with self.assertRaises(ValueError):signature_command('image',identity=policy)
-        with self.assertRaises(ValueError):signature_command('image',key=Path('key'),identity=policy,issuer='issuer')
 
     def test_unresolved_licenses_and_relationships_fail(self):
         document={'SPDXID':'SPDXRef-DOCUMENT','packages':[{'SPDXID':'SPDXRef-test','licenseDeclared':'LicenseRef-missing'}]}
@@ -128,15 +126,6 @@ class ConsumerPolicyTest(unittest.TestCase):
         document['packages'][0].pop('licenseDeclared');document['relationships']=[{'spdxElementId':'SPDXRef-test','relatedSpdxElement':'SPDXRef-missing'}]
         with self.assertRaisesRegex(ValueError,'relationship'):validate_document(document)
 
-
-class ReceiptTest(unittest.TestCase):
-    def test_partial_and_stale_receipts_cannot_enable_emulation(self):
-        with tempfile.TemporaryDirectory() as temporary:
-            path=Path(temporary)/'native-report.json'
-            for report in [{'complete':False},{'schema_version':1,'complete':True,'workspace_sha256':'old'}]:
-                path.write_text(json.dumps(report));checksum=hashlib.sha256(path.read_bytes()).hexdigest()
-                with patch('local.receipts.source_digest',return_value='current'),self.assertRaises(ValueError):verify_receipt(path,checksum)
-            with self.assertRaisesRegex(ValueError,'hash'):verify_receipt(path,'0'*64)
 
 class SignatureStorageTest(unittest.TestCase):
     def test_format_fallback_keeps_the_same_publisher_policy(self):
@@ -161,7 +150,7 @@ class SignatureStorageTest(unittest.TestCase):
         from verify import verify_signature
         signature=[{'critical':{'image':{'docker-manifest-digest':'sha256:'+'b'*64}}}]
         with patch('verify.run',return_value=json.dumps(signature).encode()) as run:
-            with self.assertRaisesRegex(ValueError,'digest'):verify_signature('image@sha256:'+'a'*64,key=Path('public'))
+            with self.assertRaisesRegex(ValueError,'digest'):verify_signature('image@sha256:'+'a'*64,identity='publisher',issuer='issuer')
             self.assertEqual(run.call_count,1)
 
 class SourceArchiveTest(unittest.TestCase):

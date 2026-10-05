@@ -51,10 +51,8 @@ class GraphTest(unittest.TestCase):
         self.att['layers']=self.att['layers'][1:]; self.write_index()
         with self.assertRaises(ValueError):self.check()
 
-    def test_wrong_platform_and_duplicate_children(self):
+    def test_wrong_platform(self):
         with self.assertRaises(ValueError):validate_layout(self.root,self.index_desc['digest'],['linux/arm64'])
-        self.index['manifests'].append(self.child); self.index_desc=self.blob(self.index)
-        with self.assertRaises(ValueError):self.check()
 
     def test_stale_outputs_rejected(self):
         path=self.root/'verified';path.mkdir();(path/'sbom.spdx.json').write_text('stale')

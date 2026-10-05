@@ -6,43 +6,8 @@ name: Build, test and publish PGRX extensions
         description: PGRX extension directory
         type: string
         required: true
-      local:
-        description: Use local registries and signing
-        type: boolean
-        required: false
-        default: false
-      platform:
-        description: Ordinary local mode requires linux/amd64
-        type: string
-        required: false
-        default: ''
-      distro:
-        description: One metadata-declared local distro
-        type: string
-        required: false
-        default: ''
-      pg_target:
-        description: Exact Bake target when selection is ambiguous
-        type: string
-        required: false
-        default: ''
       cnpg_version:
-        description: CNPG fixture selector; local default is the locked stable release
-        type: string
-        required: false
-        default: ''
-      local_multiplatform:
-        description: Final gated session-jwt/Trixie/PG18 pass only
-        type: boolean
-        required: false
-        default: false
-      local_run_id:
-        description: Unique local invocation identity
-        type: string
-        required: false
-        default: ''
-      native_gate_sha256:
-        description: Verified native receipt SHA256
+        description: CNPG fixture selector
         type: string
         required: false
         default: ''
@@ -105,15 +70,7 @@ jobs:
     uses: ./.github/workflows/pgrx_targets.yml
     with:
       extension_name: ${{ matrix.extension }}
-      local: ${{ inputs.local || false }}
-      platform: ${{ inputs.platform }}
-      distro: ${{ inputs.distro }}
-      pg_target: ${{ inputs.pg_target }}
       cnpg_version: ${{ inputs.cnpg_version }}
-      local_multiplatform: ${{ inputs.local_multiplatform || false }}
-      local_run_id: ${{ inputs.local_run_id }}
-      native_gate_sha256: ${{ inputs.native_gate_sha256 }}
-    secrets: inherit
   gate:
     if: ${{ always() }}
     needs:

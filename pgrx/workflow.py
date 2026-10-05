@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-"""Typed workflow selection and source identity shared by hosted and act jobs."""
+"""Hosted workflow selection and source identity."""
 import argparse
-import base64
 import hashlib
 import json
 import os
 from pathlib import Path
-import re
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,12 +12,6 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def execute(command, *, root=ROOT, env=None):
     return subprocess.run(command,cwd=root,env=env,check=True,capture_output=True,text=True).stdout
-
-
-def boolean(value):
-    if isinstance(value,bool): return value
-    if value not in ('true','false'): raise ValueError('boolean must be true or false')
-    return value == 'true'
 
 
 def metadata(path):
@@ -35,7 +27,7 @@ def discover():
 
 
 def source_digest(root=ROOT):
-    paths=json.loads(base64.b64decode(os.environ['PGRX_SOURCE_FILES'])) if os.getenv('PGRX_SOURCE_FILES') else execute(['git','ls-files','-z','--cached','--others','--exclude-standard'],root=root).split('\0')
+    paths=execute(['git','ls-files','-z','--cached','--others','--exclude-standard'],root=root).split('\0')
     digest=hashlib.sha256()
     for name in sorted(set(paths)-{''}):
         if Path(name).name == 'AGENTS.md':continue
@@ -47,21 +39,9 @@ def source_digest(root=ROOT):
 
 
 def select(inputs, inventory):
-    local=boolean(inputs.get('local',False)); multi=boolean(inputs.get('local_multiplatform',False))
     extension=inputs['extension_name']
     if extension not in inventory:raise ValueError(f'not a PGRX extension: {extension}')
-    distro=inputs.get('distro','');platform=inputs.get('platform','');target=inputs.get('pg_target','')
-    if not local:
-        if any((distro,platform,target,multi,inputs.get('local_run_id'),inputs.get('native_gate_sha256'))):
-            raise ValueError('local selectors require local=true')
-    else:
-        if not re.fullmatch('[A-Za-z0-9][A-Za-z0-9_.-]{7,100}',inputs.get('local_run_id','')):raise ValueError('unique local_run_id required')
-        if distro not in inventory[extension]['versions']:raise ValueError('local distro must be metadata-declared')
-        if multi:
-            if extension!='pg-session-jwt' or distro!='trixie' or platform:raise ValueError('final pass restricted to session-jwt/Trixie with empty platform')
-            if not re.fullmatch('[a-f0-9]{64}',inputs.get('native_gate_sha256','')):raise ValueError('native gate receipt required')
-        elif platform!='linux/amd64':raise ValueError('ordinary local mode requires linux/amd64')
-    return ['linux/amd64','linux/arm64'] if not local or multi else ['linux/amd64']
+    return ['linux/amd64','linux/arm64']
 
 
 def changed_extensions(paths, inventory):

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Narrow pinned Skopeo transport adapter, including act-safe OCI output transfer."""
+"""Narrow pinned Skopeo transport adapter for workflow OCI output transfer."""
 import json
 import os
 import platform
@@ -26,7 +26,6 @@ def main():
     image=json.loads((Path(__file__).parent/'dependencies/workflow-tools.json').read_text())['images']['skopeo']
     architecture={'x86_64':'amd64','aarch64':'arm64'}[platform.machine()]
     options=['docker','create','--platform','linux/'+architecture]
-    if os.getenv('PGRX_LOCAL')=='true':options+=['--network','pg-extensions-e2e']
     # Container paths are never passed as host bind-mount paths.
     auth=Path(os.environ.get('DOCKER_CONFIG',str(Path.home()/'.docker')))/'config.json'
     if auth.exists():args.insert(1,'--authfile=/tmp/registry-auth.json')

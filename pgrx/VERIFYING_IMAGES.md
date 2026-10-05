@@ -56,32 +56,7 @@ base image or other extension volumes. Scan those images separately. PGRX Cargo
 relationships describe the configured target dependency graph; they do not
 claim that every dependency survives linker dead-code elimination.
 
-## Local validation
-
-The local harness creates a disposable Cosign key outside the source tree. Use
-its public key instead of a GitHub certificate policy. From the host, configure
-the local adapters and a Buildx client for the harness's HTTP registries first:
-
-```sh
-export PGRX_LOCAL=true
-export BUILDX_BUILDER=$(python3 pgrx/bootstrap_workflow_tools.py --output /tmp/extension-tools)
-export PATH=/tmp/extension-tools:$PATH
-```
-
-Then use the same verifier:
-
-```sh
-python3 pgrx/verify.py --image "$IMAGE" --platform "$PLATFORM" \
-  --key /path/to/cosign.pub --insecure-registry \
-  --output-directory ./verified-local
-trivy sbom --scanners vuln,license ./verified-local/sbom.spdx.json
-```
-
-The HTTP registry and disabled transparency-log check apply only to this local
-key-based test. Production verification requires the issuer and identity policy
-above. Local validation does not exercise hosted OIDC issuance.
-
-After copying an image, run the same command against the destination repository
-and its signature. A successful source verification does not authenticate a
-separate repository. The local workflow preserves every digest, signs the
-copied destination index, and verifies both platforms there again.
+After copying an image, run the same verification against the destination
+repository and its signature. A successful source verification does not
+authenticate a separate repository. The hosted promotion workflow preserves
+digests, signs the copied index, and verifies both platforms again.

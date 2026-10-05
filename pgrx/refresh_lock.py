@@ -36,7 +36,6 @@ def tool_url(name, version, architecture):
         'task':f'https://github.com/go-task/task/releases/download/v{numeric}/task_linux_{architecture}.tar.gz',
         'dagger':f'https://github.com/dagger/dagger/releases/download/v{numeric}/dagger_v{numeric}_linux_{architecture}.tar.gz',
         'kind':f'https://github.com/kubernetes-sigs/kind/releases/download/v{numeric}/kind-linux-{architecture}',
-        'act':f'https://github.com/nektos/act/releases/download/v{numeric}/act_Linux_'+('x86_64' if architecture=='amd64' else 'arm64')+'.tar.gz',
         'rustup':f'https://static.rust-lang.org/rustup/archive/{numeric}/{rust_arch}-unknown-linux-gnu/rustup-init',
     }
     return templates[name]

@@ -1,6 +1,5 @@
 """Run Renovate itself against the current workspace, without GitHub writes."""
 import json
-from pathlib import Path
 import subprocess
 
 from workflow import ROOT, discover
@@ -32,7 +31,7 @@ def check_renovate(output, pins):
         if not any(dep.get('depName') == sources[extension]['repository'] and dep.get('currentValue') == sources[extension]['version'] for dep in matched):
             raise ValueError('Renovate missed PGRX source: ' + extension)
     dependencies = {dep.get('depName') for entry in entries for dep in entry.get('deps', [])}
-    expected = {tool['depName'] for tool in pins['tools'].values()} | {'rust-lang/rust', 'rust-lang/rustup', 'ghcr.io/cnpg-extensions/cnpg-sbom-generator', 'tonistiigi/binfmt'}
+    expected = {tool['depName'] for tool in pins['tools'].values()} | {'rust-lang/rust', 'rust-lang/rustup', 'ghcr.io/ardentperf-labs/cnpg-sbom-generator', 'spdx-tools'}
     if expected - dependencies:
         raise ValueError('Renovate missed execution pins: ' + str(expected - dependencies))
     with (output / 'updates.log').open('w') as log:
