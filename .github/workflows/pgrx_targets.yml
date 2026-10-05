@@ -6,59 +6,17 @@ name: PGRX platform builds
         description: PGRX extension directory
         type: string
         required: true
-      local:
-        description: Use local registries and signing
-        type: boolean
-        required: false
-        default: false
-      platform:
-        description: Ordinary local mode requires linux/amd64
-        type: string
-        required: false
-        default: ''
-      distro:
-        description: One metadata-declared local distro
-        type: string
-        required: false
-        default: ''
-      pg_target:
-        description: Exact Bake target when selection is ambiguous
-        type: string
-        required: false
-        default: ''
       cnpg_version:
-        description: CNPG fixture selector; local default is the locked stable release
+        description: CNPG fixture selector
         type: string
         required: false
         default: ''
-      local_multiplatform:
-        description: Final gated session-jwt/Trixie/PG18 pass only
-        type: boolean
-        required: false
-        default: false
-      local_run_id:
-        description: Unique local invocation identity
-        type: string
-        required: false
-        default: ''
-      native_gate_sha256:
-        description: Verified native receipt SHA256
-        type: string
-        required: false
-        default: ''
-    secrets:
-      PGRX_COSIGN_PRIVATE_KEY_B64:
-        required: false
-      PGRX_COSIGN_PUBLIC_KEY_B64:
-        required: false
   workflow_dispatch:
     inputs: *id001
 permissions: {}
 defaults:
   run:
     shell: bash -Eeuo pipefail {0}
-env:
-  PGRX_LOCAL: ${{ inputs.local }}
 jobs:
   prepare:
     runs-on: ubuntu-24.04
@@ -112,7 +70,6 @@ jobs:
         path: ${{ runner.temp }}/prepared
     - &id005
       name: GHCR authentication
-      if: ${{ !inputs.local }}
       env:
         GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GHCR_USER: ${{ github.actor }}
@@ -192,10 +149,6 @@ jobs:
         path: ${{ runner.temp }}/assembly
     - *id005
     - name: Sign assembled target
-      env:
-        PGRX_COSIGN_PUBLIC_KEY_B64: ${{ secrets.PGRX_COSIGN_PUBLIC_KEY_B64 }}
-        PGRX_COSIGN_PRIVATE_KEY_B64: ${{ secrets.PGRX_COSIGN_PRIVATE_KEY_B64 }}
-        COSIGN_PASSWORD: ''
       run: python3 pgrx/downstream.py sign --preparation "$RUNNER_TEMP/prepared" --assembly "$RUNNER_TEMP/assembly"
         --output "$RUNNER_TEMP/sign-result"
     - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -226,8 +179,6 @@ jobs:
         path: ${{ runner.temp }}/assembly
     - *id005
     - name: Security assembled target
-      env:
-        PGRX_COSIGN_PUBLIC_KEY_B64: ${{ secrets.PGRX_COSIGN_PUBLIC_KEY_B64 }}
       run: python3 pgrx/downstream.py security --preparation "$RUNNER_TEMP/prepared" --assembly "$RUNNER_TEMP/assembly"
         --output "$RUNNER_TEMP/security-result"
     - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -260,7 +211,6 @@ jobs:
     - name: Smoke assembled target
       env:
         CNPG_VERSION: ${{ matrix.cnpg }}
-        PGRX_COSIGN_PUBLIC_KEY_B64: ${{ secrets.PGRX_COSIGN_PUBLIC_KEY_B64 }}
       run: python3 pgrx/downstream.py smoke --preparation "$RUNNER_TEMP/prepared" --assembly "$RUNNER_TEMP/assembly"
         --cnpg-version "$CNPG_VERSION" --output "$RUNNER_TEMP/smoke-result"
     - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -294,10 +244,6 @@ jobs:
         path: ${{ runner.temp }}/assembly
     - *id005
     - name: Promote assembled target
-      env:
-        PGRX_COSIGN_PUBLIC_KEY_B64: ${{ secrets.PGRX_COSIGN_PUBLIC_KEY_B64 }}
-        PGRX_COSIGN_PRIVATE_KEY_B64: ${{ secrets.PGRX_COSIGN_PRIVATE_KEY_B64 }}
-        COSIGN_PASSWORD: ''
       run: python3 pgrx/downstream.py promote --preparation "$RUNNER_TEMP/prepared" --assembly "$RUNNER_TEMP/assembly"
         --output "$RUNNER_TEMP/promote-result"
     - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -305,8 +251,7 @@ jobs:
         name: promote-${{ matrix.target }}
         path: ${{ runner.temp }}/promote-result
         if-no-files-found: error
-    if: ${{ inputs.local || (github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name
-      == 'workflow_dispatch')) }}
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
   gate:
     if: ${{ always() }}
     needs:
@@ -322,12 +267,12 @@ jobs:
     steps:
     - env:
         RESULTS: ${{ toJSON(needs) }}
-        LOCAL: ${{ inputs.local }}
+        PROMOTION_ALLOWED: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
       run: |-
         python3 - <<'PY'
         import json, os
         results=json.loads(os.environ['RESULTS'])
         for name,value in results.items():
-            if name=='promote' and os.environ['LOCAL']=='false' and value['result']=='skipped': continue
+            if name=='promote' and os.environ['PROMOTION_ALLOWED']=='false' and value['result']=='skipped': continue
             if value['result']!='success': raise SystemExit(f"required job {name}: {value['result']}")
         PY

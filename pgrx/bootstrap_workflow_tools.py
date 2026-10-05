@@ -6,8 +6,6 @@ import json
 import os
 from pathlib import Path
 import platform
-import subprocess
-import uuid
 import tarfile
 import urllib.request
 
@@ -30,13 +28,6 @@ def main():
         binary=args.output/name;binary.write_bytes(data);binary.chmod(0o755);archive.unlink()
     (args.output/'skopeo').write_text('#!/bin/sh\nexec python3 '+str(ROOT/'skopeo.py')+' "$@"\n')
     (args.output/'skopeo').chmod(0o755)
-    if os.getenv('PGRX_LOCAL')=='true':
-        config=args.output/'buildkit-registry.toml'
-        config.write_text('[registry."registry.pg-extensions:5000"]\n  http = true\n[registry."registry-copy.pg-extensions:5000"]\n  http = true\n')
-        builder='pgrx-tools-'+uuid.uuid4().hex[:16]
-        subprocess.run(['docker','buildx','create','--name',builder,'--driver','docker-container','--driver-opt','image='+pins['images']['buildkit'],'--buildkitd-config',str(config)],check=True)
-        if os.getenv('GITHUB_ENV'):
-            with open(os.environ['GITHUB_ENV'],'a') as stream:stream.write('BUILDX_BUILDER='+builder+'\n')
     if os.getenv('GITHUB_PATH'):
 
         with open(os.environ['GITHUB_PATH'],'a') as stream:stream.write(str(args.output.resolve())+'\n')

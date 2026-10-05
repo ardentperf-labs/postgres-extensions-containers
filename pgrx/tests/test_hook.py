@@ -1,6 +1,5 @@
 import copy
 import hashlib
-import importlib.util
 import json
 from pathlib import Path
 import sys
@@ -57,12 +56,18 @@ class HookTest(unittest.TestCase):
                        for key in ('demo','runtime')],
         })
         self.document = {'SPDXID': 'SPDXRef-DOCUMENT', 'spdxVersion': 'SPDX-2.3', 'creationInfo': {'created': '2026-01-01T00:00:00Z', 'creators': ['Tool: generator']},
-            'packages': [{'SPDXID': 'SPDXRef-Package-extension-payload', 'name': 'payload'}, {'SPDXID': 'SPDXRef-OS', 'name': 'debian'}],
-            'files': [{'SPDXID': 'SPDXRef-file', 'fileName': 'lib/demo.so', 'checksums': [{'algorithm': 'SHA256', 'checksumValue': digest(elf)}]}],
+            'packages': [
+                {'SPDXID': 'SPDXRef-OS', 'name': 'debian', 'primaryPackagePurpose': 'OPERATING-SYSTEM', 'filesAnalyzed': False},
+                {'SPDXID': 'SPDXRef-libc6', 'name': 'libc6', 'versionInfo': '2.36-9+deb12u10',
+                 'filesAnalyzed': False, 'externalRefs': [{'referenceCategory': 'PACKAGE-MANAGER',
+                    'referenceType': 'purl', 'referenceLocator': 'pkg:deb/debian/libc6@2.36-9+deb12u10?distro=debian-12'}]},
+            ],
+            'files': [{'SPDXID': 'SPDXRef-file', 'fileName': 'lib/demo.so',
+                       'checksums': [{'algorithm': 'SHA256', 'checksumValue': digest(elf)}],
+                       'licenseInfoInFiles': ['Apache-2.0 OR MIT']}],
             'relationships': [
-                {'spdxElementId': 'SPDXRef-DOCUMENT', 'relationshipType': 'DESCRIBES', 'relatedSpdxElement': 'SPDXRef-Package-extension-payload'},
-                {'spdxElementId': 'SPDXRef-OS', 'relationshipType': 'CONTAINS', 'relatedSpdxElement': 'SPDXRef-file'},
-                {'spdxElementId': 'SPDXRef-Package-extension-payload', 'relationshipType': 'CONTAINS', 'relatedSpdxElement': 'SPDXRef-file'},
+                {'spdxElementId': 'SPDXRef-DOCUMENT', 'relationshipType': 'DESCRIBES', 'relatedSpdxElement': 'SPDXRef-OS'},
+                {'spdxElementId': 'SPDXRef-OS', 'relationshipType': 'CONTAINS', 'relatedSpdxElement': 'SPDXRef-libc6'},
             ]}
         self.context = SimpleNamespace(api_version=1, extension_name='extension', platform='linux/amd64', builder_path=self.builder, final_path=self.final, builder_document={'packages': [{'name': 'build-only'}]})
 
@@ -78,57 +83,14 @@ class HookTest(unittest.TestCase):
         before = copy.deepcopy(self.document); builder = copy.deepcopy(self.context.builder_document)
         result = self.run_hook()
         self.assertEqual(self.document, before); self.assertEqual(self.context.builder_document, builder)
-        self.assertEqual({p['name'] for p in result['packages']}, {'demo','runtime','debian'})
+        self.assertEqual({p['name'] for p in result['packages']}, {'demo','runtime','debian','libc6'})
         self.assertEqual(result['files'], before['files'])
-        self.assertNotIn(before['relationships'][0], result['relationships'])
+        self.assertIn(before['relationships'][0], result['relationships'])
         self.assertIn(before['relationships'][1], result['relationships'])
-        self.assertNotIn(before['relationships'][2], result['relationships'])
+        self.assertIn(before['packages'][0], result['packages'])
+        self.assertIn(before['packages'][1], result['packages'])
         self.assertEqual(result['creationInfo'], before['creationInfo'])
         self.assertEqual(result, self.run_hook())
-
-    def test_root_crate_describes_extension_without_adopting_legacy_payload_license(self):
-        legacy_payload = self.document['packages'][0]
-        legacy_payload.update(licenseDeclared='Apache-2.0 AND MIT',
-                              licenseInfoFromFiles=['Apache-2.0', 'MIT'])
-        result = self.run_hook()
-        by_name = {package['name']: package for package in result['packages']}
-        root = by_name['demo']
-        self.assertEqual(root['licenseDeclared'], 'MIT')
-        self.assertFalse(root['filesAnalyzed'])
-        self.assertNotIn('licenseInfoFromFiles', root)
-        self.assertNotIn('payload', by_name)
-        self.assertNotIn(legacy_payload['SPDXID'], {p['SPDXID'] for p in result['packages']})
-        self.assertNotIn({'spdxElementId': 'SPDXRef-DOCUMENT', 'relationshipType': 'DESCRIBES',
-                          'relatedSpdxElement': legacy_payload['SPDXID']}, result['relationships'])
-        self.assertIn({'spdxElementId': 'SPDXRef-DOCUMENT', 'relationshipType': 'DESCRIBES',
-                       'relatedSpdxElement': root['SPDXID']}, result['relationships'])
-        self.assertIn({'spdxElementId': root['SPDXID'], 'relationshipType': 'DEPENDS_ON',
-                       'relatedSpdxElement': by_name['runtime']['SPDXID']}, result['relationships'])
-        self.assertFalse(any(r['spdxElementId'] == root['SPDXID'] and
-                             r['relationshipType'] == 'CONTAINS' for r in result['relationships']))
-        self.assertIn(self.document['files'][0], result['files'])
-
-    def test_only_reserved_legacy_package_is_removed(self):
-        other = {'SPDXID': 'SPDXRef-other-payload', 'name': 'extension-extension-artifacts',
-                 'filesAnalyzed': False, 'downloadLocation': 'NOASSERTION', 'copyrightText': 'NOASSERTION'}
-        self.document['packages'].append(other)
-        result = self.run_hook()
-        self.assertIn(other, result['packages'])
-
-    def test_fresh_generator_without_synthetic_package_is_supported(self):
-        self.document['packages'] = [self.document['packages'][1]]
-        self.document['relationships'] = [self.document['relationships'][1]]
-        result = self.run_hook()
-        self.assertFalse(any(p['SPDXID'] == 'SPDXRef-Package-extension-payload'
-                             for p in result['packages']))
-        self.assertIn(self.document['files'][0], result['files'])
-        self.assertTrue(any(r['spdxElementId'] == 'SPDXRef-DOCUMENT'
-                            and r['relationshipType'] == 'DESCRIBES'
-                            and r['relatedSpdxElement'].startswith('SPDXRef-Cargo-')
-                            for r in result['relationships']))
-        self.assertFalse(any(r.get('spdxElementId', '').startswith('SPDXRef-Cargo-')
-                             and r.get('relationshipType') == 'CONTAINS'
-                             for r in result['relationships']))
 
     def test_invalid_evidence_fails_closed(self):
         for group,key,value in [('target','platform','linux/arm64'), ('identity','extension','wrong'), ('inputs','lock_sha256','0'*64)]:
@@ -148,8 +110,14 @@ class HookTest(unittest.TestCase):
         with self.assertRaises(ValueError): self.run_hook()
 
     def test_wrong_elf_and_missing_payload(self):
-        (self.final/'lib/demo.so').write_bytes(b'wrong')
-        with self.assertRaises(ValueError): self.run_hook()
+        wrong_arch = bytearray((self.final/'lib/demo.so').read_bytes())
+        wrong_arch[18:20] = (183).to_bytes(2, 'little')
+        for root, path in [(self.builder, 'build/demo.so'), (self.final, 'lib/demo.so')]:
+            (root/path).write_bytes(wrong_arch)
+        wrong_hash = digest(wrong_arch)
+        self.manifest['payload'][0]['sha256'] = wrong_hash
+        self.document['files'][0]['checksums'][0]['checksumValue'] = wrong_hash
+        with self.assertRaisesRegex(ValueError, 'ELF architecture mismatch'): self.run_hook()
         (self.final/'lib/demo.so').unlink()
         with self.assertRaises(ValueError): self.run_hook()
 
@@ -161,14 +129,6 @@ class HookTest(unittest.TestCase):
     def test_duplicate_json_keys(self):
         (self.evidence/'manifest.json').write_text('{"schema_version":1,"schema_version":2}')
         with self.assertRaises(ValueError): augment_spdx(self.document,self.context)
-
-    def test_generator_hook_loader(self):
-        sys.path.insert(0,str(ROOT/'sbom-generator'))
-        from hooks import run_augmentation_hook
-        hook=self.builder/'usr/local/share/cnpg-sbom/augment_spdx.py'
-        hook.parent.mkdir(parents=True); hook.write_bytes((ROOT/'pgrx/sbom/augment_spdx.py').read_bytes())
-        expected=self.run_hook()
-        self.assertEqual(run_augmentation_hook(self.document,self.context),expected)
 
     def test_spdx_expressions_and_unknown_names(self):
         expression='(MIT OR Apache-2.0) AND GPL-2.0-only WITH Classpath-exception-2.0'
@@ -237,13 +197,15 @@ class HookTest(unittest.TestCase):
         b['manifest_path']='/outside/Cargo.toml'
         with self.assertRaises(ValueError):cargo_purl(b,'a'*40)
 
-    def test_matching_existing_package_merges(self):
-        self.document['packages'].append({'SPDXID':'SPDXRef-existing-runtime','name':'runtime','licenseConcluded':'MIT',
-            'externalRefs':[{'referenceType':'purl','referenceLocator':'pkg:cargo/runtime@1.0'}]})
-        result=self.run_hook()
-        matches=[p for p in result['packages'] if p['name']=='runtime']
-        self.assertEqual(len(matches),1);self.assertEqual(matches[0]['SPDXID'],'SPDXRef-existing-runtime')
-        self.assertEqual(matches[0]['licenseConcluded'],'MIT')
+    def test_cargo_license_notices_are_attributed_to_selected_packages(self):
+        result = self.run_hook()
+        notices = {notice['licenseId']: notice['extractedText']
+                   for notice in result['hasExtractedLicensingInfos']}
+        notice_id = 'LicenseRef-Cargo-' + hashlib.sha256(b'MIT fixture license text').hexdigest()[:32]
+        self.assertEqual(notices[notice_id], 'MIT fixture license text')
+        for name in ('demo', 'runtime'):
+            package = next(package for package in result['packages'] if package['name'] == name)
+            self.assertIn('Cargo license text: ' + notice_id, package['attributionTexts'])
 
     def test_arm_evidence_as_data(self):
         self.manifest['target'].update(platform='linux/arm64',rust_target='aarch64-unknown-linux-gnu')

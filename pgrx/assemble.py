@@ -10,7 +10,6 @@ import tempfile
 from prepare import save
 from record import load_preparation,validate_record
 from verify import validate_layout
-from workflow import boolean
 
 
 def main():
@@ -40,8 +39,7 @@ def main():
         subprocess.run(command,check=True)
         raw=subprocess.check_output(['docker','buildx','imagetools','inspect',candidate,'--raw'])
         index_digest='sha256:'+hashlib.sha256(raw).hexdigest();image=repository+'@'+index_digest
-        local=boolean(preparation['inputs'].get('local',False))
-        subprocess.run(['skopeo','copy','--all','--preserve-digests',*(['--src-tls-verify=false'] if local else []),'docker://'+image,'oci:'+str(output/'layout')+':assembly'],check=True)
+        subprocess.run(['skopeo','copy','--all','--preserve-digests','docker://'+image,'oci:'+str(output/'layout')+':assembly'],check=True)
         graph=validate_layout(output/'layout',index_digest,preparation['platforms'])
         if normalized(graph['index']['manifests'])!=normalized(expected_descriptors):raise ValueError('published merge changed descriptors')
         # Publish normal tags only after the candidate graph has been read back.

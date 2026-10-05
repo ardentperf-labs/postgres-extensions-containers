@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 import re
 
-from workflow import ROOT, boolean, discover, execute, select, source_digest
+from workflow import ROOT, discover, execute, select, source_digest
 
 
 def encoded(value):return json.dumps(value,sort_keys=True,separators=(',',':')).encode()
@@ -35,17 +35,12 @@ def prepare(inputs,generator,output):
     if output.exists():raise ValueError('fresh preparation directory required')
     output.mkdir(parents=True)
     timestamp=datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
-    workspace=source_digest();local=boolean(inputs.get('local',False))
-    registry='registry.pg-extensions:5000' if local else 'ghcr.io/'+os.environ['GITHUB_REPOSITORY_OWNER'].lower()
-    environment={**os.environ,'environment':'testing','sbom_generator':generator,'build_timestamp':timestamp,'registry':registry,'revision':(os.environ.get('PGRX_SOURCE_GIT_SHA') or execute(['git','rev-parse','HEAD']).strip()),'DISTRO':inputs.get('distro','')}
+    workspace=source_digest()
+    registry='ghcr.io/'+os.environ['GITHUB_REPOSITORY_OWNER'].lower()
+    environment={**os.environ,'environment':'testing','sbom_generator':generator,'build_timestamp':timestamp,'registry':registry,'revision':execute(['git','rev-parse','HEAD']).strip()}
     definition=json.loads(execute(['docker','buildx','bake','-f','docker-bake-pgrx.hcl','-f',extension+'/metadata.hcl','--print'],env=environment))
     targets=definition['target']
-    if inputs.get('pg_target'):
-        if inputs['pg_target'] not in targets:raise ValueError('pg_target not in candidates: '+', '.join(targets))
-        targets={inputs['pg_target']:targets[inputs['pg_target']]}
-    if local and len(targets)!=1:raise ValueError('select one pg_target from: '+', '.join(targets))
-    if boolean(inputs.get('local_multiplatform',False)) and any(d['args']['PG_MAJOR']!='18' for d in targets.values()):raise ValueError('final pass requires PG18')
-    run_id=inputs.get('local_run_id') if local else os.environ['GITHUB_RUN_ID']+'-'+os.environ.get('GITHUB_RUN_ATTEMPT','1')
+    run_id=os.environ['GITHUB_RUN_ID']+'-'+os.environ.get('GITHUB_RUN_ATTEMPT','1')
     source=json.loads((ROOT/'pgrx/dependencies/sources.json').read_text())[extension]
     result={'schema_version':1,'extension':extension,'inputs':inputs,'platforms':platforms,'timestamp':timestamp,'workspace_sha256':workspace,
             'git_sha':environment['revision'],'generator':generator,'run_id':run_id,'targets':{},'rows':[]}
@@ -75,7 +70,7 @@ def main():
     matrix={'include':[{k:r[k] for k in ('id','target','platform','architecture','runner')} for r in result['rows']]}
     fixtures=json.loads((ROOT/'pgrx/dependencies/fixtures/lock.json').read_text())
     selector=result['inputs'].get('cnpg_version')
-    selectors=[selector] if selector else [fixtures['selector']] if boolean(result['inputs'].get('local',False)) else fixtures['supported_releases']
+    selectors=[selector] if selector else fixtures['supported_releases']
     if not set(selectors)<=set(fixtures['operators']):raise ValueError('unsupported CNPG selector; refresh fixture locks')
     smoke_matrix={'include':[{'target':target,'cnpg':selector} for target in result['targets'] for selector in selectors]}
     if 'GITHUB_OUTPUT' in os.environ:

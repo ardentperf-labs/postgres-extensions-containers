@@ -57,6 +57,8 @@ class SPDXConformanceTest(unittest.TestCase):
             }]},
         )
         fixture.context.builder_document = builder
+        generator_packages = {package['SPDXID']: package for package in fixture.document['packages']}
+        generator_relationships = list(fixture.document['relationships'])
         output = fixture.run_hook()
         path = fixture.root / 'pgrx.spdx.json'
         path.write_text(json.dumps(output))
@@ -64,10 +66,16 @@ class SPDXConformanceTest(unittest.TestCase):
         self.assertEqual([], findings, '\n'.join(str(finding) for finding in findings))
         packages = {package['name']: package for package in output['packages']}
         self.assertIn('runtime', packages)
-        self.assertNotIn('pg-demo-extension-artifacts', packages)
+        self.assertIn('debian', packages)
+        output_packages = {package['SPDXID']: package for package in output['packages']}
+        self.assertTrue(all(output_packages[package_id] == package
+                            for package_id, package in generator_packages.items()))
+        self.assertTrue(all(relationship in output['relationships']
+                            for relationship in generator_relationships))
         root = packages['demo']
         self.assertEqual('MIT', root['licenseDeclared'])
         self.assertFalse(root['filesAnalyzed'])
+        self.assertNotIn('licenseInfoFromFiles', root)
         self.assertIn({'spdxElementId': 'SPDXRef-DOCUMENT', 'relationshipType': 'DESCRIBES',
                        'relatedSpdxElement': root['SPDXID']}, output['relationships'])
         self.assertFalse(any(
@@ -77,9 +85,10 @@ class SPDXConformanceTest(unittest.TestCase):
         license_file = next(file for file in output['files']
                             if file['fileName'].endswith('licenses/rust/license.txt'))
         self.assertEqual(['Apache-2.0 OR MIT'], license_file['licenseInfoInFiles'])
+        output_file_ids = {file['SPDXID'] for file in output['files']}
         self.assertFalse(any(
             relation.get('relationshipType') == 'CONTAINS'
-            and relation.get('relatedSpdxElement') == license_file['SPDXID']
+            and relation.get('relatedSpdxElement') in output_file_ids
             for relation in output['relationships']
         ))
         cargo_ids = {package['SPDXID'] for package in output['packages']

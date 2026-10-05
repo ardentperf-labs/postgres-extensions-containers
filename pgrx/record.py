@@ -59,8 +59,7 @@ def capture(preparation_dir,row_id,index_digest,output):
     if output.exists():raise ValueError('fresh record output required')
     output.mkdir(parents=True)
     repository=row['staging'].rsplit(':',1)[0];image=repository+'@'+index_digest
-    local=preparation['inputs'].get('local') in (True,'true')
-    subprocess.run(['skopeo','copy','--all','--preserve-digests',*(['--src-tls-verify=false'] if local else []),'docker://'+image,'oci:'+str(output/'layout')+':record'],check=True)
+    subprocess.run(['skopeo','copy','--all','--preserve-digests','docker://'+image,'oci:'+str(output/'layout')+':record'],check=True)
     result=validate_layout(output/'layout',index_digest,[row['platform']])
     graph=result['platforms'][row['platform']];assert_pgrx(graph['spdx'],preparation,row)
     definition=json.loads((preparation_dir/(row_id+'.json')).read_text())

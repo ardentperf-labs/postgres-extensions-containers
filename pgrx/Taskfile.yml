@@ -4,12 +4,8 @@ tasks:
   test:
     desc: Run the PGRX contract suite
     cmds:
-      - python3 -m unittest discover -s pgrx/tests -p 'test_*.py'
-  native:
-    desc: Validate all metadata-declared PGRX targets with native act workflows
+      - python3 pgrx/test.py
+  validate:
+    desc: Run local unit, workflow and dependency checks once
     cmds:
-      - python3 pgrx/local/validate.py native {{.CLI_ARGS}}
-  multiplatform:
-    desc: Run the bounded final case after a complete native receipt
-    cmds:
-      - python3 pgrx/local/validate.py multiplatform {{.CLI_ARGS}}
+      - python3 pgrx/local/validate.py {{.CLI_ARGS}}
