@@ -33,6 +33,34 @@ Use `linux/arm64` for ARM images. For single-platform Buildx output, use
 `{{ json .SBOM.SPDX }}` instead. Buildx retrieves the embedded BuildKit statement;
 `cosign verify-attestation` is not its retrieval command.
 
+## Inspect and verify build provenance
+
+BuildKit records detailed build inputs and parameters alongside the SBOM:
+
+```bash
+docker buildx imagetools inspect "$IMAGE" \
+  --format '{{ json (index .Provenance "linux/amd64").SLSA }}'
+```
+
+Published Debian extension images also carry separately signed provenance from
+CNPG's SLSA container generator. Verify the image index digest against the
+expected source repository and branch:
+
+```bash
+slsa-verifier verify-image "$IMAGE" \
+  --source-uri github.com/OWNER/postgres-extensions-containers \
+  --source-branch main
+```
+
+For testing images, use the branch that built them. This applies to images
+published after the SLSA workflow was introduced; older images have only BuildKit
+provenance. The SLSA job runs for both testing and production image repositories.
+Mirrors must preserve its separate signed attestation as well as the image index.
+The [SLSA container generator](https://github.com/slsa-framework/slsa-github-generator/blob/v2.1.0/internal/builders/container/README.md)
+requires explicit opt-in for private source repositories because it publishes
+repository identity to the public transparency log. This workflow leaves that
+opt-in disabled.
+
 ## Report vulnerabilities and licenses with Trivy
 
 ```bash
@@ -113,8 +141,10 @@ to their original file paths.
 CI selects the digest-pinned scanner and inserts
 `ARG BUILDKIT_SBOM_SCAN_STAGE=builder` into the Dockerfile so BuildKit exposes the
 builder stage. Ordinary local Bake builds use the default scanner when
-`sbom_generator` is empty. Existing BuildKit provenance (`mode=max`) and GitHub
-image signing remain in place; this generator produces the SPDX predicate only.
+`sbom_generator` is empty. BuildKit produces detailed provenance (`mode=max`); the SLSA reusable workflow
+adds signed provenance for each published index. Testing provenance gates
+production copying; production provenance is generated at the destination.
+This SBOM generator produces the SPDX predicate only.
 
 ### Downstream augmentation
 
