@@ -199,7 +199,13 @@ jobs:
         env:
           CNPG_RELEASE: ${{ matrix.cnpg }}
         run: |
-          task e2e:setup-env CNPG_RELEASE="$CNPG_RELEASE"
+          # Validation-only workaround: upstream release-1.29 artifacts reference a missing testing image.
+          if [[ "$CNPG_RELEASE" == 1.29 ]]; then
+            task e2e:setup-env CNPG_RELEASE="$CNPG_RELEASE" \
+              CNPG_MANIFEST=https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/v1.29.3/releases/cnpg-1.29.3.yaml
+          else
+            task e2e:setup-env CNPG_RELEASE="$CNPG_RELEASE"
+          fi
 
       - name: Generate Chainsaw testing values
         env:
