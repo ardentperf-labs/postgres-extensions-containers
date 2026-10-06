@@ -201,8 +201,9 @@ jobs:
         run: |
           # Validation-only workaround: upstream release-1.29 artifacts reference a missing testing image.
           if [[ "$CNPG_RELEASE" == 1.29 ]]; then
-            task e2e:setup-env CNPG_RELEASE="$CNPG_RELEASE" \
-              CNPG_MANIFEST=https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/v1.29.3/releases/cnpg-1.29.3.yaml
+            # Task's task-local manifest variable overrides command-line values.
+            sed -i 's|https://raw.githubusercontent.com/cloudnative-pg/artifacts/release-{{ .CNPG_RELEASE }}/manifests/operator-manifest.yaml|https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/v1.29.3/releases/cnpg-1.29.3.yaml|' Taskfile.yml
+            task e2e:setup-env CNPG_RELEASE="$CNPG_RELEASE"
           else
             task e2e:setup-env CNPG_RELEASE="$CNPG_RELEASE"
           fi
