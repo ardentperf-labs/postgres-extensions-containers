@@ -24,11 +24,14 @@ COPY --from=builder /usr/share/doc/postgresql-${PG_MAJOR}-mysql-fdw/copyright /l
 COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/mysql_fdw.so /lib/
 COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/bitcode/ /lib/bitcode/
 
-# System libs (includes the dlopen-loaded MariaDB client and MySQL alias)
-COPY --from=builder /lib/*-linux-gnu/libmariadb.so.3 /system/
-COPY --from=builder /lib/*-linux-gnu/libmysqlclient.so /system/
-
 # Share
 COPY --from=builder /usr/share/postgresql/${PG_MAJOR}/extension/mysql_fdw* /share/extension/
+
+# mysql_fdw loads the client with dlopen(), so ldd on mysql_fdw.so cannot discover
+# the client library. stage_system_libs.sh only stages dependencies reported by
+# ldd; keep the client library, compatibility alias, and package copyright explicit.
+# System libs
+COPY --from=builder /lib/*-linux-gnu/libmariadb.so.3 /system/
+COPY --from=builder /lib/*-linux-gnu/libmysqlclient.so /system/
 
 USER 65532:65532
