@@ -6,7 +6,7 @@ Reviewed locally on 2026-10-09.
 - Working branch: `upstream/sync-2026-10-09`, to be published to `ardentperf-labs/postgres-extensions-containers`
 - Upstream ref: `upstream/main` at `019e7c20e8feb930a61e4799c108462c3b63485b` (`cloudnative-pg/postgres-extensions-containers`)
 - Last upstream commit already merged: `c1c47c21fb6ffa7ff46d19f019e8d6502dc8ffec`
-- Downstream merge commit: pending creation; exact SHA will be recorded in a follow-up documentation commit.
+- Downstream merge commit: `28f0cb2e579baa6c43c8498dff46438c274c1c20` (second parent is the upstream SHA above).
 - Reviewed commits: 30; substantive: 8; pure dependency chores: 22.
 
 ## Review rules
@@ -106,4 +106,3 @@ metadata, including paths Git pairs with upstream PostGIS through rename detecti
   and manifests; downstream image/catalog identity is preserved.
 - Full image builds, cluster E2E smoke tests, and GitHub-hosted CI have not
   been run locally; they remain for PR CI.
-
