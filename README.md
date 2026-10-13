@@ -274,9 +274,8 @@ skopeo inspect docker://<image> | jq '.Labels'
 
 Use the [SBOM guide](./sbom-generator/README.md) to verify an extension image,
 extract its platform-specific SPDX, and report vulnerabilities and licenses with
-Trivy. See the [example report](./examples/trivy-sbom-examples.txt),
-[architecture and code map](./sbom-generator/REVIEWER-GUIDE.md),
-and [generator release workflow](./sbom-generator/README.md#generator-release-and-test-builds).
+Trivy. See the [example report](./examples/trivy-sbom-examples.txt) and
+[generator release workflow](./sbom-generator/README.md#generator-release-and-test-builds).
 
 ## Image catalogs
 

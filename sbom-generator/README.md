@@ -8,13 +8,10 @@ system libraries. Scan the PostgreSQL base image separately using its own SBOM.
 ## Verify the image and extract its SBOM
 
 You need Cosign, Docker Buildx, and Trivy. This example uses the PgSphere image
-published by `cnpg-extensions`. Resolve its index digest so verification and
-extraction refer to the same content:
+published by `cnpg-extensions`, pinned to its image index digest:
 
 ```bash
-IMAGE=ghcr.io/cnpg-extensions/pgsphere:1.5.2-18-bookworm
-DIGEST=$(docker buildx imagetools inspect "$IMAGE" --format '{{.Manifest.Digest}}')
-IMAGE="ghcr.io/cnpg-extensions/pgsphere@$DIGEST"
+IMAGE=ghcr.io/cnpg-extensions/pgsphere@sha256:54e6f0b0a9d9e4c80db8c6edcac98b451159c1fbaa91e429a92d4978f593518d
 
 cosign verify "$IMAGE" \
   --certificate-identity='https://github.com/cnpg-extensions/postgres-extensions-containers/.github/workflows/bake_targets.yml@refs/heads/main' \
@@ -172,6 +169,3 @@ creator identify the generator source commit.
 
 To roll back, restore the previous checked consumer digest and hold updates until
 fixed. Retain the corresponding commit images.
-
-For the architecture, code map, augmentation hook, and local development checks,
-see the [reviewer guide](REVIEWER-GUIDE.md).
