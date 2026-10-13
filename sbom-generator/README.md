@@ -1,184 +1,177 @@
 # Inspect extension SBOMs
 
-Extension images include an SPDX 2.3 software bill of materials (SBOM) for each
-platform. It lists shipped files, their checksums, identifiable Debian packages,
-and license evidence from the notices in `/licenses`. This includes copied
-system libraries. The PostgreSQL base image has its own SBOM and should be
-scanned separately.
+CNPG Extensions images include an SPDX 2.3 software bill of materials (SBOM) for
+each platform. It lists shipped files, their checksums, identifiable Debian
+packages, and license evidence from the notices in `/licenses`, including copied
+system libraries. Scan the PostgreSQL base image separately using its own SBOM.
 
 ## Verify the image and extract its SBOM
 
-You need Cosign, Docker Buildx, and Trivy. Use the published image **index digest**
-so verification and extraction refer to the same content. Replace the placeholders
-below with the image's publisher, extension, and digest:
+You need Cosign, Docker Buildx, and Trivy. This example uses the PgSphere image
+published by `cnpg-extensions`. Resolve its index digest so verification and
+extraction refer to the same content:
 
 ```bash
-IMAGE='ghcr.io/OWNER/EXTENSION@sha256:INDEX_DIGEST'
+IMAGE=ghcr.io/cnpg-extensions/pgsphere:1.5.2-18-bookworm
+DIGEST=$(docker buildx imagetools inspect "$IMAGE" --format '{{.Manifest.Digest}}')
+IMAGE="ghcr.io/cnpg-extensions/pgsphere@$DIGEST"
+
 cosign verify "$IMAGE" \
-  --certificate-identity='https://github.com/OWNER/postgres-extensions-containers/.github/workflows/bake_targets.yml@refs/heads/main' \
+  --certificate-identity='https://github.com/cnpg-extensions/postgres-extensions-containers/.github/workflows/bake_targets.yml@refs/heads/main' \
   --certificate-oidc-issuer='https://token.actions.githubusercontent.com'
 
 docker buildx imagetools inspect "$IMAGE" \
   --format '{{ json (index .SBOM "linux/amd64").SPDX }}' \
-  > extension-amd64.spdx.json
+  > pgsphere-amd64.spdx.json
 ```
 
-The signing identity above is for this repository's Debian build workflow on
-`main`. For a testing image or another publisher, use the exact workflow and ref
-you trust. Extraction alone does not verify the publisher. This follows the
-[CloudNativePG signature and attestation guidance](https://cloudnative-pg.io/docs/1.30/security/#image-signatures),
-with the extension publisher's identity.
-
-Use `linux/arm64` for ARM images. For single-platform Buildx output, use
-`{{ json .SBOM.SPDX }}` instead. Buildx retrieves the embedded BuildKit statement;
-`cosign verify-attestation` is not its retrieval command.
+Replace `linux/amd64` with `linux/arm64` and `pgsphere-amd64.spdx.json` with
+`pgsphere-arm64.spdx.json` to inspect the ARM image. Extraction alone does not
+verify the publisher. See [CloudNativePG's signature and attestation guidance](https://cloudnative-pg.io/docs/1.30/security/#image-signatures).
 
 ## Inspect and verify build provenance
 
-BuildKit records detailed build inputs and parameters alongside the SBOM:
+BuildKit records build inputs and parameters alongside the SBOM:
 
 ```bash
 docker buildx imagetools inspect "$IMAGE" \
   --format '{{ json (index .Provenance "linux/amd64").SLSA }}'
 ```
 
-Published Debian extension images also carry separately signed provenance from
-CNPG's SLSA container generator. Verify the image index digest against the
-expected source repository and branch:
+Separately signed SLSA provenance identifies the source repository, commit, and
+workflow run. Verify that the image was built from this project's `main` branch:
 
 ```bash
 slsa-verifier verify-image "$IMAGE" \
-  --source-uri github.com/OWNER/postgres-extensions-containers \
+  --source-uri github.com/cnpg-extensions/postgres-extensions-containers \
   --source-branch main
 ```
 
-For testing images, use the branch that built them. This applies to images
-published after the SLSA workflow was introduced; older images have only BuildKit
-provenance. The SLSA job runs for both testing and production image repositories.
-Mirrors must preserve its separate signed attestation as well as the image index.
-The [SLSA container generator](https://github.com/slsa-framework/slsa-github-generator/blob/v2.1.0/internal/builders/container/README.md)
-requires explicit opt-in for private source repositories because it publishes
-repository identity to the public transparency log. This workflow leaves that
-opt-in disabled.
+An image built from another branch fails verification with a message such as
+`expected branch 'main', got 'work/sbom-validation'`. The command exits nonzero;
+it does not silently accept a different branch. Testing and production images
+both receive SLSA provenance. Mirrors must preserve its separate signed
+attestation as well as the image index.
 
 ## Report vulnerabilities and licenses with Trivy
 
 ```bash
-trivy sbom --scanners vuln,license extension-amd64.spdx.json
-
-# Save a machine-readable report, including the package inventory.
-trivy sbom --scanners vuln,license --list-all-pkgs \
-  --format json --output extension-report.json extension-amd64.spdx.json
+trivy sbom --scanners vuln,license pgsphere-amd64.spdx.json
 ```
 
 See the [example Trivy output](../examples/trivy-sbom-examples.txt) for vulnerability
-and package-license tables. It is a historical local pgAgent build, illustrating
-the report format rather than current findings or the current extension catalog.
+and package-license tables. It is a historical local pgAgent build illustrating
+the report format.
 
 Use [`trivy sbom`](https://trivy.dev/docs/latest/target/sbom/) with the extracted
-SPDX. A direct `trivy image` scan of the scratch image cannot recover its missing
-Debian package database. Findings also depend on Trivy's database and supported
-package ecosystems; an empty vulnerability report is not proof of safety.
+SPDX. A direct filesystem scan of the scratch image cannot recover its missing
+Debian package database. Findings depend on Trivy's database and supported
+package ecosystems.
 
 ### Reading license results
 
-- Package identities and existing license declarations come from Syft's builder
-  scan. ScanCode scans the shipped `/licenses` files and records findings on
-  those files. For owned files, findings also populate package
-  `licenseInfoFromFiles` and fill missing or unknown `licenseDeclared` values.
-- Trivy reports package licenses. Unmatched files remain in SPDX with checksums
-  and scanned license evidence, without an invented owner. Their file-level
-  findings may not appear in Trivy's package report.
-- `NOASSERTION` means no value was established for that field. `LicenseRef-*`
-  identifiers refer to `hasExtractedLicensingInfos`, with ScanCode reference text
-  when available. Original notices remain in the image.
-- Trivy's `UNKNOWN` license classification does not mean the license expression
-  is absent. Shared Debian copyright files can produce broad expressions;
-  inspect the SPDX evidence and shipped notice for context.
+Syft identifies packages in the builder, but is known to miss license declarations
+for many Debian packages. We therefore use ScanCode to scan the shipped `/licenses`
+notices. Its findings populate SPDX file records, contribute to their owning
+packages' `licenseInfoFromFiles`, and fill missing or unknown `licenseDeclared`
+values.
 
-## How it works — reviewer guide
+Trivy reports package licenses. Unmatched files remain in SPDX with checksums and
+scanned license evidence; their file-level findings may not appear in Trivy's
+package report. `NOASSERTION` means no value was established for that field.
+`LicenseRef-*` identifiers refer to `hasExtractedLicensingInfos`, with ScanCode
+reference text when available. Trivy's `UNKNOWN` classification does not mean the
+license expression is absent.
 
-The final image is built `FROM scratch`: it retains extension files and libraries,
-but no package database. The generator uses the builder's package evidence to
-identify the files actually shipped, excluding packages with no matched files.
-It runs as a BuildKit scanner; its tools are not added to the extension image.
+### Retrieve an original notice
 
-```mermaid
-flowchart TD
-    B[Builder stage] --> S[Syft: packages and file ownership]
-    F[Final scratch image] --> I[Inventory: paths and checksums]
-    F --> L[ScanCode: shipped /licenses notices]
-    S --> C[Compose final-payload SPDX]
-    I --> C
-    L --> C
-    C --> H[Optional downstream augmentation]
-    H --> V[SPDX Tools validation]
-    V --> A[BuildKit: platform SBOM attestation]
-    A --> P[Existing publication: signed image index]
-    P --> U[Buildx extraction and Trivy report]
-```
-
-Ownership requires matching SHA256 content. Exact paths and shared path suffixes
-rank candidates; ambiguous matches stay unclaimed. The composer retains owning
-packages and their relationships, adds Debian distribution context for consumers,
-and merges license evidence. It does not infer ownership from a license-directory
-name. Large copyright files are split for scanning, then findings are mapped back
-to their original file paths.
-
-### Where to review
-
-| Area | Entry points |
-| --- | --- |
-| Scanner lifecycle, final inventory, ScanCode invocation, BuildKit statement | [generator.py](generator.py) |
-| File ownership, package selection, license composition, document identity | [compose.py](compose.py) |
-| Optional hook and its context | [hooks.py](hooks.py) |
-| Final SPDX conformance check | [spdx_validation.py](spdx_validation.py), [validator pin](requirements-validation.txt) |
-| Scanner image and dependencies | [Dockerfile](Dockerfile) |
-| Extension integration | [docker-bake.hcl](../docker-bake.hcl), [bake_targets.yml](../.github/workflows/bake_targets.yml) |
-| Generator checks, publication, and digest updates | [sbom-generator.yml](../.github/workflows/sbom-generator.yml), [release.py](release.py), [renovate.json](../renovate.json) |
-| Unit checks and real BuildKit/SPDX/Trivy fixture | [tests](tests), [integration](tests/integration) |
-
-CI selects the digest-pinned scanner and inserts
-`ARG BUILDKIT_SBOM_SCAN_STAGE=builder` into the Dockerfile so BuildKit exposes the
-builder stage. Ordinary local Bake builds use the default scanner when
-`sbom_generator` is empty. BuildKit produces detailed provenance (`mode=max`); the SLSA reusable workflow
-adds signed provenance for each published index. Testing provenance gates
-production copying; production provenance is generated at the destination.
-This SBOM generator produces the SPDX predicate only.
-
-### Downstream augmentation
-
-A builder may supply `/usr/local/share/cnpg-sbom/augment_spdx.py` with
-`augment_spdx(document, context) -> dict`. The hook runs after composition and
-before validation. [HookContext](hooks.py) exposes API version 1, extension name,
-platform, builder/final paths, and the complete Syft builder document.
-
-The hook executes trusted Python in the generator environment. Builder-installed
-dependencies are unavailable there; downstream builds can prepare JSON evidence
-for the hook to read. Missing hooks leave the document unchanged; hook errors or
-invalid final SPDX fail the build. SPDX validation checks conformance, not whether
-added components actually belong to the payload.
-
-PGRX is a downstream consumer of this interface: it supplies Cargo component and
-license evidence. The core generator has no Cargo or PGRX processing dependency.
-The [fixture hook](tests/integration/fixture/augment_spdx.py) demonstrates adding
-a package that Trivy can report.
-
-### Local checks
-
-From the repository root:
+When ScanCode provides no reference text, the original notice is still shipped
+in the image. Find its path in SPDX file records using `licenseInfoInFiles`.
+For example, PgSphere's shared GCC copyright notice contains an unidentified
+license reference:
 
 ```bash
-python3 -m venv /tmp/cnpg-spdx-venv
-/tmp/cnpg-spdx-venv/bin/pip install -r sbom-generator/requirements-validation.txt
-/tmp/cnpg-spdx-venv/bin/python -m unittest discover -s sbom-generator/tests
-/tmp/cnpg-spdx-venv/bin/python sbom-generator/spdx_validation.py extension-amd64.spdx.json
+jq -r '.files[] |
+  select(any(.licenseInfoInFiles[]?;
+    contains("LicenseRef-scancode-unknown-license-reference"))) |
+  .fileName' pgsphere-amd64.spdx.json
+# licenses/gcc-12-base/copyright
 ```
 
-The validator accepts extracted SPDX or the generator's in-toto statement and
-exits nonzero on invalid output. Native AMD64 and ARM64 CI checks also build the
-scanner and exercise a real BuildKit attestation, Debian notice ownership, hook
-augmentation, and Trivy license reporting.
+Copy that notice from a stopped container; no shell inside the scratch image is
+needed:
 
-For test publication, consumer digest updates, and adoption, see
-[Generator release and test builds](RELEASE-DESIGN.md).
+```bash
+CONTAINER=$(docker create --platform linux/amd64 "$IMAGE" /unused)
+docker cp "$CONTAINER:/licenses/gcc-12-base/copyright" ./gcc-12-copyright
+docker rm "$CONTAINER"
+```
+
+Shared Debian notices can cover several libraries and produce broad license
+expressions. Read the notice alongside the package and file evidence in SPDX.
+
+## Generator release and test builds
+
+`ghcr.io/cnpg-extensions/cnpg-sbom-generator:latest` identifies the checked generator
+published from `main`; `:test` identifies the most recent checked manual test
+publication. These are moving tags. Consumers pin a tag **and its image digest**,
+so moving a tag does not silently change an extension build. `sha-<full-commit>`
+tags retain individual builds; there are no major/minor releases.
+
+### Publication
+
+| Trigger | Result |
+| --- | --- |
+| Pull request touching generator code/workflow | Checks only |
+| Relevant push to `main` | Publish or reuse commit image; promote to `latest` if still current |
+| Manual dispatch, `publish=false` | Checks only |
+| Manual dispatch, `publish=true` | Publish or reuse commit image; promote to `test` |
+
+[The workflow](../.github/workflows/sbom-generator.yml) runs unit and
+BuildKit/SPDX/Trivy checks on native AMD64 and ARM64 runners, publishes a
+two-platform image, verifies its platform configurations and source labels, and
+smoke-tests the published digest on AMD64 before promotion.
+
+Publication is serialized. Failed checks leave aliases unchanged; manual
+publication never moves `latest`. [release.py](release.py) reuses commit tags and
+verifies alias digests. A dependency rebuild requires a new commit.
+
+### Testing from a branch
+
+For example, push a generator change on a branch named `sbom-license-update`
+and publish its test image:
+
+```bash
+git switch -c sbom-license-update
+# Make and commit the generator change.
+git push origin sbom-license-update
+
+gh workflow run sbom-generator.yml \
+  --repo cnpg-extensions/postgres-extensions-containers \
+  --ref sbom-license-update -f publish=true
+
+gh run list --repo cnpg-extensions/postgres-extensions-containers \
+  --workflow sbom-generator.yml --branch sbom-license-update --limit 1
+```
+
+Take the checked `test@sha256:…` reference from the successful run summary and pin
+it in a temporary consumer branch. Run the affected extension builds before
+accepting the update. Keep test pins out of stable consumers.
+
+### Update consumers
+
+When a generator change is merged to `main` and its checked publication advances
+`latest`, [Renovate](../renovate.json) updates the stable `latest@sha256:…` consumer
+pin. Digest updates are grouped and automerged after their required tests pass.
+Renovate rebases an update when it falls behind `main` and waits for the checks
+on that revision before merging.
+
+Renovate also tracks the SPDX validator, grouped with ScanCode for compatibility
+review, and the scanner's other dependencies. The image revision label and SPDX
+creator identify the generator source commit.
+
+To roll back, restore the previous checked consumer digest and hold updates until
+fixed. Retain the corresponding commit images.
+
+For the architecture, code map, augmentation hook, and local development checks,
+see the [reviewer guide](REVIEWER-GUIDE.md).
