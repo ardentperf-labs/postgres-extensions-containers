@@ -69,11 +69,6 @@ def build(image, revision, repository, output):
 def promote(image, digest, revision, repository, alias):
     if digest_for(f"{image}:sha-{revision}") != digest:
         raise ValueError("Commit tag no longer identifies the checked digest")
-    if alias == "latest":
-        head = run("gh", "api", f"repos/{repository}/git/ref/heads/main", "--jq", ".object.sha")
-        if head != revision:
-            print(f"Skipping latest: main has advanced to {head}", flush=True)
-            return False
     subprocess.run([
         "docker", "buildx", "imagetools", "create", "--tag", f"{image}:{alias}",
         f"{image}@{digest}",

@@ -98,28 +98,16 @@ class ReleaseTests(unittest.TestCase):
                     release.build(IMAGE, REVISION, REPOSITORY, output)
                 self.assertFalse((output / "digest").exists())
 
-    def test_stale_main_does_not_promote(self):
-        with patch.object(release, "digest_for", return_value=DIGEST), \
-             patch.object(release, "run", return_value="c" * 40), \
-             patch.object(release.subprocess, "run") as command:
-            self.assertFalse(release.promote(IMAGE, DIGEST, REVISION, REPOSITORY, "latest"))
-            command.assert_not_called()
-
-    def test_test_alias_does_not_require_main_head(self):
-        with patch.object(release, "digest_for", return_value=DIGEST), \
-             patch.object(release, "run") as read, \
-             patch.object(release.subprocess, "run") as command:
-            self.assertTrue(release.promote(IMAGE, DIGEST, REVISION, REPOSITORY, "test"))
-            read.assert_not_called()
-            self.assertIn(IMAGE + ":test", command.call_args.args[0])
-            self.assertEqual(command.call_args.args[0][-1], IMAGE + "@" + DIGEST)
-
-    def test_current_main_promotes_latest(self):
-        with patch.object(release, "digest_for", return_value=DIGEST), \
-             patch.object(release, "run", return_value=REVISION), \
-             patch.object(release.subprocess, "run") as command:
-            self.assertTrue(release.promote(IMAGE, DIGEST, REVISION, REPOSITORY, "latest"))
-            self.assertIn(IMAGE + ":latest", command.call_args.args[0])
+    def test_checked_digest_promotes_without_reading_main_head(self):
+        for alias in ("latest", "test"):
+            with self.subTest(alias=alias), \
+                 patch.object(release, "digest_for", return_value=DIGEST), \
+                 patch.object(release, "run") as read, \
+                 patch.object(release.subprocess, "run") as command:
+                self.assertTrue(release.promote(IMAGE, DIGEST, REVISION, REPOSITORY, alias))
+                read.assert_not_called()
+                self.assertIn(IMAGE + ":" + alias, command.call_args.args[0])
+                self.assertEqual(command.call_args.args[0][-1], IMAGE + "@" + DIGEST)
 
     def test_changed_commit_tag_blocks_promotion(self):
         with patch.object(release, "digest_for", return_value="sha256:" + "c" * 64), \

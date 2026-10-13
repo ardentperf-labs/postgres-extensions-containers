@@ -123,7 +123,7 @@ tags retain individual builds; there are no major/minor releases.
 | Trigger | Result |
 | --- | --- |
 | Pull request touching generator code/workflow | Checks only |
-| Relevant push to `main` | Publish or reuse commit image; promote to `latest` if still current |
+| Relevant push to `main` | Publish or reuse commit image; promote the checked digest to `latest` |
 | Manual dispatch, `publish=false` | Checks only |
 | Manual dispatch, `publish=true` | Publish or reuse commit image; promote to `test` |
 

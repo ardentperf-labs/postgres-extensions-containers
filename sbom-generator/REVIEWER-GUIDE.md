@@ -93,9 +93,8 @@ See the [user and release guide](README.md) for inspection and publication comma
 
 ## Release promotion
 
-The publish job is serialized and `release.py` checks the current `main` head
-before moving `latest`. If another merge has advanced the head, the older run
-keeps its commit image but skips promotion. A newer push touching generator
-paths schedules another publication; an unrelated merge does not. The GitHub
-head check and registry tag update are separate operations, so this is not an
-atomic guarantee against a merge during promotion.
+The publish job is serialized. Once its digest passes checks, a `main` push
+updates `latest` even if unrelated commits have since advanced `main`.
+`release.py` verifies the immutable commit tag and promoted alias against the
+checked digest. GitHub does not guarantee queue order, so serialization alone
+does not enforce source-commit order for publications.
