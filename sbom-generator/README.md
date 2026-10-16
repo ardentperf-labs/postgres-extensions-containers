@@ -28,6 +28,8 @@ Replace `linux/amd64` with `linux/arm64` and `pgsphere-amd64.spdx.json` with
 `pgsphere-arm64.spdx.json` to inspect the ARM image. Extraction alone does not
 verify the publisher. See [CloudNativePG's signature and attestation guidance](https://cloudnative-pg.io/docs/1.30/security/#image-signatures).
 
+For PGRX images, see the [common image verification procedure](../pgrx/VERIFYING_IMAGES.md).
+
 ### Inspect and verify build provenance
 
 BuildKit records build inputs and parameters alongside the SBOM:
