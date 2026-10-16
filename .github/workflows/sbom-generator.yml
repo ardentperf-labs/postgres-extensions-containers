@@ -32,8 +32,6 @@ jobs:
         include:
           - arch: amd64
             runner: ubuntu-26.04
-          - arch: arm64
-            runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.runner }}
     env:
       SBOM_SMOKE_PLATFORM: linux/${{ matrix.arch }}
@@ -75,6 +73,9 @@ jobs:
 
       - name: Check BuildKit integration and license report
         run: bash sbom-generator/tests/integration/buildkit-smoke.sh localhost:5000/cnpg-sbom-generator:check "$RUNNER_TEMP/sbom-check"
+
+      - name: Build OGR FDW Bookworm and report licenses and vulnerabilities
+        run: bash .validation/ogr.sh
 
       - name: Save check evidence
         if: always()
