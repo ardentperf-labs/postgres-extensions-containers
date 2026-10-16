@@ -1,11 +1,13 @@
 # SBOM generator
 
+## Usage
+
 CNPG Extensions images include an SPDX 2.3 software bill of materials (SBOM) for
 each platform. It lists shipped files, their checksums, identifiable Debian
 packages, and license evidence from the notices in `/licenses`, including copied
 system libraries. Scan the PostgreSQL base image separately using its own SBOM.
 
-## Verify the image and extract its SBOM
+### Verify the image and extract its SBOM
 
 You need Cosign, Docker Buildx, and Trivy. This example uses the PgSphere image
 published by `cnpg-extensions`, pinned to its image index digest:
@@ -26,7 +28,7 @@ Replace `linux/amd64` with `linux/arm64` and `pgsphere-amd64.spdx.json` with
 `pgsphere-arm64.spdx.json` to inspect the ARM image. Extraction alone does not
 verify the publisher. See [CloudNativePG's signature and attestation guidance](https://cloudnative-pg.io/docs/1.30/security/#image-signatures).
 
-## Inspect and verify build provenance
+### Inspect and verify build provenance
 
 BuildKit records build inputs and parameters alongside the SBOM:
 
@@ -50,7 +52,7 @@ it does not silently accept a different branch. Testing and production images
 both receive SLSA provenance. Mirrors must preserve its separate signed
 attestation as well as the image index.
 
-## Report vulnerabilities and licenses with Trivy
+### Report vulnerabilities and licenses with Trivy
 
 ```bash
 trivy sbom --scanners vuln,license pgsphere-amd64.spdx.json
@@ -65,7 +67,7 @@ SPDX. A direct filesystem scan of the scratch image cannot recover its missing
 Debian package database. Findings depend on Trivy's database and supported
 package ecosystems.
 
-### Reading license results
+#### Reading license results
 
 Syft identifies packages in the builder, but is known to miss license declarations
 for many Debian packages. We therefore use ScanCode to scan the shipped `/licenses`
@@ -80,7 +82,7 @@ package report. `NOASSERTION` means no value was established for that field.
 reference text when available. Trivy's `UNKNOWN` classification does not mean the
 license expression is absent.
 
-### Retrieve an original notice
+#### Retrieve an original notice
 
 When ScanCode provides no reference text, the original notice is still shipped
 in the image. Find its path in SPDX file records using `licenseInfoInFiles`.
@@ -107,7 +109,9 @@ docker rm "$CONTAINER"
 Shared Debian notices can cover several libraries and produce broad license
 expressions. Read the notice alongside the package and file evidence in SPDX.
 
-## Add extension-specific inventory
+## Development
+
+### Add extension-specific inventory
 
 To add components that the builder scan cannot identify, install a Python file
 at `/usr/local/share/cnpg-sbom/augment_spdx.py` in the extension's `builder` stage.
@@ -134,7 +138,7 @@ Without a hook, the inventory is unchanged. Hook errors or invalid resulting
 SPDX fail the build. Keep required license notices in the final image; adding a
 package declaration does not copy notice files there.
 
-## Generator release and test builds
+### Generator release and test builds
 
 `ghcr.io/cnpg-extensions/cnpg-sbom-generator:latest` identifies the checked generator
 published from `main`; `:test` identifies the most recent checked manual test
@@ -142,7 +146,7 @@ publication. These are moving tags. Consumers pin a tag **and its image digest**
 so moving a tag does not silently change an extension build. `sha-<full-commit>`
 tags retain individual builds; there are no major/minor releases.
 
-### Publication
+#### Publication
 
 | Trigger | Result |
 | --- | --- |
@@ -164,7 +168,7 @@ Publication is serialized. Failed checks leave aliases unchanged; manual
 publication never moves `latest`. [release.py](release.py) reuses commit tags and
 verifies alias digests. A dependency rebuild requires a new commit.
 
-### Testing from a branch
+#### Testing from a branch
 
 For example, push a generator change on a branch named `sbom-license-update`
 and publish its test image:
@@ -186,7 +190,7 @@ Take the checked `test@sha256:…` reference from the successful run summary and
 it in a temporary consumer branch. Run the affected extension builds before
 accepting the update. Keep test pins out of stable consumers.
 
-### Update consumers
+#### Update consumers
 
 When a generator change is merged to `main` and its checked publication advances
 `latest`, [Renovate](../renovate.json) updates the stable `latest@sha256:…` consumer
