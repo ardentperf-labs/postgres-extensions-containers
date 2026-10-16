@@ -11,6 +11,9 @@ ARG TARGETARCH
 ARG SYFT_VERSION=1.51.1
 # renovate: datasource=pypi depName=scancode-toolkit versioning=pep440
 ARG SCANCODE_VERSION=32.5.0
+# Pluggy 1.7 rejects the class-based hooks used by ScanCode's plugincode dependency.
+# renovate: datasource=pypi depName=pluggy versioning=pep440
+ARG PLUGGY_VERSION=1.6.0
 
 COPY requirements-validation.txt /tmp/requirements-validation.txt
 
@@ -27,7 +30,7 @@ RUN apt-get update \
       "https://github.com/anchore/syft/releases/download/v${SYFT_VERSION}/syft_${SYFT_VERSION}_linux_${TARGETARCH}.tar.gz" \
       | tar -xz -C /usr/local/bin syft \
     && python -m pip install --no-cache-dir \
-      "scancode-toolkit==${SCANCODE_VERSION}" -r /tmp/requirements-validation.txt \
+      "scancode-toolkit==${SCANCODE_VERSION}" "pluggy==${PLUGGY_VERSION}" -r /tmp/requirements-validation.txt \
     && syft version \
     && scancode --version
 

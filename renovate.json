@@ -125,7 +125,8 @@
       "description": "review SPDX validator upgrades with ScanCode dependency compatibility",
       "matchPackageNames": [
         "spdx-tools",
-        "scancode-toolkit"
+        "scancode-toolkit",
+        "pluggy"
       ],
       "groupName": "SBOM validation dependencies",
       "automerge": false,
