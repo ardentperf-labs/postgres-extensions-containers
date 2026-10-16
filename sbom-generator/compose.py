@@ -52,7 +52,6 @@ def scancode_licenses(
 
     licenses_by_file: defaultdict[str, set[str]] = defaultdict(set)
     comments_by_file: defaultdict[str, list[str]] = defaultdict(list)
-    custom_licenses: set[str] = set()
 
     def parse_expression(expression: str) -> tuple[str | None, str | None]:
         try:
@@ -113,10 +112,12 @@ def scancode_licenses(
                 ) + "."
             comments_by_file[path].append(comment)
 
-    licenses = set().union(*licenses_by_file.values()) if licenses_by_file else set()
-    custom_licenses.update(
-        license_id for expression in licenses for license_id in LICENSE_REF.findall(expression)
-    )
+    custom_licenses = {
+        license_id
+        for expressions in licenses_by_file.values()
+        for expression in expressions
+        for license_id in LICENSE_REF.findall(expression)
+    }
     references = {
         reference["spdx_license_key"]: {
             "extractedText": reference.get("text") or "NOASSERTION",
@@ -213,11 +214,12 @@ def compose(builder_document: dict[str, Any], *,
         if package_id in package_ids and package_id not in packages_without_file_analysis:
             owners_by_source_file[source_file_id].add(package_id)
 
-    by_checksum: defaultdict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
+    by_checksum: defaultdict[str, list[dict[str, Any]]] = defaultdict(list)
     all_file_ids = {record["SPDXID"] for record in builder_records}
     for record in builder_records:
         for checksum in record["checksums"]:
-            by_checksum[(checksum["algorithm"].lower(), checksum["checksumValue"].lower())].append(record)
+            if checksum["algorithm"].upper() == "SHA256":
+                by_checksum[checksum["checksumValue"].lower()].append(record)
 
     composed_files: list[dict[str, Any]] = []
     source_to_final: defaultdict[str, set[str]] = defaultdict(set)
@@ -238,9 +240,7 @@ def compose(builder_document: dict[str, Any], *,
             checksum["checksumValue"] for checksum in final_record["checksums"]
             if checksum["algorithm"] == "SHA256"
         )
-        candidates = by_checksum.get(
-            ("sha256", sha256), []
-        )
+        candidates = by_checksum.get(sha256, [])
         if not candidates:
             add_final_file(final_record, sha256)
             continue
@@ -263,22 +263,14 @@ def compose(builder_document: dict[str, Any], *,
         source = selected[0]
         new_id = file_id(final_name, sha256)
         output_record = source.copy()
+        # Final payload hashes override builder values; retain extra algorithms.
         checksums_by_algorithm = {
             checksum["algorithm"].upper(): {
                 "algorithm": checksum["algorithm"].upper(),
                 "checksumValue": checksum["checksumValue"].lower(),
             }
-            for checksum in source["checksums"]
+            for checksum in source["checksums"] + final_record["checksums"]
         }
-        # Prefer hashes computed from the final payload, while retaining any
-        # additional algorithms already supplied by the builder scan.
-        checksums_by_algorithm.update({
-            checksum["algorithm"].upper(): {
-                "algorithm": checksum["algorithm"].upper(),
-                "checksumValue": checksum["checksumValue"].lower(),
-            }
-            for checksum in final_record["checksums"]
-        })
         output_record["checksums"] = [
             checksums_by_algorithm[algorithm]
             for algorithm in sorted(checksums_by_algorithm)
@@ -352,7 +344,7 @@ def compose(builder_document: dict[str, Any], *,
     output = deepcopy(builder)
     os_package = debian_os_package(packages, builder_path)
     output["packages"] = [
-        deepcopy(package) for package in packages
+        package for package in output["packages"]
         if package["SPDXID"] in retained_package_ids
     ]
     output["packages"].append(os_package)
@@ -368,7 +360,6 @@ def compose(builder_document: dict[str, Any], *,
             relationship.get("relationshipType") == "CONTAINS"
             and package is not None
             and file is not None
-            and package.get("filesAnalyzed", True) is not False
         ):
             licenses_by_package[package["SPDXID"]].update(
                 set(file.get("licenseInfoInFiles", [])) - {"NONE", "NOASSERTION"}

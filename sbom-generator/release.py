@@ -68,7 +68,7 @@ def build(image, revision, repository, output):
     return digest
 
 
-def promote(image, digest, revision, repository, alias):
+def promote(image, digest, revision, alias):
     if digest_for(f"{image}:sha-{revision}") != digest:
         raise ValueError("Commit tag no longer identifies the checked digest")
     subprocess.run([
@@ -77,7 +77,6 @@ def promote(image, digest, revision, repository, alias):
     ], check=True)
     if digest_for(f"{image}:{alias}") != digest:
         raise ValueError("Promoted alias differs from checked digest")
-    return True
 
 
 def main():
@@ -97,9 +96,9 @@ def main():
         if args.alias is None:
             parser.error("promote requires --alias")
         digest = (args.output / "digest").read_text().strip()
-        promoted = promote(args.image, digest, args.revision, args.repository, args.alias)
+        promote(args.image, digest, args.revision, args.alias)
         (args.output / "promotion.json").write_text(json.dumps({
-            "alias": args.alias, "promoted": promoted, "digest": digest,
+            "alias": args.alias, "promoted": True, "digest": digest,
         }) + "\n")
 
 

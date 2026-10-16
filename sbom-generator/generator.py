@@ -87,8 +87,6 @@ def final_inventory(root: Path) -> dict[str, Any]:
         })
 
     for directory, directory_names, file_names in os.walk(root, followlinks=False):
-        directory_names.sort()
-        file_names.sort()
         for name in list(directory_names):
             path = Path(directory) / name
             if path.is_symlink():
@@ -156,33 +154,15 @@ def run_command_with_progress(
     return result
 
 
-def run_json_command(
-    command: Sequence[str], output: Path, label: str
-) -> dict[str, Any]:
-    try:
-        run_command_with_progress(
-            [*command, f"spdx-json={output}"],
-            label,
-        )
-    except FileNotFoundError as error:
-        raise RuntimeError(f"required scanner is unavailable: {command[0]}") from error
-    try:
-        with output.open(encoding="utf-8") as stream:
-            document = json.load(stream)
-    except (OSError, json.JSONDecodeError) as error:
-        raise RuntimeError(f"scanner did not produce valid SPDX JSON at {output}") from error
-    if not isinstance(document, dict):
-        raise RuntimeError(f"scanner output is not a JSON object: {output}")
-    return document
-
-
 def scan_builder(builder: Path, temporary: Path) -> dict[str, Any]:
     output = temporary / "builder.spdx.json"
-    document = run_json_command(
-        ["syft", f"dir:{builder}", "--scope", "all-layers", "--quiet", "--output"],
-        output,
+    run_command_with_progress(
+        ["syft", f"dir:{builder}", "--scope", "all-layers", "--quiet",
+         "--output", f"spdx-json={output}"],
         "Syft builder scan",
     )
+    with output.open(encoding="utf-8") as stream:
+        document = json.load(stream)
     progress(f"Syft found {len(document['packages'])} builder packages")
     return document
 

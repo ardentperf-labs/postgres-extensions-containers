@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-import copy
 import hashlib
 import json
 import os
 import sys
-import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch

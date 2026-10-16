@@ -160,7 +160,6 @@ jobs:
         env:
           IMAGE: ${{ steps.destination.outputs.image }}
           ALIAS: ${{ steps.destination.outputs.alias }}
-          GH_TOKEN: ${{ github.token }}
         run: |
           python3 sbom-generator/release.py promote \
             --image "$IMAGE" --revision "$GITHUB_SHA" --repository "$GITHUB_REPOSITORY" \
