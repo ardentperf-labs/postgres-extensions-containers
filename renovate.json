@@ -131,7 +131,8 @@
       "groupName": "SBOM validation dependencies",
       "automerge": false,
       "prBodyNotes": [
-        "⚠️ Check that the selected SPDX Tools release is compatible with the ScanCode Toolkit release. The current ScanCode Toolkit pins spdx-tools==0.8.2."
+        "⚠️ Check that the selected SPDX Tools release is compatible with the ScanCode Toolkit release. The current ScanCode Toolkit pins spdx-tools==0.8.2.",
+        "On every ScanCode update, attempt removing PLUGGY_VERSION and its pip pin, then run the existing native AMD64/ARM64 integration checks. Keep the pin only if the incompatibility persists: https://github.com/aboutcode-org/scancode-toolkit/issues/5363"
       ]
     },
     {
