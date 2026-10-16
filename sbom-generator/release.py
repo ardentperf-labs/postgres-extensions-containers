@@ -50,6 +50,8 @@ def build(image, revision, repository, output):
         # Stream build progress so long builds remain observable in Actions.
         subprocess.run([
             "docker", "buildx", "build", "--platform", "linux/amd64,linux/arm64",
+            "--provenance=mode=max",
+            "--sbom=true",
             "--build-arg", f"SBOM_GENERATOR_REVISION={revision}",
             "--label", f"org.opencontainers.image.source=https://github.com/{repository}",
             "--tag", reference, "--metadata-file", str(output / "build.json"),

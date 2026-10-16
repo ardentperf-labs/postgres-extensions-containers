@@ -85,6 +85,8 @@ class ReleaseTests(unittest.TestCase):
                  patch.object(release, "verify_image") as verify, \
                  patch.object(release.subprocess, "run", side_effect=build_command) as command:
                 self.assertEqual(release.build(IMAGE, REVISION, REPOSITORY, output), DIGEST)
+                self.assertIn("--provenance=mode=max", command.call_args.args[0])
+                self.assertIn("--sbom=true", command.call_args.args[0])
                 self.assertIn(IMAGE + ":sha-" + REVISION, command.call_args.args[0])
                 self.assertNotIn(IMAGE + ":latest", command.call_args.args[0])
                 verify.assert_called_once_with(IMAGE, DIGEST, REVISION, REPOSITORY)

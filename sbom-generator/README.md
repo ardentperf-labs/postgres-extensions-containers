@@ -132,7 +132,11 @@ tags retain individual builds; there are no major/minor releases.
 [The workflow](../.github/workflows/sbom-generator.yml) runs unit and
 BuildKit/SPDX/Trivy checks on native AMD64 and ARM64 runners, publishes a
 two-platform image, verifies its platform configurations and source labels, and
-smoke-tests the published digest on AMD64 before promotion.
+smoke-tests the published digest on AMD64 before promotion. The generator image
+includes per-platform BuildKit `mode=max` provenance and a default-scanner SPDX
+SBOM. The publish job signs the checked image index with Cosign before promotion;
+this binds the platform images and their attestations to the publishing workflow.
+This does not provide `slsa-verifier` verification for the generator itself.
 
 Publication is serialized. Failed checks leave aliases unchanged; manual
 publication never moves `latest`. [release.py](release.py) reuses commit tags and

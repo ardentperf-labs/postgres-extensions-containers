@@ -94,6 +94,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write
     concurrency:
       group: sbom-generator-publish
       cancel-in-progress: false
@@ -152,6 +153,14 @@ jobs:
           "$PYTHON" -m pip install --requirement sbom-generator/requirements-validation.txt
           digest=$(cat "$RUNNER_TEMP/sbom-release/digest")
           bash sbom-generator/tests/integration/buildkit-smoke.sh "$IMAGE@$digest" "$RUNNER_TEMP/sbom-release/smoke"
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+
+      - name: Sign checked generator image
+        env:
+          IMAGE: ${{ steps.destination.outputs.image }}
+        run: cosign sign --yes "$IMAGE@$(cat "$RUNNER_TEMP/sbom-release/digest")"
 
       - name: Promote checked digest
         env:
