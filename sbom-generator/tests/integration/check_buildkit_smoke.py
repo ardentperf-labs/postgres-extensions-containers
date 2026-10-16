@@ -63,6 +63,10 @@ def main() -> None:
         for result in report.get("Results", [])
         for package in result.get("Packages", [])
     ]
+    libc = next((package for package in trivy_packages if package.get("Name") == "libc6"), {})
+    if libc.get("SrcName") != "glibc":
+        fail("Trivy did not recover libc6's glibc source package for vulnerability matching")
+
     cargo_report = next(
         (
             package for package in trivy_packages

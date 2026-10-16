@@ -136,6 +136,19 @@ def scancode_licenses(
     return licenses_by_file, references, comments_by_file
 
 
+def debian_source_info(package: dict[str, Any]) -> str | None:
+    """Express Syft's source-package PURL evidence in Trivy's SPDX convention."""
+    for reference in package.get("externalRefs", []):
+        locator = reference.get("referenceLocator", "")
+        if reference.get("referenceType") != "purl" or not locator.startswith("pkg:deb/debian/"):
+            continue
+        upstream = parse_qs(urlsplit(locator).query).get("upstream")
+        if upstream:
+            name, _, version = upstream[0].partition("@")
+            return f"built package from: {name} {version or package['versionInfo']}"
+    return None
+
+
 def debian_os_package(packages: list[dict[str, Any]], path: Path) -> dict[str, Any]:
     distros = {
         distro
@@ -373,6 +386,12 @@ def compose(builder_document: dict[str, Any], *,
                 - {"NONE", "NOASSERTION"}
             )
     for package in output["packages"]:
+        source_info = debian_source_info(package)
+        if source_info:
+            original = package.get("sourceInfo")
+            if original and original != source_info:
+                package["comment"] = "\n".join(filter(None, [package.get("comment"), original]))
+            package["sourceInfo"] = source_info
         if package.get("licenseDeclared") not in {None, "NONE", "NOASSERTION"}:
             continue
         file_licenses = set(package.get("licenseInfoFromFiles", [])) - {"NONE", "NOASSERTION"}

@@ -5,6 +5,7 @@ import os
 import sys
 import unittest
 from pathlib import Path
+from urllib.parse import quote
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).parents[1]))
@@ -104,6 +105,25 @@ class ComposeTest(unittest.TestCase):
         ))
         self.assertNotIn("build-only", json.dumps(output))
         self.assertFalse("subject" in output)
+
+    def test_debian_source_package_is_available_to_trivy_without_losing_provenance(self):
+        for upstream, version in (("curl", "7.88.1-10+deb12u15"), ("curl@7.88.1-10+deb12u15", "7.88.1-10+deb12u15+b1")):
+            with self.subTest(upstream=upstream):
+                document = builder_document()
+                item = document["packages"][1]
+                item["name"], item["versionInfo"] = "libcurl4", version
+                item["sourceInfo"] = "acquired package info from DPKG DB: /var/lib/dpkg/status"
+                item["comment"] = "existing evidence"
+                item["externalRefs"] = [{
+                    "referenceCategory": "PACKAGE-MANAGER", "referenceType": "purl",
+                    "referenceLocator": f"pkg:deb/debian/libcurl4@{version}?arch=amd64&distro=debian-12.15&upstream={quote(upstream, safe='')}",
+                }]
+                output = compose(document, extension_name="demo", platform="linux/amd64",
+                                 final_inventory=inventory(("lib/ext.so", "extension")))
+                package = next(p for p in output["packages"] if p["name"] == "libcurl4")
+                self.assertEqual(package["sourceInfo"], "built package from: curl 7.88.1-10+deb12u15")
+                self.assertEqual(package["comment"], "existing evidence\n" + item["sourceInfo"])
+                self.assertEqual(validate_spdx_document(output), [])
 
     def test_matched_file_uses_final_inventory_sha1_when_builder_only_has_sha256(self):
         document = builder_document()
