@@ -9,12 +9,9 @@ FROM python:3.14-slim-bookworm
 ARG TARGETARCH
 # renovate: datasource=github-releases depName=anchore/syft versioning=semver
 ARG SYFT_VERSION=1.51.1
-# On every ScanCode update, try removing the Pluggy pin and rerun the native integration checks.
+# On every ScanCode update, retry without the Pluggy pin in native checks; 1.7 breaks ScanCode: https://github.com/aboutcode-org/scancode-toolkit/issues/5363
 # renovate: datasource=pypi depName=scancode-toolkit versioning=pep440
 ARG SCANCODE_VERSION=32.5.0
-# Pluggy 1.7 rejects the class-based hooks used by ScanCode's plugincode dependency.
-# https://github.com/aboutcode-org/scancode-toolkit/issues/5363
-# On every ScanCode update, try removing this ARG and its pip pin; retain only if checks still fail.
 # renovate: datasource=pypi depName=pluggy versioning=pep440
 ARG PLUGGY_VERSION=1.6.0
 
