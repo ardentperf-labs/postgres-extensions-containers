@@ -1,21 +1,17 @@
 # syntax=docker/dockerfile:1.7
 
 # Python 3.14 is the newest version supported by the pinned ScanCode 32.5.0.
-# Move to a newer Python as soon as ScanCode supports it; keep this aligned with SCANCODE_VERSION.
+# Move to a newer Python as soon as ScanCode supports it; keep this aligned with scancode-toolkit in requirements-runtime.txt.
 # https://github.com/aboutcode-org/scancode-toolkit/releases/tag/v32.5.0
 # renovate: datasource=docker depName=python packageName=library/python versioning=docker
-FROM python:3.14-slim-bookworm
+FROM python:3.14-slim-bookworm@sha256:48b13b003dda20b16f9442b8475aa05fe21bf6579a8c881db92ffb4d8fd20f83
 
 ARG TARGETARCH
 # renovate: datasource=github-releases depName=anchore/syft versioning=semver
 ARG SYFT_VERSION=1.51.1
-# On every ScanCode update, retry without the Pluggy pin in native checks; 1.7 breaks ScanCode: https://github.com/aboutcode-org/scancode-toolkit/issues/5363
-# renovate: datasource=pypi depName=scancode-toolkit versioning=pep440
-ARG SCANCODE_VERSION=32.5.0
-# renovate: datasource=pypi depName=pluggy versioning=pep440
-ARG PLUGGY_VERSION=1.6.0
 
-COPY requirements-validation.txt /tmp/requirements-validation.txt
+COPY requirements-validation.txt requirements-runtime.txt /tmp/
+COPY dependencies/ /tmp/dependencies/
 
 # ScanCode's bundled native libraries are not available on every architecture.
 # Use Debian's libraries and an explicit path for ExtractCode's libarchive lookup.
@@ -23,14 +19,15 @@ ENV EXTRACTCODE_LIBARCHIVE_PATH=/usr/local/lib/libarchive.so.13 \
     TYPECODE_LIBMAGIC_DB_PATH=/usr/share/misc/magic.mgc
 
 RUN apt-get update \
-    && apt-get install --no-install-recommends -y ca-certificates curl gcc g++ libarchive13 libmagic1 libxml2-dev libxslt1-dev pkg-config \
+    && xargs apt-get install --no-install-recommends -y < "/tmp/dependencies/debian-${TARGETARCH}.txt" \
     && ln -s /usr/lib/*-linux-gnu/libarchive.so.13 /usr/local/lib/libarchive.so.13 \
     && rm -rf /var/lib/apt/lists/* \
     && curl --fail --silent --show-error --location \
       "https://github.com/anchore/syft/releases/download/v${SYFT_VERSION}/syft_${SYFT_VERSION}_linux_${TARGETARCH}.tar.gz" \
       | tar -xz -C /usr/local/bin syft \
-    && python -m pip install --no-cache-dir \
-      "scancode-toolkit==${SCANCODE_VERSION}" "pluggy==${PLUGGY_VERSION}" -r /tmp/requirements-validation.txt \
+    && python -m pip install --no-cache-dir --no-deps \
+      -r /tmp/requirements-runtime.txt -r /tmp/requirements-validation.txt \
+    && python -m pip check \
     && syft version \
     && scancode --version
 

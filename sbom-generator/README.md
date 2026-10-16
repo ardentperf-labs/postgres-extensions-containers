@@ -194,9 +194,16 @@ pin. Digest updates are grouped and automerged after their required tests pass.
 Renovate rebases an update when it falls behind `main` and waits for the checks
 on that revision before merging.
 
-Renovate also tracks the SPDX validator, grouped with ScanCode for compatibility
-review, and the scanner's other dependencies. The image revision label and SPDX
-creator identify the generator source commit.
+Renovate tracks the Python base-image digest, which covers its bundled Debian
+packages and pip. Additional Debian packages are tracked in architecture-specific
+`dependencies/debian-*.txt` files, grouped with that digest.
+It also tracks Python runtime packages, including transitive dependencies, in
+`requirements-runtime.txt`; these are grouped with ScanCode and the SPDX validator
+for compatibility review. Python installation uses `--no-deps` and `pip check`, so
+a dependency added by an upstream update must be included in the package list.
+The Debian lists include build tools because those remain installed in the
+generator image. New Debian dependencies must also be added to both lists.
+The image revision label and SPDX creator identify the generator source commit.
 
 To roll back, restore the previous checked consumer digest and hold updates until
 fixed. Retain the corresponding commit images.
