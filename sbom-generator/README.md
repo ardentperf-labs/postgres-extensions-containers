@@ -1,9 +1,4 @@
-# Inspect extension SBOMs
-
-This change publishes the generator and its optional build interface. Extension
-builds continue using the existing scanner until the separate adoption change
-selects an officially published generator digest. The inspection guide below
-describes the resulting extension images after adoption.
+# SBOM generator
 
 CNPG Extensions images include an SPDX 2.3 software bill of materials (SBOM) for
 each platform. It lists shipped files, their checksums, identifiable Debian
@@ -111,6 +106,33 @@ docker rm "$CONTAINER"
 
 Shared Debian notices can cover several libraries and produce broad license
 expressions. Read the notice alongside the package and file evidence in SPDX.
+
+## Add extension-specific inventory
+
+To add components that the builder scan cannot identify, install a Python file
+at `/usr/local/share/cnpg-sbom/augment_spdx.py` in the extension's `builder` stage.
+It must export `augment_spdx(document, context)` and return the updated SPDX
+JSON dictionary. For example, copy your hook into the builder:
+
+```dockerfile
+COPY augment_spdx.py /usr/local/share/cnpg-sbom/augment_spdx.py
+```
+
+The hook runs after the generator composes the inventory and before SPDX
+validation. Add package records, licenses, and relationships using normal SPDX
+2.3 fields; see the [small fixture hook](tests/integration/fixture/augment_spdx.py)
+for an example.
+
+[The context](hooks.py) provides `api_version` (currently `1`), `extension_name`,
+`platform`, `builder_path`, `final_path`, and the full Syft `builder_document`.
+Treat that builder evidence as read-only; filesystem paths last only for this
+invocation. The hook runs as trusted code inside the generator, using its Python
+standard library and installed dependencies. Prepare any additional evidence as
+files in the builder; the builder's own Python dependencies are not available.
+
+Without a hook, the inventory is unchanged. Hook errors or invalid resulting
+SPDX fail the build. Keep required license notices in the final image; adding a
+package declaration does not copy notice files there.
 
 ## Generator release and test builds
 
