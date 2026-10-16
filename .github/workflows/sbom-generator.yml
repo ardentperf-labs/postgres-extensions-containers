@@ -76,6 +76,10 @@ jobs:
       - name: Check BuildKit integration and license report
         run: bash sbom-generator/tests/integration/buildkit-smoke.sh localhost:5000/cnpg-sbom-generator:check "$RUNNER_TEMP/sbom-check"
 
+      - name: Build PgAgent Bookworm and report licenses and vulnerabilities
+        if: matrix.arch == 'amd64'
+        run: bash .validation/pgagent.sh
+
       - name: Save check evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
