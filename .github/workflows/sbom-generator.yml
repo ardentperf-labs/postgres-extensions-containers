@@ -54,14 +54,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Run tests
-        run: |
-          python3 -m venv "$RUNNER_TEMP/sbom-generator-venv"
-          "$RUNNER_TEMP/sbom-generator-venv/bin/python" -m pip install \
-            --requirement sbom-generator/requirements-validation.txt
-          "$RUNNER_TEMP/sbom-generator-venv/bin/python" -m unittest discover \
-            -s sbom-generator/tests -p 'test_*.py'
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
         with:
@@ -74,9 +66,14 @@ jobs:
             --label "org.opencontainers.image.source=https://github.com/$GITHUB_REPOSITORY" \
             --tag localhost:5000/cnpg-sbom-generator:check --push sbom-generator
 
+      - name: Run tests in generator image
+        run: |
+          docker run --rm --platform "$SBOM_SMOKE_PLATFORM" --entrypoint python3 \
+            --volume "$PWD:/workspace:ro" --workdir /workspace \
+            localhost:5000/cnpg-sbom-generator:check \
+            -m unittest discover -s sbom-generator/tests -p 'test_*.py'
+
       - name: Check BuildKit integration and license report
-        env:
-          PYTHON: ${{ runner.temp }}/sbom-generator-venv/bin/python
         run: bash sbom-generator/tests/integration/buildkit-smoke.sh localhost:5000/cnpg-sbom-generator:check "$RUNNER_TEMP/sbom-check"
 
       - name: Save check evidence
@@ -147,10 +144,7 @@ jobs:
       - name: Check published digest with BuildKit
         env:
           IMAGE: ${{ steps.destination.outputs.image }}
-          PYTHON: ${{ runner.temp }}/sbom-generator-venv/bin/python
         run: |
-          python3 -m venv "$RUNNER_TEMP/sbom-generator-venv"
-          "$PYTHON" -m pip install --requirement sbom-generator/requirements-validation.txt
           digest=$(cat "$RUNNER_TEMP/sbom-release/digest")
           bash sbom-generator/tests/integration/buildkit-smoke.sh "$IMAGE@$digest" "$RUNNER_TEMP/sbom-release/smoke"
 

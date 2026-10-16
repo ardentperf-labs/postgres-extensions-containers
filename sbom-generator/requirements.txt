@@ -81,3 +81,6 @@ wcwidth==0.9.2
 webencodings==0.6.1
 xmltodict==1.0.4
 zipp==4.1.1
+
+# ScanCode Toolkit 32.5.0 currently pins this release; update alongside ScanCode.
+spdx-tools==0.8.2

@@ -198,7 +198,7 @@ Renovate tracks the Python base-image digest, which covers its bundled Debian
 packages and pip. Additional Debian packages are tracked in architecture-specific
 `dependencies/debian-*.txt` files, grouped with that digest.
 It also tracks Python runtime packages, including transitive dependencies, in
-`requirements-runtime.txt`; these are grouped with ScanCode and the SPDX validator
+`requirements.txt`; these are grouped with ScanCode and the SPDX validator
 for compatibility review. Python installation uses `--no-deps` and `pip check`, so
 a dependency added by an upstream update must be included in the package list.
 The Debian lists include build tools because those remain installed in the

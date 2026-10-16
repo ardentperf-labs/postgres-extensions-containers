@@ -51,8 +51,10 @@ if [[ ! -s "$artifact_dir/fixture.spdx.json" ]]; then
   exit 1
 fi
 
-"$python" "$repo_root/sbom-generator/spdx_validation.py" \
-  "$artifact_dir/fixture.spdx.json"
+docker run --rm --platform "$platform" --entrypoint python3 \
+  --volume "$artifact_dir:/results:ro" \
+  "$generator_image" /opt/cnpg-sbom-generator/spdx_validation.py \
+  /results/fixture.spdx.json
 
 docker run --rm \
   --user "$(id -u):$(id -g)" \

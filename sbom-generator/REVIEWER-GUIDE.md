@@ -40,7 +40,7 @@ to their original file paths.
 | Scanner lifecycle, final inventory, ScanCode invocation, BuildKit statement | [generator.py](generator.py) |
 | File ownership, package selection, license composition, document identity | [compose.py](compose.py) |
 | Optional hook and its context | [hooks.py](hooks.py) |
-| Final SPDX conformance check | [spdx_validation.py](spdx_validation.py), [validator pin](requirements-validation.txt) |
+| Final SPDX conformance check | [spdx_validation.py](spdx_validation.py), [validator pin](requirements.txt) |
 | Scanner image and dependencies | [Dockerfile](Dockerfile) |
 | Extension integration | [docker-bake.hcl](../docker-bake.hcl), [bake_targets.yml](../.github/workflows/bake_targets.yml) |
 | Generator checks, publication, and digest updates | [sbom-generator.yml](../.github/workflows/sbom-generator.yml), [release.py](release.py), [renovate.json](../renovate.json) |
@@ -78,10 +78,13 @@ a package that Trivy can report.
 From the repository root:
 
 ```bash
-python3 -m venv /tmp/cnpg-spdx-venv
-/tmp/cnpg-spdx-venv/bin/pip install -r sbom-generator/requirements-validation.txt
-/tmp/cnpg-spdx-venv/bin/python -m unittest discover -s sbom-generator/tests
-/tmp/cnpg-spdx-venv/bin/python sbom-generator/spdx_validation.py pgsphere-amd64.spdx.json
+docker build -t cnpg-sbom-generator:local sbom-generator
+docker run --rm --entrypoint python3 \
+  --volume "$PWD:/workspace:ro" --workdir /workspace \
+  cnpg-sbom-generator:local -m unittest discover -s sbom-generator/tests
+docker run --rm --entrypoint python3 --volume "$PWD:/workspace:ro" \
+  cnpg-sbom-generator:local /opt/cnpg-sbom-generator/spdx_validation.py \
+  /workspace/pgsphere-amd64.spdx.json
 ```
 
 The validator accepts extracted SPDX or the generator's in-toto statement and
