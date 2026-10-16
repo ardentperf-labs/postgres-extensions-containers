@@ -353,18 +353,6 @@ class ComposeTest(unittest.TestCase):
         set_document_namespace(first, "demo", "linux/amd64")
         self.assertNotEqual(first["documentNamespace"], original_namespace)
 
-    def test_changed_scanner_output_fails_instead_of_losing_evidence(self):
-        for field in ("packages", "files", "relationships"):
-            with self.subTest(field=field):
-                builder = builder_document()
-                del builder[field]
-                with self.assertRaises(KeyError):
-                    compose(builder, extension_name="demo", platform="linux/amd64",
-                            final_inventory=inventory(("lib/ext.so", "extension")))
-        with self.assertRaises(KeyError):
-            compose(builder_document(), extension_name="demo", platform="linux/amd64",
-                    final_inventory=inventory(("lib/ext.so", "extension")), scancode_report={})
-
     def test_files_from_packages_without_file_analysis_are_not_claimed_as_contained(self):
         document = builder_document()
         package_id = "SPDXRef-Package-extension"

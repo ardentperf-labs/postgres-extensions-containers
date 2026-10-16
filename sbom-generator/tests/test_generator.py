@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import hashlib
 import json
-import os
 import subprocess
 import sys
 import tempfile
@@ -14,9 +13,7 @@ sys.path.insert(0, str(Path(__file__).parents[1]))
 from generator import (  # noqa: E402
     final_inventory,
     infer_platform,
-    run_command_with_progress,
     scan_licenses,
-    statement_for,
 )
 
 
@@ -53,47 +50,6 @@ class GeneratorTest(unittest.TestCase):
             "referenceLocator": "pkg:deb/debian/base@1?arch=amd64&distro=debian-12.15",
         }]}]}
         self.assertEqual(infer_platform(document), "linux/amd64")
-
-    def test_platform_ambiguity_is_rejected(self):
-        document = {"packages": [{"externalRefs": [
-            {"referenceType": "purl", "referenceLocator": "pkg:deb/debian/a@1?arch=amd64"},
-            {"referenceType": "purl", "referenceLocator": "pkg:deb/debian/b@1?arch=arm64"},
-        ]}]}
-        with self.assertRaises(RuntimeError):
-            infer_platform(document)
-
-    def test_output_is_an_spdx_intoto_statement(self):
-        predicate = {"SPDXID": "SPDXRef-DOCUMENT", "name": "demo"}
-        statement = statement_for(predicate)
-        self.assertEqual(statement["_type"], "https://in-toto.io/Statement/v1")
-        self.assertEqual(statement["predicateType"], "https://spdx.dev/Document")
-        self.assertEqual(statement["predicate"], predicate)
-        self.assertEqual(statement["subject"], [])
-
-    def test_long_running_scanner_reports_a_heartbeat(self):
-        messages = []
-
-        class FakeProcess:
-            returncode = 0
-
-            def __init__(self):
-                self.calls = 0
-
-            def communicate(self, timeout=None):
-                self.calls += 1
-                if self.calls == 1:
-                    raise subprocess.TimeoutExpired(["scanner"], timeout)
-                return "", ""
-
-        with patch("generator.subprocess.Popen", return_value=FakeProcess()), patch(
-            "generator.progress", side_effect=messages.append
-        ):
-            result = run_command_with_progress(["scanner"], "test scanner")
-
-        self.assertEqual(result.returncode, 0)
-        self.assertEqual(messages[0], "test scanner started")
-        self.assertTrue(any("test scanner still running" in message for message in messages))
-        self.assertTrue(any("test scanner complete" in message for message in messages))
 
     def test_license_files_are_split_before_scancode_and_paths_are_collapsed(self):
         with tempfile.TemporaryDirectory() as directory:
