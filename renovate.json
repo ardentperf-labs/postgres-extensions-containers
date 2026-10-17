@@ -192,6 +192,18 @@
       ]
     },
     {
+      "description": "automerge checked latest generator digest updates",
+      "matchPackageNames": [
+        "/^ghcr\\.io\\/[^/]+\\/cnpg-sbom-generator$/"
+      ],
+      "groupName": "cnpg-sbom-generator image digests",
+      "matchUpdateTypes": ["digest"],
+      "matchCurrentValue": "latest",
+      "automerge": true,
+      "platformAutomerge": false,
+      "rebaseWhen": "behind-base-branch"
+    },
+    {
       "description": "require stable release verification for all updates",
       "matchPackageNames": [
         "*"
