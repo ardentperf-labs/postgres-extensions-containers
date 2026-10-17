@@ -64,7 +64,7 @@ dry-run merge. Normal tags are assigned only after reading back a valid candidat
 
 Sign, security, smoke, and promotion consume per-target assembly artifacts.
 Production promotion is restricted to trusted `main` push/dispatch events.
-Trivy reports vulnerabilities and licenses; findings are retained for review,
+Grype reports vulnerabilities and Grant reports licenses; findings are retained for review,
 while scanner errors fail the job. CNPG smoke installs pinned, published
 CloudNativePG release manifests from the upstream `cloudnative-pg/cloudnative-pg`
 repository and production `cloudnative-pg` operator images. CI exercises the locked production releases, currently 1.29 and 1.30.
@@ -97,13 +97,13 @@ task pgrx:validate -- --renovate-output /tmp/pgrx-renovate-check
 ```
 
 For a quick downstream-only check, use `task pgrx:test`. The generator's
-BuildKit/SPDX/Trivy integration fixture is maintained in
+BuildKit/SPDX/Grype/Grant integration fixture is maintained in
 `sbom-generator/tests/integration/`; its workflow runs it on both native
 architectures.
 
 For full extension acceptance, dispatch `.github/workflows/pgrx.yml` with an
 `extension_name`. It builds all metadata-declared targets on native AMD64 and
-ARM64, assembles and signs their indexes, checks SPDX/Trivy results, and runs
+ARM64, assembles and signs their indexes, checks SPDX/Grype/Grant results, and runs
 CNPG smoke tests. Branch builds publish testing packages; production promotion
 requires a trusted `main` event. An optional `cnpg_version` selects one locked
 operator release; by default all supported locked releases are tested.
