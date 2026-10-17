@@ -25,8 +25,8 @@ python3 pgrx/verify.py --image "$IMAGE" --platform "$PLATFORM" \
   --certificate-oidc-issuer "$ISSUER" \
   --output-directory ./verified-amd64
 
-grype sbom:./verified-amd64/sbom.spdx.json | grep -E 'NAME|High|Critical'
-grant list ./verified-amd64/sbom.spdx.json
+grype sbom:./verified-amd64/sbom.spdx.json | grep -E 'NAME|High|Critical' | grep -v "won't fix"
+grant list ./verified-amd64/sbom.spdx.json 2>/dev/null
 ```
 
 Replace the owner in both the image and the anchored identity policy if you
