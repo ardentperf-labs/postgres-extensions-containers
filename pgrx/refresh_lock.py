@@ -27,11 +27,11 @@ def write(path,value):path.write_text(json.dumps(value,indent=2)+'\n')
 def tool_url(name, version, architecture):
     numeric=version.removeprefix('v')
     rust_arch={'amd64':'x86_64','arm64':'aarch64'}[architecture]
+    if name in ('grype','grant'):return f'https://github.com/anchore/{name}/releases/download/v{numeric}/{name}_{numeric}_linux_{architecture}.tar.gz'
     templates={
         'cargo-about':f'https://github.com/EmbarkStudios/cargo-about/releases/download/{numeric}/cargo-about-{numeric}-{rust_arch}-unknown-linux-musl.tar.gz',
         'cargo-cyclonedx':f'https://github.com/CycloneDX/cyclonedx-rust-cargo/releases/download/cargo-cyclonedx-{numeric}/cargo-cyclonedx-{rust_arch}-unknown-linux-gnu.tar.xz',
         'cosign':f'https://github.com/sigstore/cosign/releases/download/v{numeric}/cosign-linux-{architecture}',
-        'trivy':f'https://github.com/aquasecurity/trivy/releases/download/v{numeric}/trivy_{numeric}_Linux-'+('64bit' if architecture=='amd64' else 'ARM64')+'.tar.gz',
         'actionlint':f'https://github.com/rhysd/actionlint/releases/download/v{numeric}/actionlint_{numeric}_linux_{architecture}.tar.gz',
         'task':f'https://github.com/go-task/task/releases/download/v{numeric}/task_linux_{architecture}.tar.gz',
         'dagger':f'https://github.com/dagger/dagger/releases/download/v{numeric}/dagger_v{numeric}_linux_{architecture}.tar.gz',

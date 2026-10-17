@@ -37,7 +37,10 @@ def main():
         for platform in assembly['platforms']:
             output=args.output/platform.split('/')[1]
             verify(image,platform,output,identity=policy,issuer=ISSUER)
-            subprocess.run(['trivy','sbom','--scanners','vuln,license','--format','json','--output',str(output/'trivy.json'),str(output/'sbom.spdx.json')],check=True)
+            for tool in ('grype','grant'):
+                command = ['grype','sbom:'+str(output/'sbom.spdx.json'),'-o','json'] if tool=='grype' else ['grant','list',str(output/'sbom.spdx.json'),'-o','json']
+                with (output/(tool+'.json')).open('w') as report:
+                    subprocess.run(command,stdout=report,check=True)
     elif args.stage=='smoke':
         from smoke import smoke
         verify_signature(image)

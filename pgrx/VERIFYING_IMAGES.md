@@ -25,7 +25,8 @@ python3 pgrx/verify.py --image "$IMAGE" --platform "$PLATFORM" \
   --certificate-oidc-issuer "$ISSUER" \
   --output-directory ./verified-amd64
 
-trivy sbom --scanners vuln,license ./verified-amd64/sbom.spdx.json
+grype sbom:./verified-amd64/sbom.spdx.json | grep -E 'NAME|High|Critical'
+grant list ./verified-amd64/sbom.spdx.json
 ```
 
 Replace the owner in both the image and the anchored identity policy if you
@@ -50,7 +51,7 @@ check the publisher signature or the complete graph. Buildx returns an SPDX
 stub for a single-platform index and a platform map for a multi-platform index;
 the verifier handles both shapes identically for all extensions.
 
-Trivy scans the extracted document; it does not authenticate it. Reports cover
+Grype and Grant scan the extracted document; they do not authenticate it. Reports cover
 the shipped extension payload and its selected dependencies, not the PostgreSQL
 base image or other extension volumes. Scan those images separately. PGRX Cargo
 relationships describe the configured target dependency graph; they do not

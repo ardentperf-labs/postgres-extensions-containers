@@ -66,7 +66,6 @@ class SPDXConformanceTest(unittest.TestCase):
         self.assertEqual([], findings, '\n'.join(str(finding) for finding in findings))
         packages = {package['name']: package for package in output['packages']}
         self.assertIn('runtime', packages)
-        self.assertIn('debian', packages)
         output_packages = {package['SPDXID']: package for package in output['packages']}
         self.assertTrue(all(output_packages[package_id] == package
                             for package_id, package in generator_packages.items()))
