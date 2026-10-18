@@ -43,6 +43,7 @@ jobs:
       env:
         EVENT: ${{ github.event_name }}
         BEFORE: ${{ github.event.before }}
+        REF: ${{ github.ref }}
       run: |-
         if [[ "$EVENT" == workflow_dispatch ]]; then
           MATRIX=$(python3 pgrx/workflow.py --inputs "$RUNNER_TEMP/pgrx-inputs.json")
@@ -51,7 +52,7 @@ jobs:
             MATRIX=$(python3 pgrx/workflow.py)
           else
             git diff --name-only "$BEFORE" HEAD > "$RUNNER_TEMP/changed.txt"
-            MATRIX=$(python3 pgrx/workflow.py --changed-paths "$RUNNER_TEMP/changed.txt")
+            MATRIX=$(python3 pgrx/workflow.py --changed-paths "$RUNNER_TEMP/changed.txt" --ref "$REF")
           fi
         fi
         printf 'matrix=%s\n' "$MATRIX" >> "$GITHUB_OUTPUT"

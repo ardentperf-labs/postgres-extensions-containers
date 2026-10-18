@@ -44,12 +44,12 @@ def select(inputs, inventory):
     return ['linux/amd64','linux/arm64']
 
 
-def changed_extensions(paths, inventory):
+def changed_extensions(paths, inventory, *, ref=""):
     # This manifest contains per-extension source pins, rather than shared tooling.
     if 'pgrx/dependencies/sources.json' in paths:return sorted(inventory)
     shared=('pgrx/','docker-bake-pgrx.hcl','.github/workflows/pgrx.yml','.github/workflows/pgrx_targets.yml','dagger/maintenance/','Taskfile.yml','test/')
     changed={p.split('/')[0] for p in paths}&set(inventory)
-    if any(any(p.startswith(prefix) for prefix in shared) for p in paths):
+    if ref != "refs/heads/main" and any(any(p.startswith(prefix) for prefix in shared) for p in paths):
         # Ordinary extension loading plus shared preload/background-worker setup.
         sample={'pg-session-jwt','pg-durable'}
         if sample-set(inventory):raise ValueError('infrastructure sample contains an unknown PGRX extension')
@@ -58,11 +58,11 @@ def changed_extensions(paths, inventory):
 
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--inputs',type=Path);parser.add_argument('--changed-paths',type=Path)
+    parser=argparse.ArgumentParser();parser.add_argument('--inputs',type=Path);parser.add_argument('--changed-paths',type=Path);parser.add_argument('--ref',default='')
     args=parser.parse_args();inventory=discover()
     if args.inputs:
         inputs=json.loads(args.inputs.read_text());select(inputs,inventory);result=[inputs['extension_name']]
-    elif args.changed_paths:result=changed_extensions(args.changed_paths.read_text().splitlines(),inventory)
+    elif args.changed_paths:result=changed_extensions(args.changed_paths.read_text().splitlines(),inventory,ref=args.ref)
     else:result=sorted(inventory)
     print(json.dumps(result))
 

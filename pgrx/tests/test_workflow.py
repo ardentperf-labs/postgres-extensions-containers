@@ -19,3 +19,9 @@ class SelectorTest(unittest.TestCase):
         self.assertEqual(changed_extensions(['pg-search/Dockerfile'],self.inventory),['pg-search'])
         self.assertEqual(changed_extensions(['Taskfile.yml','pg-search/metadata.hcl'],self.inventory),sorted(self.inventory))
         self.assertEqual(changed_extensions(['Taskfile.yml','pg-session-jwt/Dockerfile'],self.inventory),['pg-durable','pg-session-jwt'])
+
+    def test_main_does_not_repeat_infrastructure_builds(self):
+        self.assertEqual(changed_extensions(['Taskfile.yml'],self.inventory,ref='refs/heads/main'),[])
+        self.assertEqual(changed_extensions(['Taskfile.yml','pg-search/metadata.hcl'],self.inventory,ref='refs/heads/main'),['pg-search'])
+        self.assertEqual(changed_extensions(['Taskfile.yml','pg-search/metadata.hcl'],self.inventory,ref='refs/heads/topic'),sorted(self.inventory))
+        self.assertEqual(changed_extensions(['pgrx/dependencies/sources.json'],self.inventory,ref='refs/heads/main'),sorted(self.inventory))
