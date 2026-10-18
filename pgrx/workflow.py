@@ -45,7 +45,7 @@ def select(inputs, inventory):
 
 
 def changed_extensions(paths, inventory):
-    shared=('pgrx/','docker-bake-pgrx.hcl','.github/workflows/pgrx.yml','.github/workflows/pgrx_targets.yml','dagger/maintenance/','Taskfile.yml','renovate.json')
+    shared=('pgrx/','docker-bake-pgrx.hcl','.github/workflows/pgrx.yml','.github/workflows/pgrx_targets.yml','dagger/maintenance/','Taskfile.yml')
     if any(any(p.startswith(prefix) for prefix in shared) for p in paths):return sorted(inventory)
     return sorted({p.split('/')[0] for p in paths}&set(inventory))
 

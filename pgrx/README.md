@@ -85,7 +85,11 @@ Create and activate a virtual environment for SPDX validation:
 ```sh
 python3 -m venv /tmp/cnpg-pgrx-venv
 source /tmp/cnpg-pgrx-venv/bin/activate
-python -m pip install -r sbom-generator/requirements.txt
+scancode_version=$(sed -n 's/^ARG SCANCODE_VERSION=//p' sbom-generator/Dockerfile)
+curl --fail --silent --show-error --location \
+  "https://raw.githubusercontent.com/aboutcode-org/scancode-toolkit/v${scancode_version}/requirements.txt" \
+  --output /tmp/cnpg-pgrx-constraints.txt
+python -m pip install spdx-tools -c /tmp/cnpg-pgrx-constraints.txt
 ```
 
 Run all local unit, workflow, and dependency checks once:

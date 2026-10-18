@@ -68,5 +68,10 @@ jobs:
       - name: Run PGRX contract tests
         run: |
           python3 -m venv "$RUNNER_TEMP/pgrx-tests"
-          "$RUNNER_TEMP/pgrx-tests/bin/pip" install -r sbom-generator/requirements.txt
+          scancode_version=$(sed -n 's/^ARG SCANCODE_VERSION=//p' sbom-generator/Dockerfile)
+          test -n "$scancode_version"
+          curl --fail --silent --show-error --location \
+            "https://raw.githubusercontent.com/aboutcode-org/scancode-toolkit/v${scancode_version}/requirements.txt" \
+            --output "$RUNNER_TEMP/pgrx-constraints.txt"
+          "$RUNNER_TEMP/pgrx-tests/bin/pip" install spdx-tools -c "$RUNNER_TEMP/pgrx-constraints.txt"
           "$RUNNER_TEMP/pgrx-tests/bin/python" pgrx/test.py

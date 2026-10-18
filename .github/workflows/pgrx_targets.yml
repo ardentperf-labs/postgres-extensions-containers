@@ -27,9 +27,8 @@ jobs:
       targets: ${{ steps.prepare.outputs.targets }}
       smoke_targets: ${{ steps.prepare.outputs.smoke_targets }}
     env:
-      # Before merge, replace this checked development image with the official digest selected by the adoption PR.
-      # renovate: datasource=docker depName=ghcr.io/ardentperf-labs/cnpg-sbom-generator versioning=docker
-      SBOM_GENERATOR: ghcr.io/ardentperf-labs/cnpg-sbom-generator:latest@sha256:d7762114a3f906d8ba7a5ffcf611d9ea855a4d7fd18b46d3c2939d8d9c7eb135
+      # renovate: datasource=docker depName=ghcr.io/cnpg-extensions/cnpg-sbom-generator versioning=docker
+      SBOM_GENERATOR: ghcr.io/cnpg-extensions/cnpg-sbom-generator:latest@sha256:055375d36ca37696266938adc5af62663cf1071ff11a293ad7bce21a0af4d1f7
     steps:
     - &id002
       name: Use current workspace

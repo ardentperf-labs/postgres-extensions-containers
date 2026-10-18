@@ -20,7 +20,6 @@ name: Build, test and publish PGRX extensions
     - '*/Dockerfile'
     - '*/metadata.hcl'
     - Taskfile.yml
-    - renovate.json
 permissions: {}
 jobs:
   discover:
