@@ -68,7 +68,7 @@ jobs:
           fi
           {
             echo 'EXTENSIONS<<YAML_EOF'
-            echo "$VALID_TARGETS" | jq -r '.[] | "\(.):\n  - \"\(.)/**\"\n  - *shared"'
+            echo "$VALID_TARGETS" | jq -r '.[] | "\(.):\n  - \"\(.)/**\""'
             echo 'YAML_EOF'
           } >> "$GITHUB_ENV"
 
@@ -77,31 +77,42 @@ jobs:
         id: filter
         with:
           filters: |
-            _shared: &shared
+            _shared:
               - 'docker-bake.hcl'
               - 'scripts/**'
               - 'Taskfile.yml'
               - 'test/**'
               - 'dagger/maintenance/**'
+              - '.github/workflows/bake.yml'
               - '.github/workflows/bake_targets.yml'
             ${{ env.EXTENSIONS }}
 
-      # Compute a matrix containing the list of all extensions that have been modified
+      # Always build changed extensions; shared infrastructure adds a fixed sample.
       - name: Compute matrix
         id: get-matrix
         env:
           # JSON array containing the extensions that have been changed
           CHANGES: ${{ steps.filter.outputs.changes }}
+          # SQL-only, native/preload, bundled libraries/data, and extension dependencies.
+          INFRASTRUCTURE_SAMPLE: '["pgtap", "pg-cron", "ogr-fdw", "powa"]'
+          VALID_TARGETS: ${{ steps.get-targets.outputs.output }}
           # Input Extension name
           INPUT_EXTENSION_NAME: ${{ github.event.inputs.extension_name }}
           EVENT_NAME: ${{ github.event_name }}
         run: |
           if [[ "${EVENT_NAME}" == 'workflow_dispatch' ]]; then
-            CHANGES="[\"$INPUT_EXTENSION_NAME\"]"
+            EXTENSIONS_CHANGED=$(jq -cn --arg ext "$INPUT_EXTENSION_NAME" '[$ext]')
+          else
+            EXTENSIONS_CHANGED=$(jq -ce --argjson sample "$INFRASTRUCTURE_SAMPLE" \
+              --argjson targets "$VALID_TARGETS" '
+              if index("_shared") then
+                if ($sample - $targets | length) > 0 then
+                  error("Infrastructure sample contains an unknown extension")
+                else (. + $sample) end
+              else . end
+              | map(select(. != "_shared")) | unique
+            ' <<< "$CHANGES")
           fi
-
-          # Filter away the shared filter
-          EXTENSIONS_CHANGED=$(echo "$CHANGES" | jq -c 'map(select(. != "_shared"))')
 
           echo "matrix=$EXTENSIONS_CHANGED" >> "$GITHUB_OUTPUT"
 

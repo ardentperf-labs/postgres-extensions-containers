@@ -131,6 +131,23 @@ task DRY_RUN=true
 task bake TARGET=pgvector DRY_RUN=true
 ```
 
+## CI extension selection
+
+Changes within an extension directory build and test that extension. Shared build
+infrastructure changes (Bake configuration, scripts, Task/Dagger, common tests,
+or extension build workflows) add a representative sample:
+
+- `pgtap`: SQL-only payload.
+- `pg-cron`: native library with shared preload and PostgreSQL configuration.
+- `ogr-fdw`: bundled system libraries, data files, and environment settings.
+- `powa`: base-image extension dependencies and multiple shared preload libraries.
+
+When both change, CI builds the union of the sample and directly changed
+extensions. Each selected extension keeps its complete architecture, distro,
+security, provenance, and CNPG smoke-test matrix. Manual workflow dispatch still
+builds exactly the requested extension. Update the sample in
+`.github/workflows/bake.yml` if these extensions or their coverage change.
+
 ## Local testing guide
 
 Testing your extensions locally ensures high-quality PRs and faster iteration
