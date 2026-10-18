@@ -87,7 +87,7 @@ jobs:
               - '.github/workflows/bake_targets.yml'
             ${{ env.EXTENSIONS }}
 
-      # Always build changed extensions; shared infrastructure adds a fixed sample.
+      # Always build changed extensions; test shared infrastructure on branches only.
       - name: Compute matrix
         id: get-matrix
         env:
@@ -99,13 +99,14 @@ jobs:
           # Input Extension name
           INPUT_EXTENSION_NAME: ${{ github.event.inputs.extension_name }}
           EVENT_NAME: ${{ github.event_name }}
+          REF: ${{ github.ref }}
         run: |
           if [[ "${EVENT_NAME}" == 'workflow_dispatch' ]]; then
             EXTENSIONS_CHANGED=$(jq -cn --arg ext "$INPUT_EXTENSION_NAME" '[$ext]')
           else
             EXTENSIONS_CHANGED=$(jq -ce --argjson sample "$INFRASTRUCTURE_SAMPLE" \
-              --argjson targets "$VALID_TARGETS" '
-              if index("_shared") then
+              --argjson targets "$VALID_TARGETS" --arg ref "$REF" '
+              if index("_shared") and $ref != "refs/heads/main" then
                 if ($sample - $targets | length) > 0 then
                   error("Infrastructure sample contains an unknown extension")
                 else (. + $sample) end
