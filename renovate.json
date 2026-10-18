@@ -149,7 +149,6 @@
         "https://packages.debian.org/bookworm/amd64/{{packageName}}"
       ],
       "groupName": "SBOM generator Debian and base image updates",
-      "automerge": false,
       "description": "Work around Renovate #44330 using Debian package pages; see WORKAROUNDS.md",
       "overrideDatasource": "custom.debian-bookworm",
       "versioning": "deb"
@@ -165,7 +164,6 @@
         "https://packages.debian.org/bookworm/arm64/{{packageName}}"
       ],
       "groupName": "SBOM generator Debian and base image updates",
-      "automerge": false,
       "description": "Work around Renovate #44330 using Debian package pages; see WORKAROUNDS.md",
       "overrideDatasource": "custom.debian-bookworm",
       "versioning": "deb"
@@ -183,8 +181,7 @@
         "sbom-generator/Dockerfile"
       ],
       "groupName": "SBOM generator Debian and base image updates",
-      "allowedVersions": "/^3\\.14(?:\\.\\d+)?-slim-bookworm$/",
-      "automerge": false
+      "allowedVersions": "/^3\\.14(?:\\.\\d+)?-slim-bookworm$/"
     },
     {
       "matchDatasources": [
@@ -193,8 +190,7 @@
       "matchFileNames": [
         "sbom-generator/requirements.txt"
       ],
-      "groupName": "SBOM validation dependencies",
-      "automerge": false
+      "groupName": "SBOM validation dependencies"
     },
     {
       "description": "review SPDX validator upgrades with ScanCode dependency compatibility",
@@ -293,6 +289,22 @@
       "prBodyNotes": [
         "⚠️ SQL versions in this image cannot all be updated by a verified package-version extraction rule. Before merging, inspect every shipped extension control file and SQL upgrade script, including independently versioned bundled extensions. Update metadata.hcl, README.md and affected test expectations where needed. Do not infer SQL versions from the package version or approve solely because CI passed."
       ]
+    },
+    {
+      "description": "Automerge non-major SBOM generator updates after all checks pass on the current base",
+      "matchFileNames": [
+        "sbom-generator/**",
+        ".github/workflows/sbom-generator.yml"
+      ],
+      "matchUpdateTypes": ["minor", "patch", "digest", "pin", "pinDigest"],
+      "automerge": true,
+      "platformAutomerge": false,
+      "rebaseWhen": "behind-base-branch"
+    },
+    {
+      "description": "Require manual merging for major updates across every dependency and manager; keep this rule last",
+      "matchUpdateTypes": ["major"],
+      "automerge": false
     }
   ],
   "customDatasources": {
