@@ -45,9 +45,16 @@ def select(inputs, inventory):
 
 
 def changed_extensions(paths, inventory):
-    shared=('pgrx/','docker-bake-pgrx.hcl','.github/workflows/pgrx.yml','.github/workflows/pgrx_targets.yml','dagger/maintenance/','Taskfile.yml')
-    if any(any(p.startswith(prefix) for prefix in shared) for p in paths):return sorted(inventory)
-    return sorted({p.split('/')[0] for p in paths}&set(inventory))
+    # This manifest contains per-extension source pins, rather than shared tooling.
+    if 'pgrx/dependencies/sources.json' in paths:return sorted(inventory)
+    shared=('pgrx/','docker-bake-pgrx.hcl','.github/workflows/pgrx.yml','.github/workflows/pgrx_targets.yml','dagger/maintenance/','Taskfile.yml','test/')
+    changed={p.split('/')[0] for p in paths}&set(inventory)
+    if any(any(p.startswith(prefix) for prefix in shared) for p in paths):
+        # Ordinary extension loading plus shared preload/background-worker setup.
+        sample={'pg-session-jwt','pg-durable'}
+        if sample-set(inventory):raise ValueError('infrastructure sample contains an unknown PGRX extension')
+        changed.update(sample)
+    return sorted(changed)
 
 
 def main():

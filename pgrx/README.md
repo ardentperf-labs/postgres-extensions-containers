@@ -105,6 +105,14 @@ BuildKit/SPDX/Grype/Grant integration fixture is maintained in
 `sbom-generator/tests/integration/`; its workflow runs it on both native
 architectures.
 
+Shared PGRX build infrastructure and common test changes select `pg-session-jwt`
+(ordinary extension loading) and `pg-durable` (shared preload/background worker),
+plus any directly changed PGRX extensions. Each selected extension retains its
+full distro, native architecture, signing, security, and CNPG smoke-test matrix.
+The sample is maintained in `pgrx/workflow.py`. Changes to the combined
+per-extension source pin manifest (`pgrx/dependencies/sources.json`) still select
+all PGRX extensions.
+
 For full extension acceptance, dispatch `.github/workflows/pgrx.yml` with an
 `extension_name`. It builds all metadata-declared targets on native AMD64 and
 ARM64, assembles and signs their indexes, checks SPDX/Grype/Grant results, and runs
