@@ -5,10 +5,6 @@ but no package database. The generator uses the builder's package evidence to
 identify the files actually shipped, excluding packages with no matched files.
 It runs as a BuildKit scanner; its tools are not added to the extension image.
 
-The first PR adds the generator image, publication workflow, composer, hook, and
-checks. This adoption PR connects extension builds to that generator and adds the
-end-user documentation. PGRX follows as a separate downstream consumer.
-
 See [How it works](README.md#how-it-works) for the complete architecture diagram.
 
 Files are copied to different locations in the scratch image: for example,
@@ -19,19 +15,27 @@ that owned that builder file.
 
 Ownership requires matching SHA256 content. Exact paths and shared path suffixes
 rank candidates; ambiguous matches stay unclaimed. The composer retains owning
-packages and their relationships, preserves Syft package identities, and merges
-license evidence. It does not infer ownership from a license-directory
-name. Large copyright files are split for scanning, then findings are mapped back
-to their original file paths.
+packages and their relationships, and passes through Syft package identities,
+license references, and extracted license text. It updates file paths, IDs, and
+checksums, repairs relationships, and recalculates package verification codes for
+the shipped subset. Original copyright notices remain intact. Hash-based license
+references can be difficult to interpret; see the [upstream usability work](../WORKAROUNDS.md#syft-readability-of-hash-based-license-references)
+and [checksum-based notice retrieval](README.md#retrieve-an-original-notice).
+
+Builder scans should mirror BuildKit's default Syft generator as closely as
+possible. Review the [Syft call](generator.py) against the upstream settings
+linked there: scan base path, source alias, `image,file` cataloger defaults, and
+added `sbom-cataloger`. Tests exercise installed packages, embedded SBOMs, and
+exclusion of source-only Go dependencies.
 
 ## Where to review
 
 | Area | Entry points |
 | --- | --- |
-| Scanner lifecycle, final inventory, ScanCode invocation, BuildKit statement | [generator.py](generator.py) |
-| File ownership, package selection, license composition, document identity | [compose.py](compose.py) |
+| Syft lifecycle, final inventory, BuildKit statement | [generator.py](generator.py) |
+| File ownership, package selection, metadata preservation, document identity | [compose.py](compose.py) |
 | Optional hook and its context | [hooks.py](hooks.py) |
-| Final SPDX conformance check | [spdx_validation.py](spdx_validation.py), [release constraints](Dockerfile) |
+| Final SPDX conformance check | [spdx_validation.py](spdx_validation.py), [explicit SPDX Tools dependency](Dockerfile) |
 | Scanner image and dependencies | [Dockerfile](Dockerfile) |
 | Extension integration | [docker-bake.hcl](../docker-bake.hcl), [bake_targets.yml](../.github/workflows/bake_targets.yml) |
 | Generator checks, publication, and digest updates | [sbom-generator.yml](../.github/workflows/sbom-generator.yml), [release.py](release.py), [renovate.json](../renovate.json) |
@@ -49,9 +53,11 @@ image. Signing and SLSA provenance are handled separately by the workflows.
 ## Downstream augmentation
 
 A builder may supply `/usr/local/share/cnpg-sbom/augment_spdx.py` with
-`augment_spdx(document, context) -> dict`. The hook runs after composition and
-before validation. [HookContext](hooks.py) exposes API version 1, extension name,
-platform, builder/final paths, and the complete Syft builder document.
+`augment_spdx(document, context) -> dict`. It receives the scoped document as
+`document` and the full, unprocessed Syft result as `context.builder_document`.
+[HookContext](hooks.py) also exposes API version 1, extension name, platform, and
+builder/final paths. After the hook returns, the generator calculates the final
+document namespace and validates the complete SPDX, including hook additions.
 
 The hook executes trusted Python in the generator environment. Builder-installed
 dependencies are unavailable there; downstream builds can prepare JSON evidence
@@ -78,13 +84,13 @@ docker run --rm --entrypoint python3 \
 IMAGE=ghcr.io/cnpg-extensions/pgsphere@sha256:54e6f0b0a9d9e4c80db8c6edcac98b451159c1fbaa91e429a92d4978f593518d
 docker buildx imagetools inspect "$IMAGE" \
   --format '{{ json (index .SBOM "linux/amd64").SPDX }}' \
-  > pgsphere-amd64.spdx.json
+  > pgsphere.spdx.json
 docker run --rm --entrypoint python3 --volume "$PWD:/workspace:ro" \
   cnpg-sbom-generator:local /opt/cnpg-sbom-generator/spdx_validation.py \
-  /workspace/pgsphere-amd64.spdx.json
+  /workspace/pgsphere.spdx.json
 ```
 
-Delete `pgsphere-amd64.spdx.json` after the check, or supply another extracted
+Delete `pgsphere.spdx.json` after the check, or supply another extracted
 SBOM at that path. See the [user guide](README.md#verify-the-image-and-extract-its-sbom)
 for publisher verification.
 

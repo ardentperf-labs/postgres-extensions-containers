@@ -168,7 +168,7 @@
       "versioning": "deb"
     },
     {
-      "description": "Hold SBOM Python to ScanCode-supported 3.14 Bookworm tags; see WORKAROUNDS.md",
+      "description": "Keep the SBOM Python base on Bookworm to match pinned Debian packages",
       "matchDatasources": [
         "docker"
       ],
@@ -180,7 +180,7 @@
         "sbom-generator/Dockerfile"
       ],
       "groupName": "SBOM generator Debian and base image updates",
-      "allowedVersions": "/^3\\.14(?:\\.\\d+)?-slim-bookworm$/"
+      "allowedVersions": "/^\\d+\\.\\d+(?:\\.\\d+)?-slim-bookworm$/"
     },
     {
       "description": "automerge checked latest generator digest updates",
@@ -267,26 +267,6 @@
       "description": "Require manual merging for major updates",
       "matchUpdateTypes": ["major"],
       "automerge": false
-    },
-    {
-      "description": "Automerge minor and patch ScanCode releases after checks pass",
-      "matchDatasources": [
-        "pypi"
-      ],
-      "matchFileNames": [
-        "sbom-generator/Dockerfile"
-      ],
-      "matchPackageNames": [
-        "scancode-toolkit"
-      ],
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "ScanCode release and dependencies",
-      "automerge": true,
-      "prBodyNotes": [
-        "The image build uses the selected ScanCode release's dependency constraints. On ARM64, pip selects compatible versions of the three native packages excluded from those constraints. Both native AMD64/ARM64 generator integration checks must pass before automerging. See WORKAROUNDS.md for packaging and ARM64 limitations."
-      ],
-      "platformAutomerge": true,
-      "rebaseWhen": "behind-base-branch"
     },
     {
       "description": "Keep SBOM updates separate from extension updates to satisfy PR scope",
