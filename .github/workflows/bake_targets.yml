@@ -62,8 +62,8 @@ jobs:
           environment: testing
           registry: ghcr.io/${{ github.repository_owner }}
           revision: ${{ github.sha }}
-          # renovate: datasource=docker depName=ghcr.io/ardentperf-labs/cnpg-sbom-generator
-          sbom_generator: ghcr.io/ardentperf-labs/cnpg-sbom-generator:latest@sha256:d7762114a3f906d8ba7a5ffcf611d9ea855a4d7fd18b46d3c2939d8d9c7eb135
+          # renovate: datasource=docker depName=ghcr.io/cnpg-extensions/cnpg-sbom-generator
+          sbom_generator: ghcr.io/cnpg-extensions/cnpg-sbom-generator:latest@sha256:69eb2fde370217da1e4f9a8e57156960c66a6142117fb2a58ae1f0dcb89a5fcc
         with:
           # Use the checkout so Bake sees the injected Dockerfile declaration.
           source: .
