@@ -4,8 +4,9 @@
 
 CNPG Extensions images include an SPDX 2.3 software bill of materials (SBOM) for
 each platform. It lists shipped files, their checksums, identifiable Debian
-packages, and license evidence from the notices in `/licenses`, including copied
-system libraries. Scan the PostgreSQL base image separately using its own SBOM.
+packages, and license metadata reported by Syft, including copied system
+libraries. Original license notices are shipped in `/licenses`. Scan the
+PostgreSQL base image separately using its own SBOM.
 
 ### Verify the image and extract its SBOM
 
@@ -21,11 +22,10 @@ cosign verify "$IMAGE" \
 
 docker buildx imagetools inspect "$IMAGE" \
   --format '{{ json (index .SBOM "linux/amd64").SPDX }}' \
-  > pgsphere-amd64.spdx.json
+  > pgsphere.spdx.json
 ```
 
-Replace `linux/amd64` with `linux/arm64` and `pgsphere-amd64.spdx.json` with
-`pgsphere-arm64.spdx.json` to inspect the ARM image. Extraction alone does not
+Replace `linux/amd64` with `linux/arm64` to inspect the ARM image. Extraction alone does not
 verify the publisher. See [CloudNativePG's signature and attestation guidance](https://cloudnative-pg.io/docs/1.30/security/#image-signatures).
 
 ### Inspect and verify build provenance
@@ -55,8 +55,8 @@ attestation as well as the image index.
 ### Report vulnerabilities and licenses
 
 ```bash
-grype sbom:pgsphere-amd64.spdx.json | grep -E 'NAME|High|Critical' | grep -v "won't fix"
-grant list pgsphere-amd64.spdx.json
+grype sbom:pgsphere.spdx.json | grep -E 'NAME|High|Critical' | grep -v "won't fix"
+grant list pgsphere.spdx.json
 ```
 
 The filters show High and Critical findings except those marked "won't fix".
@@ -65,60 +65,81 @@ with a known fix. Grant reports all package licenses.
 To list packages associated with a license or inspect one package:
 
 ```bash
-grant list pgsphere-amd64.spdx.json MIT
-grant list pgsphere-amd64.spdx.json GPL-3.0-or-later --pkg gcc-12-base
+grant list pgsphere.spdx.json MIT
+grant list pgsphere.spdx.json GPL-3.0-or-later --pkg gcc-12-base
 ```
 
-See the [example output](../examples/sbom-reports.txt) from an OGR FDW Bookworm
-validation build. These commands also accept SPDX extracted from CNPG PostgreSQL
+See the [example report commands](../examples/sbom-reports.txt) for an OGR FDW
+Bookworm build. These commands also accept SPDX extracted from CNPG PostgreSQL
 images. Scan the extracted SPDX: a direct filesystem scan of the scratch image
 cannot recover its missing Debian package database. Findings depend on the
 scanner's vulnerability database and supported package ecosystems.
 
 #### Reading license results
 
-Syft identifies packages in the builder, but is known to miss license declarations
-for many Debian packages. We therefore use ScanCode to scan the shipped `/licenses`
-notices. Its findings populate SPDX file records, contribute to their owning
-packages' `licenseInfoFromFiles`, and fill missing or unknown `licenseDeclared`
-values.
+`grant list` groups packages by license. The `LICENSE` column can contain a
+name such as `MIT`, an expression combining licenses with `AND` or `OR`, or a
+64-character hexadecimal checksum. The `PACKAGES` column counts packages
+associated with each entry; a package can appear under several entries.
 
-Grant reports package licenses. Unmatched files remain in SPDX with checksums and
-scanned license evidence; their file-level findings may not appear in Grant's
-package report. `NOASSERTION` means no value was established for that field.
-`LicenseRef-*` identifiers refer to `hasExtractedLicensingInfos`, with ScanCode
-reference text when available.
+A checksum identifies the original notice text when its license could not be
+identified. It is the notice's SHA256 checksum, so packages sharing the same
+notice can appear under the same checksum. Grant usually labels these entries
+`Unknown` in the `RISK` column because it has no risk classification for that
+identifier. Retrieve the notice to read its terms.
 
 #### Retrieve an original notice
 
-When ScanCode provides no reference text, the original notice is still shipped
-in the image. Find its path in SPDX file records using `licenseInfoInFiles`.
-For example, PgSphere's shared GCC copyright notice contains an unidentified
-license reference:
+Start with a checksum from `grant list`. For example, the
+[OGR FDW report](../examples/sbom-reports.txt) contains this entry. With
+`ogr-fdw.spdx.json` from that build, list its associated packages:
 
 ```bash
-jq -r '.files[] |
-  select(any(.licenseInfoInFiles[]?;
-    contains("LicenseRef-scancode-unknown-license-reference"))) |
-  .fileName' pgsphere-amd64.spdx.json
-# licenses/gcc-12-base/copyright
+CHECKSUM=da8191658b3452ce9caf31638ba61dab31a38c619fa39df119812e050f592fd3
+grant list ogr-fdw.spdx.json "$CHECKSUM"
 ```
 
-Copy that notice from a stopped container; no shell inside the scratch image is
-needed:
+Find shipped notice paths with that SHA256 checksum:
 
 ```bash
+jq -r --arg checksum "$CHECKSUM" '
+  .files[] |
+  select(any(.checksums[]?;
+    .algorithm == "SHA256" and .checksumValue == $checksum)) |
+  .fileName' ogr-fdw.spdx.json
+# licenses/libgfortran5/copyright
+# licenses/libgomp1/copyright
+# licenses/libquadmath0/copyright
+```
+
+These paths contain identical copies of the shared GCC notice. Choose one of
+the returned paths and copy it from the same image used to produce the SBOM.
+For the locally generated example, the image is `ogr-fdw:syft-only-example`;
+replace `IMAGE` when inspecting another build. No shell inside the scratch
+image is needed:
+
+```bash
+IMAGE=ogr-fdw:syft-only-example
+NOTICE=licenses/libgomp1/copyright
 CONTAINER=$(docker create --platform linux/amd64 "$IMAGE" /unused)
-docker cp "$CONTAINER:/licenses/gcc-12-base/copyright" ./gcc-12-copyright
+docker cp "$CONTAINER:/$NOTICE" ./original-notice
 docker rm "$CONTAINER"
+sha256sum ./original-notice
+# da8191658b3452ce9caf31638ba61dab31a38c619fa39df119812e050f592fd3  ./original-notice
 ```
 
-Shared Debian notices can cover several libraries and produce broad license
-expressions. Read the notice alongside the package and file evidence in SPDX.
+Read `original-notice` for the license terms. Shared Debian notices can cover
+several libraries and include terms for code beyond a single shipped binary.
 
 ## Development
 
 ### How it works
+
+The builder scan follows [BuildKit's default Syft generator](https://github.com/docker/buildkit-syft-scanner/blob/master/internal/target.go)
+to keep inventory behavior aligned with upstream. The generator scopes those
+results to files shipped in the final scratch image, applies any extension-specific
+augmentation, and validates the resulting SPDX document. Review scan alignment
+when updating Syft or the upstream generator.
 
 ```mermaid
 %%{init: {"htmlLabels": false}}%%
@@ -130,17 +151,15 @@ flowchart TD
     subgraph G["Custom generator container"]
         E["3. Syft: packages, files, ownership"]
         F["4. Inventory and hash shipped files"]
-        I["5. ScanCode: shipped license notices"]
-        H["6. Match shipped files to builder files<br/>Retain their owning packages"]
-        P["7. Compose SPDX:<br/>files, packages, relationships, and licenses"]
-        X["8. Run optional augment_spdx hook<br/>Unchanged document when absent"]
-        V["9. Recompute document namespace<br/>Validate complete SPDX"]
-        J["10. Wrap SPDX in an in-toto statement"]
+        H["5. Match shipped files to builder files<br/>Retain their owning packages"]
+        P["6. Compose SPDX:<br/>files, packages, relationships, and licenses"]
+        X["7. Run optional augment_spdx hook<br/>Unchanged document when absent"]
+        V["8. Recompute document namespace<br/>Validate complete SPDX"]
+        J["9. Wrap SPDX in an in-toto statement"]
 
         E --> H
         F --> H
         H --> P
-        I --> P
         P --> X
         E -. full builder_document .-> X
         X --> V
@@ -149,9 +168,8 @@ flowchart TD
 
     C -->|read-only mount| E
     D -->|read-only mount| F
-    D -->|license notices| I
     C -. additional evidence .-> X
-    J -->|output directory| K["11. BuildKit binds statement to image digest<br/>and exports the SBOM attestation with the image"]
+    J -->|output directory| K["10. BuildKit binds statement to image digest<br/>and exports the SBOM attestation with the image"]
 ```
 
 Files move when copied into the scratch image: for example,
@@ -251,14 +269,13 @@ on that revision before merging.
 Renovate tracks the Python base-image digest, which covers its bundled Debian
 packages and pip. Additional Debian packages are tracked in architecture-specific
 `dependencies/debian-*.txt` files, grouped with that digest.
-ScanCode dependencies follow the selected release's upstream pins, with ARM64
-exceptions. Renovate automerges ScanCode minor and patch updates after both native AMD64 and
-ARM64 checks pass. Major updates require manual merging. See [ScanCode workarounds](../WORKAROUNDS.md#scancode-arm64-release-archive-and-debian-packaging)
-for packaging limitations.
-
-The Debian lists include build tools because those remain installed in the
-generator image. New Debian dependencies must also be added to both lists.
-The image revision label and SPDX creator identify the generator source commit.
+The Dockerfile pins Syft and the explicit `spdx-tools` Python dependency used for
+SPDX conformance validation. Renovate tracks both versions. Non-major generator
+updates automerge after their required checks pass; major updates require manual
+merging. Keep the Python base on Bookworm to match the Debian dependency lists.
+New Debian dependencies must also be added to both architecture lists.
+The image revision label identifies the generator source commit. The SPDX
+document retains Syft's original name, creators, and license metadata.
 
 To roll back, restore the previous checked consumer digest and hold updates until
 fixed. Retain the corresponding commit images.
