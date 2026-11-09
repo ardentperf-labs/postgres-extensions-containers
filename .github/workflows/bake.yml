@@ -72,10 +72,11 @@ jobs:
           filters: |
             _shared: &shared
               - 'docker-bake.hcl'
+              - '.github/workflows/bake_targets.yml'
+            _testing:
               - 'Taskfile.yml'
               - 'test/**'
               - 'dagger/maintenance/**'
-              - '.github/workflows/bake_targets.yml'
             ${{ env.EXTENSIONS }}
 
       # Compute a matrix containing the list of all extensions that have been modified
@@ -87,13 +88,18 @@ jobs:
           # Input Extension name
           INPUT_EXTENSION_NAME: ${{ github.event.inputs.extension_name }}
           EVENT_NAME: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          VALID_TARGETS: ${{ steps.get-targets.outputs.output }}
         run: |
           if [[ "${EVENT_NAME}" == 'workflow_dispatch' ]]; then
-            CHANGES="[\"$INPUT_EXTENSION_NAME\"]"
+            EXTENSIONS_CHANGED=$(jq -cn --arg ext "$INPUT_EXTENSION_NAME" '[$ext]')
+          else
+            # Validate testing infrastructure on branches without republishing on main.
+            EXTENSIONS_CHANGED=$(jq -c --argjson targets "$VALID_TARGETS" --arg ref "$REF" '
+              if index("_testing") and $ref != "refs/heads/main" then $targets
+              else map(select(. != "_shared" and . != "_testing")) end
+            ' <<< "$CHANGES")
           fi
-
-          # Filter away the shared filter
-          EXTENSIONS_CHANGED=$(echo "$CHANGES" | jq -c 'map(select(. != "_shared"))')
 
           echo "matrix=$EXTENSIONS_CHANGED" >> "$GITHUB_OUTPUT"
 
