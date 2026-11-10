@@ -89,15 +89,16 @@ jobs:
           INPUT_EXTENSION_NAME: ${{ github.event.inputs.extension_name }}
           EVENT_NAME: ${{ github.event_name }}
           REF: ${{ github.ref }}
-          VALID_TARGETS: ${{ steps.get-targets.outputs.output }}
+          INFRASTRUCTURE_SAMPLE: '["postgis", "pgvector", "pgaudit"]'
         run: |
           if [[ "${EVENT_NAME}" == 'workflow_dispatch' ]]; then
             EXTENSIONS_CHANGED=$(jq -cn --arg ext "$INPUT_EXTENSION_NAME" '[$ext]')
           else
             # Validate testing infrastructure on branches without republishing on main.
-            EXTENSIONS_CHANGED=$(jq -c --argjson targets "$VALID_TARGETS" --arg ref "$REF" '
-              if index("_testing") and $ref != "refs/heads/main" then $targets
-              else map(select(. != "_shared" and . != "_testing")) end
+            EXTENSIONS_CHANGED=$(jq -c --argjson sample "$INFRASTRUCTURE_SAMPLE" --arg ref "$REF" '
+              if index("_testing") and $ref != "refs/heads/main" then . + $sample
+              else . end
+              | map(select(. != "_shared" and . != "_testing")) | unique
             ' <<< "$CHANGES")
           fi
 
