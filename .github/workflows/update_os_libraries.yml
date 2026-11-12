@@ -28,7 +28,7 @@ jobs:
         uses: dagger/dagger-for-github@27b130bf0f79a7f6fbbbe0fbca6760dc9bb40a77 # v8.4.1
         env:
           # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-          DAGGER_VERSION: 0.21.10
+          DAGGER_VERSION: 0.21.11
         with:
           version: ${{ env.DAGGER_VERSION }}
           verb: call
@@ -41,7 +41,7 @@ jobs:
           EXTENSIONS_OUTPUT: ${{ steps.get-extensions-dagger.outputs.output }}
         run: |
           EXTENSIONS="${EXTENSIONS_OUTPUT}"
-          echo "extensions=$(echo "$EXTENSIONS" | jq -c .)" >> $GITHUB_OUTPUT
+          echo "extensions=$(echo "$EXTENSIONS" | jq -c .)" >> "$GITHUB_OUTPUT"
 
   update-extension-os-libs:
     name: Update OS libs for ${{ matrix.extension }}
@@ -56,7 +56,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Log in to the GitHub Container registry
-        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
+        uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -66,7 +66,7 @@ jobs:
         uses: dagger/dagger-for-github@27b130bf0f79a7f6fbbbe0fbca6760dc9bb40a77 # v8.4.1
         env:
           # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-          DAGGER_VERSION: 0.21.10
+          DAGGER_VERSION: 0.21.11
         with:
           version: ${{ env.DAGGER_VERSION }}
           verb: call
@@ -80,7 +80,7 @@ jobs:
 
       - name: Create a PR if versions have been updated on main
         id: create_pr
-        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8
+        uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8
         if: github.ref == 'refs/heads/main'
         with:
           token: ${{ secrets.REPO_GHA_PAT }}

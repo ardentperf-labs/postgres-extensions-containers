@@ -14,6 +14,8 @@ project due to licensing constraints, but are otherwise fully compatible with
   guide for contributors.
 - [Building Locally](./BUILD.md): Technical instructions for the build system
   (Dagger/Task).
+- [Upstream Workarounds](./WORKAROUNDS.md): Temporary measures and the upstream
+  fixes needed to retire them.
 - [CloudNativePG Documentation](https://cloudnative-pg.io/documentation/current/imagevolume_extensions/):
   How to use these images in your cluster.
 
@@ -98,6 +100,7 @@ project due to licensing constraints, but are otherwise fully compatible with
 | **[pltcl](pltcl)** | Tcl procedural language for PostgreSQL | [www.postgresql.org/docs/18/pltcl.html](https://www.postgresql.org/docs/18/pltcl.html) | @ardentperf | PostgreSQL, TCL |
 | **[pointcloud](pointcloud)** | Types and functions for storing and querying LiDAR point-cloud data | [github.com/pgpointcloud/pointcloud](https://github.com/pgpointcloud/pointcloud) | @ardentperf | BSD-3-Clause |
 | **[powa](powa)** | Workload Analyzer history and snapshot schema | [powa.readthedocs.io/en/stable](https://powa.readthedocs.io/en/stable/) | @ardentperf | PostgreSQL |
+| **[postgresql-anonymizer](postgresql-anonymizer)** | Anonymization and data masking (anon) | [gitlab.com/dalibo/postgresql_anonymizer](https://gitlab.com/dalibo/postgresql_anonymizer) | @ardentperf | PostgreSQL |
 | **[prefix](prefix)** | Prefix ranges for text lookup and indexing | [github.com/dimitri/prefix](https://github.com/dimitri/prefix) | @ardentperf | BSD-2-Clause |
 | **[preprepare](preprepare)** | Pre-prepare PostgreSQL statements on the server side | [github.com/dimitri/preprepare](https://github.com/dimitri/preprepare) | @ardentperf | PostgreSQL |
 | **[prioritize](prioritize)** | Get and set the nice priorities of PostgreSQL backends | [pgxn.org/dist/prioritize](http://pgxn.org/dist/prioritize/) | @ardentperf | PostgreSQL |
@@ -270,6 +273,17 @@ docker buildx imagetools inspect <image> --raw | jq '.annotations'
 skopeo inspect docker://<image> | jq '.Labels'
 ```
 
+## SBOMs and authenticity
+
+Use the [SBOM guide](https://github.com/cnpg-extensions/cnpg-sbom-generator) to verify an extension image,
+extract its platform-specific SPDX, and report vulnerabilities and licenses with
+Grype and Grant. See the [example report](./examples/sbom-reports.txt) and
+[generator release workflow](https://github.com/cnpg-extensions/cnpg-sbom-generator/blob/main/.github/workflows/sbom-generator.yml).
+
+For PGRX images, see the [verification notes](./pgrx/README.md#verify-images)
+for the signing identity and signature format.
+
+
 ## Image catalogs
 
 To simplify the deployment of PostgreSQL extensions, this project automatically
@@ -294,3 +308,5 @@ kubectl apply -f \
 
 Clusters using this catalog should reference it instead of the corresponding
 upstream base catalog; it already includes the upstream extension definitions.
+
+PGRX build contributors: see the [build and local validation guide](./pgrx/README.md).

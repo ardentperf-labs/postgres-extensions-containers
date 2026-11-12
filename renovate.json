@@ -15,16 +15,44 @@
   ],
   "customManagers": [
     {
+      "description": "Track Ubuntu runners in matrix values and runs-on expressions",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/[^/]+\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "(?:^|\\r?\\n)[ \\t]*runner:[ \\t]*['\"]?ubuntu-(?<currentValue>\\d+\\.\\d+(?:-arm)?)(?:['\"]|[ \\t\\r\\n]|$)",
+        "(?:^|\\r?\\n)[ \\t]*runs-on:[ \\t]*\\$\\{\\{[^\\r\\n]*?['\"]ubuntu-(?<currentValue>\\d+\\.\\d+(?:-arm)?)['\"]"
+      ],
+      "depNameTemplate": "ubuntu",
+      "depTypeTemplate": "github-runner",
+      "datasourceTemplate": "github-runners",
+      "versioningTemplate": "docker"
+    },
+    {
       "description": "updates the deb package versions in the metadata.hcl files",
       "customType": "regex",
       "managerFilePatterns": [
         "**/*.hcl"
       ],
       "matchStrings": [
-        "\\/\\/\\s*renovate:\\s*?(suite=(?<suite>.*?))?\\s*depName=(?<depName>.*?)?(?: extractVersion=(?<extractVersion>[^\\s]+?))?\\s*(sql|package)\\s*=\\s*\"(?<currentValue>.*)\""
+        "\\/\\/\\s*renovate:\\s*?(suite=(?<suite>.*?))?\\s*depName=(?<depName>[^\\s]+)(?: extractVersion=(?<extractVersion>[^\\s]+?))?\\s*(sql|package)\\s*=\\s*\"(?<currentValue>.*)\""
       ],
       "registryUrlTemplate": "https://download.postgresql.org/pub/repos/apt?suite={{#if suite}}{{suite}}{{else}}stable{{/if}}&components=main&binaryArch=amd64",
       "datasourceTemplate": "deb"
+    },
+    {
+      "description": "Map credcheck X.Y package releases to SQL X.Y.0 in metadata and README",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^credcheck\\/(?:metadata\\.hcl|README\\.md)$/"
+      ],
+      "matchStrings": [
+        "(?:\\/\\/|#)\\s*renovate:\\s*suite=(?<suite>[^\\s]+)\\s+depName=(?<depName>postgresql-[0-9]+-credcheck)\\s+depType=(?<depType>sql)\\s+(?:sql\\s*=\\s*|version:\\s*)\"(?<currentValue>[0-9]+\\.[0-9]+)\\.0\""
+      ],
+      "registryUrlTemplate": "https://download.postgresql.org/pub/repos/apt?suite={{suite}}&components=main&binaryArch=amd64",
+      "datasourceTemplate": "deb",
+      "extractVersionTemplate": "^(?<version>[0-9]+\\.[0-9]+)-[0-9]"
     },
     {
       "description": "updates the container image versions in the README.md files",
@@ -75,16 +103,58 @@
       "matchStrings": [
         "\\/\\/\\s+renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (?:packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))\\s+\\/\\/\\s+\\+default=[\\\"']?[^:]+?:(?<currentValue>[^@]+?)(@(?<currentDigest>sha256:[0-9a-f]+))?[\"']?\\s"
       ]
+    },
+    {
+      "description": "Synchronize PGRX source tags and SQL versions in extension metadata",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^[^/]+/metadata\\.hcl$/"
+      ],
+      "matchStrings": [
+        "#\\s*renovate:\\s*datasource=(?<datasource>github-tags|gitlab-tags)\\s+depName=(?<depName>\\S+)\\s+versioning=(?<versioning>\\S+)[ \\t]*\\r?\\n(?<indentation>[ \\t]*)package[ \\t]*=[ \\t]*\"(?<currentValue>[^\"]+)\"\\s+sql[ \\t]*=[ \\t]*\"[^\"]+\""
+      ],
+      "depTypeTemplate": "pgrx-source",
+      "autoReplaceStringTemplate": "# renovate: datasource={{{datasource}}} depName={{{depName}}} versioning={{{versioning}}}\n{{{indentation}}}package = \"{{{newValue}}}\"\n{{{indentation}}}sql     = \"{{{replace '^v' '' newValue}}}\""
+    },
+    {
+      "description": "PGRX build tool releases",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/pgrx/dependencies/tools\\.json$/"
+      ],
+      "matchStrings": [
+        "\"version\":\\s*\"(?<currentValue>[^\"]+)\"\\s*,\\s*\"depName\":\\s*\"(?<depName>[^\"]+)\"\\s*,\\s*\"datasource\":\\s*\"(?<datasource>[^\"]+)\"",
+        "\"version\":\\s*\"(?<currentValue>[^\"]+)\"\\s*,\\s*\"datasource\":\\s*\"(?<datasource>[^\"]+)\"\\s*,\\s*\"depName\":\\s*\"(?<depName>[^\"]+)\""
+      ]
     }
   ],
   "packageRules": [
     {
-      "description": "require stable release verification for all updates",
+      "description": "automerge checked latest generator digest updates",
       "matchPackageNames": [
-        "*"
+        "/^ghcr\\.io\\/[^/]+\\/cnpg-sbom-generator$/"
+      ],
+      "groupName": "cnpg-sbom-generator image digests",
+      "matchUpdateTypes": ["digest"],
+      "matchCurrentValue": "latest",
+      "automerge": true,
+      "platformAutomerge": true,
+      "rebaseWhen": "behind-base-branch"
+    },
+    {
+      "description": "require stable release verification for extension updates",
+      "matchDatasources": [
+        "deb"
+      ],
+      "matchFileNames": [
+        "*/metadata.hcl",
+        "*/README.md"
+      ],
+      "matchRegistryUrls": [
+        "https://download.postgresql.org/pub/repos/apt*"
       ],
       "prBodyNotes": [
-        "⚠️ Before approving this PR, confirm that the new extension version is a stable release, not a beta or release candidate."
+        "⚠️ Before approving this PR, confirm that the new extension version is a stable release, not a beta or release candidate. The Automerge gate fails on added Renovate-tracked version lines containing `alpha`, `beta`, `rc`, or `~` (case-insensitive), except for the documented AGE naming exception. Manual approval alone does not clear a failed gate."
       ]
     },
     {
@@ -104,7 +174,6 @@
     {
       "description": "require SQL version review when no verified package mapping covers all shipped extensions",
       "matchPackageNames": [
-        "postgresql-*-credcheck",
         "postgresql-*-jsquery",
         "postgresql-*-mysql-fdw",
         "postgresql-*-pg-csv",
@@ -128,6 +197,36 @@
       "prBodyNotes": [
         "⚠️ SQL versions in this image cannot all be updated by a verified package-version extraction rule. Before merging, inspect every shipped extension control file and SQL upgrade script, including independently versioned bundled extensions. Update metadata.hcl, README.md and affected test expectations where needed. Do not infer SQL versions from the package version or approve solely because CI passed."
       ]
+    },
+    {
+      "description": "Require manual merging for major updates",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "Keep PGRX sources separate from GitHub Actions; inherit the shared automerge policy",
+      "matchDepTypes": [
+        "pgrx-source"
+      ],
+      "groupName": null,
+      "pinDigests": false,
+      "prBodyNotes": [
+        "PGRX source tags and SQL versions are updated together, stripping a leading v for SQL. Minor and patch updates use the shared automerge policy with required acceptance checks. If upstream ships a different SQL version, investigate the release before merging. Major updates remain manual."
+      ]
+    },
+    {
+      "description": "Keep PGRX tool tags separate from GitHub Action updates",
+      "matchDatasources": [
+        "github-tags",
+        "gitlab-tags"
+      ],
+      "matchFileNames": [
+        "pgrx/dependencies/**"
+      ],
+      "groupName": null,
+      "pinDigests": false
     }
   ]
 }

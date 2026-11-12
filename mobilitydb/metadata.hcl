@@ -13,6 +13,7 @@ metadata = {
   bin_path                 = []
   env                      = {}
   auto_update_os_libs      = true
+  # Resolve the dependency image from the cluster catalog; missing entries fail E2E.
   required_extensions      = ["postgis"]
   create_extension         = true
 
@@ -20,17 +21,17 @@ metadata = {
     bookworm = {
       "18" = {
         // renovate: suite=bookworm-pgdg depName=postgresql-18-mobilitydb
-        package = "1.3.0-1.pgdg12+1"
+        package = "1.3.1-1.pgdg12+1"
         // renovate: suite=bookworm-pgdg depName=postgresql-18-mobilitydb extractVersion=^(?<version>\d+\.\d+\.\d+)
-        sql     = "1.3.0"
+        sql     = "1.3.1"
       }
     }
     trixie = {
       "18" = {
         // renovate: suite=trixie-pgdg depName=postgresql-18-mobilitydb
-        package = "1.3.0-1.pgdg13+1"
+        package = "1.3.1-1.pgdg13+1"
         // renovate: suite=trixie-pgdg depName=postgresql-18-mobilitydb extractVersion=^(?<version>\d+\.\d+\.\d+)
-        sql     = "1.3.0"
+        sql     = "1.3.1"
       }
     }
   }

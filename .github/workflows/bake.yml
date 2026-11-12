@@ -1,16 +1,24 @@
 name: Build, test and publish extensions
 
 on:
+  workflow_call:
+    inputs:
+      ref:
+        description: Optional authorized commit SHA to test (disables publishing)
+        type: string
+        default: ''
+    secrets:
+      SNYK_TOKEN:
+        required: false
+  # Required gates must report even when no extension needs rebuilding.
+  pull_request:
+  merge_group:
   push:
-    paths-ignore:
-      - '.github/workflows/sbom-generator.yml'
-      - 'sbom-generator/**'
-      - '.github/workflows/pgrx.yml'
-      - '.github/workflows/pgrx_targets.yml'
+    branches: [main]
   workflow_dispatch:
     inputs:
       extension_name:
-        description: "The PostgreSQL extension to build (directory name)"
+        description: "The PostgreSQL extension directory, or all to rebuild every extension"
         required: true
         type: string
 
@@ -21,9 +29,12 @@ defaults:
 permissions: {}
 
 jobs:
-  # Gather extensions that have been modified
+  # Select changed payloads and representative branch validation targets.
   change-triage:
     name: Check changed files
+    permissions:
+      contents: read
+      pull-requests: read
     runs-on: ubuntu-26.04
     outputs:
       matrix: ${{ steps.get-matrix.outputs.matrix}}
@@ -31,6 +42,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          ref: ${{ inputs.ref }}
           persist-credentials: false
 
       - name: Fetch valid targets
@@ -38,7 +50,7 @@ jobs:
         uses: dagger/dagger-for-github@27b130bf0f79a7f6fbbbe0fbca6760dc9bb40a77 # v8.4.1
         env:
           # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-          DAGGER_VERSION: 0.21.10
+          DAGGER_VERSION: 0.21.11
         with:
           version: ${{ env.DAGGER_VERSION }}
           verb: call
@@ -51,8 +63,8 @@ jobs:
           INPUT_EXTENSION_NAME: ${{ github.event.inputs.extension_name }}
           VALID_TARGETS: ${{ steps.get-targets.outputs.output }}
         run: |
-          if ! echo "$VALID_TARGETS" | jq -e --arg ext "$INPUT_EXTENSION_NAME" 'index($ext)' > /dev/null; then
-            echo "::error::'$INPUT_EXTENSION_NAME' is not a valid extension target. Valid targets: $VALID_TARGETS"
+          if [[ "$INPUT_EXTENSION_NAME" != all ]] && ! echo "$VALID_TARGETS" | jq -e --arg ext "$INPUT_EXTENSION_NAME" 'index($ext)' > /dev/null; then
+            echo "::error::'$INPUT_EXTENSION_NAME' is not a valid extension target. Use 'all' or one of: $VALID_TARGETS"
             exit 1
           fi
 
@@ -66,25 +78,28 @@ jobs:
           fi
           {
             echo 'EXTENSIONS<<YAML_EOF'
-            echo "$VALID_TARGETS" | jq -r '.[] | "\(.):\n  - \"\(.)/**\"\n  - *shared"'
+            echo "$VALID_TARGETS" | jq -r '.[] |
+              "\(.):\n  - \"\(.)/**\"\n  - \"!\(.)/test/**\"\n  - \"!\(.)/**/*.md\"\n_test_\(.):\n  - \"\(.)/test/**\""'
             echo 'YAML_EOF'
           } >> "$GITHUB_ENV"
 
       - name: Check for changes
+        if: github.event_name != 'workflow_dispatch'
         uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: filter
         with:
+          predicate-quantifier: some-with-excludes
           filters: |
-            _shared: &shared
+            _shared:
               - 'docker-bake.hcl'
               - 'scripts/**'
               - 'Taskfile.yml'
               - 'test/**'
               - 'dagger/maintenance/**'
-              - '.github/workflows/bake_targets.yml'
+              - '.github/workflows/**'
             ${{ env.EXTENSIONS }}
 
-      # Compute a matrix containing the list of all extensions that have been modified
+      # Only payload changes rebuild on main; shared and test changes validate on branches.
       - name: Compute matrix
         id: get-matrix
         env:
@@ -93,15 +108,35 @@ jobs:
           # Input Extension name
           INPUT_EXTENSION_NAME: ${{ github.event.inputs.extension_name }}
           EVENT_NAME: ${{ github.event_name }}
+          SELECTION_REF: ${{ inputs.ref || github.ref }}
+          VALID_TARGETS: ${{ steps.get-targets.outputs.output }}
+          # SQL-only, native/preload, base-image dependencies, upstream PostGIS, OS libraries/data.
+          INFRASTRUCTURE_SAMPLE: '["pgtap", "pg-cron", "powa", "mobilitydb", "ogr-fdw"]'
         run: |
           if [[ "${EVENT_NAME}" == 'workflow_dispatch' ]]; then
-            CHANGES="[\"$INPUT_EXTENSION_NAME\"]"
+            if [[ "$INPUT_EXTENSION_NAME" == all ]]; then
+              CHANGES="$VALID_TARGETS"
+            else
+              CHANGES=$(jq -cn --arg ext "$INPUT_EXTENSION_NAME" '[$ext]')
+            fi
+          else
+            CHANGES=$(jq -ce --arg ref "$SELECTION_REF" --argjson targets "$VALID_TARGETS" \
+              --argjson sample "$INFRASTRUCTURE_SAMPLE" '
+              . as $changes
+              | (map(select(startswith("_") | not))) as $direct
+              | if $ref == "refs/heads/main" then $direct
+                else
+                  if ($sample - $targets | length) > 0 then
+                    error("Infrastructure sample contains an unknown extension")
+                  else
+                    $direct + (map(select(startswith("_test_")) | ltrimstr("_test_")))
+                    + (if $changes | index("_shared") then $sample else [] end)
+                  end
+                end | unique
+            ' <<< "$CHANGES")
           fi
 
-          # Filter away the shared filter
-          EXTENSIONS_CHANGED=$(echo "$CHANGES" | jq -c 'map(select(. != "_shared"))')
-
-          echo "matrix=$EXTENSIONS_CHANGED" >> "$GITHUB_OUTPUT"
+          echo "matrix=$(jq -c . <<< "$CHANGES")" >> "$GITHUB_OUTPUT"
 
   Bake:
     name: Bake
@@ -120,6 +155,7 @@ jobs:
     uses: ./.github/workflows/bake_targets.yml
     with:
       extension_name: ${{ matrix.extension }}
+      ref: ${{ inputs.ref }}
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
@@ -129,36 +165,40 @@ jobs:
     needs:
       - change-triage
       - Bake
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     steps:
       - name: Verify build and test results
-        if: >-
-          ${{
-            needs.change-triage.result != 'success' ||
-            (
-              needs.Bake.result != 'success' &&
-              needs.Bake.result != 'skipped'
-            )
-          }}
+        env:
+          DISCOVERY: ${{ needs.change-triage.result }}
+          BUILDS: ${{ needs.Bake.result }}
+          MATRIX: ${{ needs.change-triage.outputs.matrix }}
         run: |
-          echo "CI failed:"
-          echo "change-triage: ${{ needs.change-triage.result }}"
-          echo "Bake: ${{ needs.Bake.result }}"
-          exit 1
+          python3 - <<'PYTHON'
+          import json, os
+          if os.environ['DISCOVERY'] != 'success':
+              raise SystemExit('Extension discovery did not succeed')
+          matrix = json.loads(os.environ['MATRIX'])
+          if not isinstance(matrix, list) or any(not isinstance(x, str) or not x for x in matrix):
+              raise SystemExit('Invalid extension matrix')
+          expected = 'success' if matrix else 'skipped'
+          if os.environ['BUILDS'] != expected:
+              raise SystemExit(f"Expected builds={expected}, got {os.environ['BUILDS']}")
+          PYTHON
 
       - name: Checkout Renovate changes
-        if: startsWith(github.ref, 'refs/heads/renovate/')
+        if: startsWith(github.head_ref || github.ref_name, 'renovate/')
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          ref: ${{ inputs.ref }}
           fetch-depth: 0
           persist-credentials: false
 
       - name: Check Renovate versions for prereleases
-        if: startsWith(github.ref, 'refs/heads/renovate/')
+        if: startsWith(github.head_ref || github.ref_name, 'renovate/')
         env:
-          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          DEFAULT_BRANCH: ${{ github.base_ref || github.event.repository.default_branch }}
         run: |
           # Real examples: MobilityDB 1.3.0-alpha, HypoPG 2.0.0beta,
           # pg_partman 5.3.0RC1, MobilityDB 1.3.0~rc1-1.pgdg13+1.
@@ -185,11 +225,11 @@ jobs:
 
   Catalogs:
     name: Update Catalogs
-    needs: Bake
+    needs: [change-triage, automerge-gate]
     runs-on: ubuntu-26.04
     permissions:
       contents: write
-    if: github.ref == 'refs/heads/main'
+    if: needs.change-triage.outputs.matrix != '[]' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request_target' && inputs.ref == ''
     steps:
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 # v4
