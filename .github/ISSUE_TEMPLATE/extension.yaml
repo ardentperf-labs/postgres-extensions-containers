@@ -86,12 +86,9 @@ body:
     attributes:
       label: Extension License (SPDX identifier)
       description: |
-        Select the SPDX license identifier for the extension. Only licenses on the
-        [CNCF Allowlist License Policy](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md)
-        are accepted for distribution through this project. If your extension is
-        licensed under something not listed here, select "Other": Allowlisted
-        licenses not in this dropdown will be accepted after manual triage;
-        non-Allowlisted licenses will not be accepted.
+        Select the extension's SPDX license identifier, or Other and explain it
+        in the proposal. Redistribution must be permitted under the
+        [extension requirements](https://github.com/cnpg-extensions/postgres-extensions-containers#extension-requirements).
       options:
         - PostgreSQL
         - MIT
@@ -99,7 +96,7 @@ body:
         - BSD-2-Clause
         - BSD-3-Clause
         - ISC
-        - Other (verify against the CNCF Allowlist)
+        - Other (provide license details)
     validations:
       required: true
 
@@ -108,12 +105,11 @@ body:
     attributes:
       label: License Compliance
       description: |
-        All components in the extension image (the extension itself and any
-        transitive dependencies) must be covered by a license on the
-        [CNCF Allowlist License Policy](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md).
-        Extensions that include any non-Allowlisted components will not be accepted.
+        Redistribution of the extension and all dependencies must be permitted,
+        with required license notices included. CNCF allowlist membership is
+        not required.
       options:
-        - label: To the best of my knowledge, the extension and its declared dependencies meet the CNCF Allowlist policy stated above.
+        - label: To the best of my knowledge, the extension and its declared dependencies permit redistribution with the required license notices.
           required: true
 
   - type: textarea

@@ -42,8 +42,8 @@ Closes #<!-- proposal issue id -->
       no `.control` file, verified with `dpkg -L`).
 - [ ] The `renovate:` annotations in `metadata.hcl` and `README.md` are present
       and intact (`suite=`, `depName=`, `extractVersion=`).
-- [ ] Every component in the image is covered by a license on the
-      [CNCF Allowlist](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md);
+- [ ] Every component in the image permits redistribution and includes required
+      license notices under the [inclusion policy](../../README.md#extension-requirements);
       SPDX `licenses` in `metadata.hcl` are accurate.
 - [ ] `task checks:all` passes locally.
 - [ ] Full E2E passes: `task e2e:test:full TARGET="<extension-name>"`.
@@ -71,7 +71,7 @@ Closes #<!-- proposal issue id -->
 - [ ] DCO check passes and history is a single clean commit with the required
       `feat: add ...` message format.
 - [ ] License compliance reviewed: all redistributed components (extension +
-      transitive/system libs) are on the CNCF Allowlist; SPDX `licenses` match.
+      transitive/system libs) permit redistribution with required notices; SPDX `licenses` match.
 - [ ] `metadata.hcl` reviewed: `package`/`sql` versions, `create_extension`,
       runtime settings (`shared_preload_libraries`, `*_path`, `env`,
       `required_extensions`) and behavior flags are correct.

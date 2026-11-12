@@ -3,6 +3,11 @@
 This guide walks you through the lifecycle of adding a new extension, from
 setting up your environment to submitting a Pull Request.
 
+Read the [extension inclusion policy](README.md#extension-requirements) first.
+The package steps below cover Debian extensions; for Rust-based extensions use
+the [PGRX build and local validation guide](pgrx/README.md). Both routes follow
+the same inclusion and maintenance policy.
+
 > [!IMPORTANT]
 > Please ensure you have also read the general
 > [CONTRIBUTING.md](https://github.com/cloudnative-pg/governance/blob/main/CONTRIBUTING.md)
@@ -115,23 +120,18 @@ submit your proposal:
 
 1. Point your browser to ["New Extension Proposal"](https://github.com/cnpg-extensions/postgres-extensions-containers/issues/new/choose).
 2. Provide the package name, versioning info, and a link to the upstream source.
-3. State the license clearly. Every component in the extension image must be
-   covered by a license on the
-   [CNCF Allowlist](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md)
-   (e.g., Apache-2.0, MIT, PostgreSQL License). CNCF policy requires a formal
-   exception for any component not covered by the Allowlist; the maintainers
-   do not intend to file exception requests for new extensions, so only
-   Allowlisted components will be accepted. This is a governance decision,
-   not a legal limitation; contributors whose extension cannot meet this
-   requirement are welcome to adopt the same build tooling and distribute
-   images independently.
+3. State the extension and dependency licenses, explain redistribution
+   requirements, and include required notices. CNCF allowlist membership and
+   prior upstream rejection are not prerequisites here.
+4. Explain how the extension works within CNPG, its platform support, dependency
+   maintenance, and any operational limitations. Confirm it is not already
+   packaged upstream.
 
 > [!NOTE]
-> In most cases you may begin development before receiving maintainer
-> approval. However, if a fundamental problem (e.g., a non-Allowlisted
-> license) is discovered during the proposal review, your work will not be
-> mergeable. Verify license compliance before investing significant
-> development effort.
+> You may begin development before maintainer approval, but inclusion depends on
+> the [extension requirements](README.md#extension-requirements). Resolve concerns
+> about redistribution, compatibility, or maintainability before investing
+> significant development effort.
 
 ---
 

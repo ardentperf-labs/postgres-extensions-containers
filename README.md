@@ -3,10 +3,13 @@
 # CNPG Extensions - PostgreSQL Extension Container Images
 
 This repository provides **maintenance scripts** for building **immutable
-container images** containing PostgreSQL extensions that cannot be accepted
-into the upstream [cloudnative-pg/postgres-extensions-containers](https://github.com/cloudnative-pg/postgres-extensions-containers)
-project due to licensing constraints, but are otherwise fully compatible with
-[CloudNativePG](https://cloudnative-pg.io/).
+container images** containing PostgreSQL extensions not already provided by
+[cloudnative-pg/postgres-extensions-containers](https://github.com/cloudnative-pg/postgres-extensions-containers).
+This complementary catalog broadens the extensions available to
+[CloudNativePG](https://cloudnative-pg.io/) users through Debian packages and
+Rust-based PGRX builds. Extensions outside upstream's licensing policy and
+extensions eligible for future upstream inclusion are both welcome, subject to
+the [extension requirements](#extension-requirements) below.
 
 ## Documentation
 
@@ -31,7 +34,7 @@ project due to licensing constraints, but are otherwise fully compatible with
 
 ## Supported Extensions
 
-| Extension | Description | Project URL | Maintained by | License blocker |
+| Extension | Description | Project URL | Maintained by | License notes |
 | :--- | :--- | :--- | :--- | :--- |
 | **[age](age)** | Apache AGE graph database extension (Cypher queries) | [github.com/apache/age](https://github.com/apache/age) | @ardentperf | libcsv (LGPL-2.1+) |
 | **[asn1oid](asn1oid)** | ASN.1 object identifiers as a native PostgreSQL type | [github.com/df7cb/pgsql-asn1oid](https://github.com/df7cb/pgsql-asn1oid) | @ardentperf | GPL-3.0-or-later |
@@ -118,9 +121,9 @@ project due to licensing constraints, but are otherwise fully compatible with
 | **[timestamp9](timestamp9)** | Timestamp type with nanosecond precision | [github.com/optiver/timestamp9](https://github.com/optiver/timestamp9) | @ardentperf | MIT |
 | **[unit](unit)** | SI unit values, conversions, and arithmetic | [github.com/df7cb/postgresql-unit](https://github.com/df7cb/postgresql-unit) | @ardentperf | GPL-3.0-or-later |
 
-Extensions in this repository are not accepted upstream solely due to licensing
-— they are otherwise fully functional and meet all other upstream quality
-requirements.
+License notes identify extension or dependency licenses; they do not imply an
+upstream rejection. Consult the extension's license files and image SBOM for
+complete attribution.
 
 ---
 
@@ -128,12 +131,20 @@ requirements.
 
 This repository tracks the upstream
 [cloudnative-pg/postgres-extensions-containers](https://github.com/cloudnative-pg/postgres-extensions-containers)
-build infrastructure as closely as possible. The only intentional differences are:
+build infrastructure as closely as possible, including shared release and test
+conventions. We continually incorporate upstream improvements and keep intentional
+downstream differences explicit; see the [upstream merge process](MERGE.md).
 
-- Extensions present upstream are removed here (they are maintained there).
-- Extensions blocked upstream by licensing are added here.
+Upstream inclusion or rejection is not a prerequisite for proposing an extension
+here. Upstream takes precedence: when it adds an extension maintained here, we
+remove our local packaging in favor of the upstream-maintained image. Our generated
+catalog retains upstream definitions and adds locally maintained extensions.
 
-This keeps merging upstream infrastructure improvements straightforward.
+The proposed **cnpg-universe** catalog would include externally maintained images.
+It is planned work, not an available inclusion route. Its eligibility, maintainer
+responsibilities, and supply-chain requirements remain to be defined; see the
+[roadmap](https://github.com/cnpg-extensions/postgres-extensions-containers/issues/290).
+The requirements below apply to extensions maintained in this repository.
 
 ---
 
@@ -154,20 +165,29 @@ The project adheres to the following frameworks:
 
 When proposing a new extension, the following criteria must be met:
 
-- **Licensing:** The extension must have been declined by the upstream
-  cloudnative-pg project solely due to a license not on the
-  [CNCF Allowlist](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md).
-  All other upstream quality requirements still apply.
-- **Structure:** only one extension can be included within an extension folder.
-- **Debian Packages:** Extension images must be built **exclusively** from
-  Debian packages in the `main` component (which by definition complies with
-  the [DFSG](https://www.debian.org/social_contract#guidelines)), sourced from
-  a trusted, auditable repository.
-  The [PostgreSQL Global Development Group (PGDG)](https://wiki.postgresql.org/wiki/Apt)
-  is the recommended source, but other Debian repositories are acceptable
-  provided they meet the same standards.
-- **License inclusion:** all necessary license agreements for the extension and
-  its dependencies must be included within the extension folder.
+- **Scope:** The extension must provide useful functionality within CloudNativePG
+  and must not already be packaged upstream. No prior upstream rejection is required.
+- **Build route:** Use either Debian packages from the `main` component of a
+  trusted, auditable repository (preferably
+  [PGDG](https://wiki.postgresql.org/wiki/Apt)), or the existing
+  [PGRX source-build framework](pgrx/README.md). Other source-build systems are
+  outside this repository's scope.
+- **Compatibility:** Support the project's current PostgreSQL and Debian targets
+  under the shared [CNPG support policy](.github/workflows/cnpg-versions.yml).
+  Document required preload libraries, configuration, and operational limitations,
+  and demonstrate the extension working in the shared runtime smoke tests.
+- **Dependencies and release quality:** Dependencies must be identifiable,
+  auditable, and maintainable. Use the existing build-time validation, SBOM,
+  security scanning, signing, provenance, and runtime test infrastructure.
+  SBOMs must account for shipped packages, files, ownership, and licenses on
+  both supported architectures.
+- **Licensing:** Redistribution of the extension and its dependencies must be
+  permitted, with required license notices included and documented. A license
+  outside the CNCF allowlist is not itself a reason for exclusion here.
+- **Structure:** Use one extension per extension folder and include the necessary
+  license agreements for the extension and its dependencies.
+- **Maintenance:** A component owner must commit to keeping the extension and
+  dependencies current and responding to compatibility and security issues.
 
 See [Adding a New Extension](./CONTRIBUTING_NEW_EXTENSION.md) for the full
 workflow on proposing and submitting a new extension.
