@@ -38,3 +38,5 @@ metadata = {
     }
   }
 }
+
+# Maintainer workflow validation: unchanged extension payload.
