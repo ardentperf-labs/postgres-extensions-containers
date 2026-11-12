@@ -5,7 +5,7 @@
 This repository provides **maintenance scripts** for building **immutable
 container images** containing PostgreSQL extensions not already provided by
 [cloudnative-pg/postgres-extensions-containers](https://github.com/cloudnative-pg/postgres-extensions-containers).
-This complementary catalog broadens the extensions available to
+We offer a very wide selection of PostgreSQL extensions for
 [CloudNativePG](https://cloudnative-pg.io/) users through Debian packages and
 Rust-based PGRX builds. Extensions outside upstream's licensing policy and
 extensions eligible for future upstream inclusion are both welcome, subject to
