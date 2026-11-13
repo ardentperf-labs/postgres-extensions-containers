@@ -27,7 +27,8 @@ spec:
       format: yaml
   - get:
       apiVersion: postgresql.cnpg.io/v1
-      kind: ImageCatalog
+      kind: ClusterImageCatalog
+      name: ($values.catalog.metadata.name)
       format: yaml
   - get:
       apiVersion: v1

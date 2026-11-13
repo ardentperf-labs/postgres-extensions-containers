@@ -69,10 +69,14 @@ jobs:
             // Repeat in each job: rerunning a downstream job does not rerun needs.
             const prNumber = process.env.PR_NUMBER || '';
             const sha = process.env.EXPECTED_SHA || '';
+            if (context.payload.inputs?.validation_only === 'true' &&
+                (!prNumber || !sha || !context.payload.inputs.extension_name || context.payload.inputs.extension_name === 'all')) {
+              throw new Error('Scoped validation requires an exact PR head and one explicit extension');
+            }
             if (context.eventName === 'workflow_dispatch' && context.ref !== 'refs/heads/main') {
               throw new Error('Dispatch the protected main workflow');
             }
-            if (prNumber || sha || context.eventName === 'pull_request_target' || context.eventName === 'workflow_dispatch') {
+            if (Number(process.env.GITHUB_RUN_ATTEMPT) > 1 || prNumber || sha || context.eventName === 'pull_request_target' || context.eventName === 'workflow_dispatch') {
               const {data} = await github.rest.repos.getCollaboratorPermissionLevel({...context.repo, username: process.env.TRIGGERING_ACTOR});
               if (data.permission !== 'admin') throw new Error('Repository Admin permission required for this execution attempt');
             }

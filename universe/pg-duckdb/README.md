@@ -37,8 +37,16 @@ DuckDB package alone would not satisfy these internal-linkage requirements.
 `ReleaseStaticSystem` uses Debian OpenSSL/curl and system LZ4 for PostgreSQL TOAST;
 it still embeds DuckDB's own LZ4. This avoids the vcpkg-built OpenSSL/curl stack
 of `ReleaseStatic`. These ordinary dependencies alone do not justify Universe.
+Trixie already packages [OpenSSL](https://packages.debian.org/trixie/libssl-dev),
+[curl](https://packages.debian.org/trixie/libcurl4-openssl-dev), and
+[LZ4](https://packages.debian.org/trixie/liblz4-dev); PostgreSQL 18 development
+packages are available in [PGDG](https://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-18/).
+[Debian's DuckDB development-package search](https://packages.debian.org/search?keywords=libduckdb-dev)
+lists forky/sid, not Trixie. Package availability alone does not resolve the exact
+DuckDB gitlink, matching httpfs pin, and private static registration interface.
+
 The inclusion rationale remains subject to review in issue #3; this is not a
-claim of an accepted packaging exception or an exhaustive Debian archive search.
+claim of an accepted packaging exception or a claim that Debian packaging is impossible.
 Revisit Debian packaging when the fork/ABI/unbundling burden is resolved.
 
 This DuckDB revision's `extension/icu/README.md` explicitly says it no longer
@@ -56,8 +64,9 @@ preserves the generator's file inventory and OS packages; it is not a composer.
 
 Vendor versions are extracted at evidence-generation time from the selected
 headers: fmt's packed `FMT_VERSION`, yyjson and cpp-httplib string macros,
-miniz's `MZ_VERSION`, and utf8proc/LZ4/Zstandard/Brotli numeric version macros.
-For the selected sources these yield 6.1.2, 0.9.0, 0.53.1, 10.0.3, 2.9.0,
+miniz's source-version banner (not its zlib-compatibility `MZ_VERSION`), and
+utf8proc/LZ4/Zstandard/Brotli numeric version macros.
+For the selected sources these yield 6.1.2, 0.9.0, 0.53.1, 2.0.8, 2.9.0,
 1.9.4, 1.5.6 and 1.1.0 respectively. Their canonical GitHub PURLs survive
 composition. Mbed TLS uses its VERSION file; FSST's README records upstream
 commit `0f0f9057048412da1ee48e35d516155cb7edd155`. Other vendors retain canonical
@@ -131,8 +140,14 @@ hosted dual-architecture validation. There is no extension-specific suite.
 Requested shared hook checks: DuckDB/httpfs revisions; canonical versions and
 PURLs after composition; no compiler-only package claims; preservation of dpkg
 ownership/Syft records; notices and payload hash binding; both architectures.
-Remaining uncertainties: native compilation/linkage and resource requirements,
-CNPG-mounted library closure, header-only/static vendor coverage from Ninja,
-canonical identity review for any newly selected vendor directories, and shared
-license-policy acceptance. These are acceptance
-work remaining, not validated outcomes.
+Local AMD64 compilation, linkage, shared-generator SPDX validation and the
+shared CNPG catalog smoke test passed on PostgreSQL 18 / Trixie. Runtime libraries
+require `ld_library_path = ["lib"]`; without it CNPG cannot find libcurl.
+The final attached SBOM includes the selected bundled components and generated
+data, with miniz's source version distinguished from its compatibility macro.
+
+Acceptance remains blocked by High/Critical Grype findings in the shipped Debian
+runtime dependencies, including libcurl and Kerberos; no exceptions are configured.
+See issue #3 for exact image digests, reports and Debian advisory references.
+Native ARM64 builds/runtime, hosted signing/SLSA, protection rules, production
+publication and a real Renovate follow-up have not been validated.

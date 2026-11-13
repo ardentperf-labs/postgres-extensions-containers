@@ -61,7 +61,7 @@ jobs:
           if (context.eventName === 'workflow_dispatch' && context.ref !== 'refs/heads/main') {
             throw new Error('Dispatch the protected main workflow');
           }
-          if (prNumber || sha || context.eventName === 'pull_request_target' || context.eventName === 'workflow_dispatch') {
+          if (Number(process.env.GITHUB_RUN_ATTEMPT) > 1 || prNumber || sha || context.eventName === 'pull_request_target' || context.eventName === 'workflow_dispatch') {
             const {data} = await github.rest.repos.getCollaboratorPermissionLevel({...context.repo, username: process.env.TRIGGERING_ACTOR});
             if (data.permission !== 'admin') throw new Error('Repository Admin permission required for this execution attempt');
           }

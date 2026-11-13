@@ -86,6 +86,17 @@ class HookComposition(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'builder/final payload mismatch'):
                 hook.augment_spdx(document, context)
 
+    def test_miniz_source_version_is_not_its_compatibility_version(self):
+        evidence = load('evidence')
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp) / 'miniz'
+            directory.mkdir()
+            (directory / 'miniz.hpp').write_text('/* miniz.c 2.0.8 - source version */\n#define MZ_VERSION "10.0.3"\n')
+            self.assertEqual(evidence.vendor_identity(directory, 'revision'),
+                             ('miniz', '2.0.8', 'pkg:github/richgel999/miniz@2.0.8'))
+        expression, _ = evidence.license_evidence('Mixed PostgreSQL and BSD redistribution terms', 'PostgreSQL')
+        self.assertTrue(expression.startswith('LicenseRef-'))
+
     def test_versions_follow_selected_macros(self):
         evidence = load('evidence')
         with tempfile.TemporaryDirectory() as tmp:

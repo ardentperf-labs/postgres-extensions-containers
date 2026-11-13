@@ -77,6 +77,10 @@ def runtime_inputs(builddir):
 
 
 def vendor_identity(directory, revision):
+    if directory.name == 'miniz':
+        text = (directory / 'miniz.hpp').read_text()
+        version = re.match(r'/\* miniz\.c ([0-9.]+)', text)[1]
+        return 'miniz', version, 'pkg:github/richgel999/miniz@' + version
     if directory.name == 'fsst':
         revision = re.search(r'@ commit ([0-9a-f]{40})', (directory / 'README.md').read_text())[1]
         return 'fsst', revision, 'pkg:github/cwida/fsst@' + revision
@@ -99,7 +103,9 @@ def vendor_identity(directory, revision):
 def license_evidence(text, name):
     # Composite/nonstandard notices retain their complete terms as LicenseRefs.
     normalized = ' '.join(text.split())
-    if text.count('UNICODE LICENSE V3') == 1 and 'Third-Party Software Licenses' not in text:
+    if name == 'PostgreSQL':
+        expression = 'LicenseRef-Universe-' + hashlib.sha256(text.encode()).hexdigest()[:24]
+    elif text.count('UNICODE LICENSE V3') == 1 and 'Third-Party Software Licenses' not in text:
         expression = 'Unicode-3.0'
     elif ('Unicode data license' in text or 'UNICODE LICENSE' in text
             or sum(marker in normalized for marker in [
