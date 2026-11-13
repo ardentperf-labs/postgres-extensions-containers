@@ -1,13 +1,21 @@
-name: PGRX platform builds
+name: Source-build targets
 'on':
   workflow_call:
-    inputs: &id001
+    inputs:
+      pr_number:
+        description: PR owning the exact candidate ref (required with ref)
+        type: string
+        default: ''
       ref:
         description: Optional commit SHA to test (disables publishing)
         type: string
         default: ''
+      build_family:
+        description: Location-derived recipe family (pgrx or universe)
+        type: string
+        default: pgrx
       extension_name:
-        description: PGRX extension directory
+        description: Logical source extension name
         type: string
         required: true
       cnpg_version:
@@ -18,8 +26,6 @@ name: PGRX platform builds
     secrets:
       SNYK_TOKEN:
         required: false
-  workflow_dispatch:
-    inputs: *id001
 permissions: {}
 defaults:
   run:
@@ -32,6 +38,7 @@ jobs:
   prepare:
     runs-on: ubuntu-26.04
     permissions:
+      pull-requests: read
       contents: read
     outputs:
       matrix: ${{ steps.prepare.outputs.matrix }}
@@ -39,6 +46,34 @@ jobs:
       # renovate: datasource=docker depName=ghcr.io/cnpg-extensions/cnpg-sbom-generator versioning=docker
       SBOM_GENERATOR: ghcr.io/cnpg-extensions/cnpg-sbom-generator:latest@sha256:9909ad887161b18d68f1e84c5568be3e8d3072ad861be843b596a0fdb6c48678
     steps:
+    - &authorize-candidate
+      name: Authorize this execution attempt
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+      env:
+        TRIGGERING_ACTOR: ${{ github.triggering_actor }}
+        PR_NUMBER: ${{ inputs.pr_number }}
+        EXPECTED_SHA: ${{ inputs.ref }}
+      with:
+        script: |
+          // Repeat in each job: rerunning a downstream job does not rerun needs.
+          const prNumber = process.env.PR_NUMBER || '';
+          const sha = process.env.EXPECTED_SHA || '';
+          if (context.eventName === 'workflow_dispatch' && context.ref !== 'refs/heads/main') {
+            throw new Error('Dispatch the protected main workflow');
+          }
+          if (prNumber || sha || context.eventName === 'pull_request_target' || context.eventName === 'workflow_dispatch') {
+            const {data} = await github.rest.repos.getCollaboratorPermissionLevel({...context.repo, username: process.env.TRIGGERING_ACTOR});
+            if (data.permission !== 'admin') throw new Error('Repository Admin permission required for this execution attempt');
+          }
+          if (prNumber || sha || context.eventName === 'pull_request_target') {
+            if (!/^[1-9][0-9]*$/.test(prNumber) || !/^[0-9a-f]{40}$/.test(sha)) throw new Error('Expected PR number and exact head SHA');
+            const {data: pr} = await github.rest.pulls.get({...context.repo, pull_number: Number(prNumber)});
+            if (pr.state !== 'open' || pr.head.sha !== sha) throw new Error('PR head changed or closed; authorize the new event');
+            if (context.eventName === 'pull_request_target' &&
+                (context.payload.pull_request.number !== pr.number || context.payload.pull_request.head.sha !== sha)) {
+              throw new Error('Candidate must match the authorized PR event');
+            }
+          }
     - &id002
       name: Use current workspace
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -52,7 +87,7 @@ jobs:
       run: printf '%s\n' "$INPUTS_JSON" > "$RUNNER_TEMP/pgrx-inputs.json"
     - id: prepare
       name: Prepare native targets
-      run: python3 pgrx/prepare.py --inputs "$RUNNER_TEMP/pgrx-inputs.json" --generator "$SBOM_GENERATOR" --output
+      run: python3 source-build/prepare.py --inputs "$RUNNER_TEMP/pgrx-inputs.json" --generator "$SBOM_GENERATOR" --output
         "$RUNNER_TEMP/prepared"
     - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
       with:
@@ -63,12 +98,14 @@ jobs:
     needs: prepare
     runs-on: ${{ matrix.runner }}
     permissions:
+      pull-requests: read
       contents: read
       packages: write
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     steps:
+    - *authorize-candidate
     - *id002
     - &id004
       uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
@@ -89,7 +126,7 @@ jobs:
       env:
         ARCHITECTURE: ${{ matrix.architecture }}
         BUILDER: ${{ steps.buildx.outputs.name }}
-      run: python3 pgrx/build.py --architecture "$ARCHITECTURE" --builder "$BUILDER"
+      run: python3 source-build/build.py --architecture "$ARCHITECTURE" --builder "$BUILDER"
     - name: Build and push
       id: build
       uses: docker/bake-action@59cb1203cd42bcefd40a1b6d73b589e48c86040e # v7
@@ -119,6 +156,7 @@ jobs:
     - build-platform
     runs-on: ubuntu-26.04
     permissions:
+      pull-requests: read
       contents: read
       packages: write
       id-token: write
@@ -127,6 +165,7 @@ jobs:
       provenance_matrix: ${{ steps.images.outputs.provenance_matrix }}
       production_provenance_matrix: ${{ steps.images.outputs.production_provenance_matrix }}
     steps:
+    - *authorize-candidate
     - *id002
     - *id004
     - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
@@ -137,7 +176,7 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
     - name: Merge complete platform indexes
-      run: python3 pgrx/assemble.py --preparation "$RUNNER_TEMP/prepared" --records "$RUNNER_TEMP/records" --output
+      run: python3 source-build/assemble.py --preparation "$RUNNER_TEMP/prepared" --records "$RUNNER_TEMP/records" --output
         "$RUNNER_TEMP/assemblies"
     - name: Export build metadata and provenance matrices
       id: images
@@ -150,6 +189,17 @@ jobs:
         } ] | unique_by([.image, .digest])' "$RUNNER_TEMP"/assemblies/*/metadata.json)
         echo "provenance_matrix=$matrix" >> "$GITHUB_OUTPUT"
         echo "production_provenance_matrix=$(jq -c 'map(.image |= sub("-testing$"; ""))' <<< "$matrix")" >> "$GITHUB_OUTPUT"
+    - name: Save catalog handoff metadata
+      env:
+        BUILD_METADATA: ${{ steps.images.outputs.metadata }}
+      run: |
+        mkdir -p "$RUNNER_TEMP/catalog-metadata"
+        printf '%s\n' "$BUILD_METADATA" > "$RUNNER_TEMP/catalog-metadata/metadata.json"
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+      with:
+        name: catalog-metadata-${{ inputs.extension_name }}
+        path: ${{ runner.temp }}/catalog-metadata
+        if-no-files-found: error
     # Assembly signs immutable digests using the standard installer. Security and
     # smoke consume those digests directly instead of downloading assembly records.
     - name: Install cosign
@@ -190,10 +240,12 @@ jobs:
       matrix:
         include: ${{ fromJSON(needs.assemble.outputs.provenance_matrix) }}
     permissions:
+      pull-requests: read
       contents: read
       packages: read
       security-events: write
     steps:
+    - *authorize-candidate
     - *id002
     - name: Security checks
       uses: cloudnative-pg/postgres-containers/.github/actions/security-scans@main
@@ -202,7 +254,18 @@ jobs:
         registry_user: ${{ github.actor }}
         registry_token: ${{ secrets.GITHUB_TOKEN }}
         snyk_token: ${{ secrets.SNYK_TOKEN }}
-        dockerfile: ${{ inputs.extension_name }}/Dockerfile
+        dockerfile: ${{ inputs.build_family }}/${{ inputs.extension_name }}/Dockerfile
+    - name: Scan both native SPDX documents
+      env:
+        IMAGE: ${{ format('{0}@{1}', matrix.image, matrix.digest) }}
+      run: source-build/scan-sbom.sh "$IMAGE" "$RUNNER_TEMP/spdx-reports"
+    - name: Preserve SPDX vulnerability and license reports
+      if: always()
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+      with:
+        name: spdx-${{ inputs.extension_name }}-${{ strategy.job-index }}
+        path: ${{ runner.temp }}/spdx-reports
+        if-no-files-found: error
   smoke:
     needs:
     - assemble
@@ -212,6 +275,7 @@ jobs:
       matrix:
         image: ${{ fromJSON(needs.assemble.outputs.provenance_matrix) }}
         cnpg: ${{ fromJSON(needs.generate-smoke-test-matrix.outputs.versions) }}
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
     permissions:
       contents: read
       packages: read
@@ -221,6 +285,7 @@ jobs:
       ref: ${{ inputs.ref }}
       image: ${{ format('{0}@{1}', matrix.image.image, matrix.image.digest) }}
       cnpg_version: ${{ matrix.cnpg }}
+      runner: ${{ matrix.runner }}
   # Use Debian's shared copy-images action with combined Bake metadata. It copies
   # the checked images and signs their production digests; production-provenance
   # then attests each index in its destination repository.
@@ -232,10 +297,12 @@ jobs:
     - provenance
     runs-on: ubuntu-26.04
     permissions:
+      pull-requests: read
       contents: read
       id-token: write
       packages: write
     steps:
+    - *authorize-candidate
     - name: Copy images to production
       uses: cloudnative-pg/postgres-containers/.github/actions/copy-images@main
       with:

@@ -83,6 +83,8 @@ def prepare(inputs, generator, output):
     inventory = discover()
     platforms = select(inputs, inventory)
     extension = inputs["extension_name"]
+    family = inventory[extension]["build_family"]
+    recipe_path = inventory[extension]["recipe_path"]
     repository_url = inventory[extension].get("source_repository")
     if not repository_url:
         raise ValueError("selected extension has no source_repository metadata")
@@ -92,7 +94,7 @@ def prepare(inputs, generator, output):
         raise ValueError("fresh preparation directory required")
     output.mkdir(parents=True)
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    registry = "ghcr.io/" + os.environ["GITHUB_REPOSITORY_OWNER"].lower()
+    registry = os.environ.get("registry") or "ghcr.io/" + os.environ["GITHUB_REPOSITORY_OWNER"].lower()
     environment = {
         **os.environ,
         "environment": "testing",
@@ -110,9 +112,9 @@ def prepare(inputs, generator, output):
                 "-f",
                 "docker-bake.hcl",
                 "-f",
-                "docker-bake-pgrx.hcl",
+                "docker-bake-pgrx.hcl" if family == "pgrx" else "docker-bake-source.hcl",
                 "-f",
-                "pgrx/" + extension + "/metadata.hcl",
+                recipe_path + "/metadata.hcl",
                 "--print",
             ],
             env=environment,
@@ -162,14 +164,19 @@ def prepare(inputs, generator, output):
             frozen = json.loads(json.dumps(original))
             frozen["platforms"] = [platform]
             frozen["tags"] = [staging]
-            frozen["args"].update(
-                BASE=base,
-                PGRX_EXTENSION=extension,
-                PGRX_DISTRO=distro,
-                PGRX_SOURCE_REPOSITORY=repository_url,
-                PGRX_SOURCE_REVISION=source["revision"],
-                PGRX_BUILD_TIMESTAMP=timestamp,
-            )
+            frozen["args"]["BASE"] = base
+            if family == "pgrx":
+                frozen["args"].update(
+                    PGRX_EXTENSION=extension, PGRX_DISTRO=distro,
+                    PGRX_SOURCE_REPOSITORY=repository_url,
+                    PGRX_SOURCE_REVISION=source["revision"],
+                    PGRX_BUILD_TIMESTAMP=timestamp,
+                )
+            else:
+                frozen["args"].update(
+                    SOURCE_REPOSITORY=repository_url,
+                    SOURCE_REVISION=source["revision"], BUILD_TIMESTAMP=timestamp,
+                )
             frozen["output"] = [
                 "type=image,oci-mediatypes=true,oci-artifact=true,push=true"
             ]

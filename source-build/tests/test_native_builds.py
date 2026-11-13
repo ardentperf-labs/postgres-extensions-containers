@@ -27,6 +27,8 @@ class NativeWorkflowTest(unittest.TestCase):
              patch.dict(os.environ, GITHUB_REPOSITORY_OWNER='example', GITHUB_RUN_ID='123'), \
              patch('prepare.discover', return_value={'example': {
                  'source_repository': 'https://github.com/example/extension', 'image_name': 'extension',
+                 'build_family': 'pgrx', 'recipe_path': 'pgrx/example',
+                 'versions': {'trixie': {'18': {'package': 'v1.0'}}},
              }}), \
              patch('prepare.execute', side_effect=['a' * 40, json.dumps({'target': {target: original}})]), \
              patch('prepare.resolve_source', return_value={'revision': 'b' * 40}), \

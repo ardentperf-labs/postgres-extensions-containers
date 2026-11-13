@@ -1,4 +1,4 @@
-name: PGRX contract tests
+name: Source-build tooling tests
 
 on:
   workflow_call:
@@ -27,8 +27,8 @@ jobs:
           allow-unsafe-pr-checkout: ${{ github.event_name == 'pull_request_target' }}
           persist-credentials: false
 
-      - name: Run PGRX contract tests
+      - name: Run shared and PGRX tooling tests
         run: |
           docker run --rm --entrypoint python3 \
             --volume "$PWD:/workspace:ro" --workdir /workspace \
-            "$SBOM_GENERATOR" pgrx/test.py
+            "$SBOM_GENERATOR" source-build/pgrx/test.py

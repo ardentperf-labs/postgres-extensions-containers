@@ -24,7 +24,8 @@ SBOM](https://github.com/cnpg-extensions/cnpg-sbom-generator#verify-the-image-an
 and [report vulnerabilities and licenses](https://github.com/cnpg-extensions/cnpg-sbom-generator#report-vulnerabilities-and-licenses).
 The tools listed in that guide are sufficient; no PGRX build setup is needed.
 
-For PGRX images published by `cnpg-extensions` from `main`, use this exact
+For PGRX images published before the workflow relocation by `cnpg-extensions`
+from `main`, use this exact
 `--certificate-identity` in the guide's Cosign command:
 
 ```text
@@ -46,8 +47,8 @@ do not claim that every dependency survives linker dead-code elimination.
 
 ## How images are built
 
-[`pgrx.yml`](../.github/workflows/pgrx.yml) selects extensions and calls
-[`pgrx_targets.yml`](../.github/workflows/pgrx_targets.yml) for each one.
+[`source-build.yml`](../.github/workflows/source-build.yml) selects extensions and calls
+[`source-build-targets.yml`](../.github/workflows/source-build-targets.yml) for each one.
 `prepare.py` turns the extension's `metadata.hcl` into a build plan. Each
 **target** is one distribution/PostgreSQL combination; each target gets separate
 AMD64 and ARM64 jobs on matching native runners.
@@ -60,7 +61,7 @@ workflows manage their own jobs and runners.
 
 ```mermaid
 flowchart TD
-    Entry["pgrx.yml"] -. "calls pgrx_targets.yml" .-> Prepare
+    Entry["source-build.yml"] -. "calls source-build-targets.yml" .-> Prepare
 
     subgraph PrepRunner["Preparation runner"]
         Prepare["prepare.py"]
@@ -152,7 +153,7 @@ destination repositories.
 ### Test a complete extension build
 
 For full extension acceptance, dispatch
-[`.github/workflows/pgrx.yml`](../.github/workflows/pgrx.yml) with an
+[`.github/workflows/source-build.yml`](../.github/workflows/source-build.yml) with an
 `extension_name`. It builds all targets declared in the extension's metadata on
 native AMD64 and ARM64 runners, assembles and signs their indexes, checks
 SPDX output, runs mainline security checks, and runs CNPG smoke tests. An optional `cnpg_version`
@@ -182,9 +183,9 @@ not replace an image build that produces attestations or test hosted signing.
 
 ### Local validation
 
-The [PGRX test workflow](../.github/workflows/pgrx-tests.yml) is called by the
+The [PGRX test workflow](../.github/workflows/source-build-tests.yml) is called by the
 PGRX build workflow and can also be dispatched separately. Its contract tests
-are required by the `PGRX acceptance` gate; Go tests remain independent.
+are required by the `Source-build acceptance` gate; Go tests remain independent.
 These tests exercise PGRX tooling and SBOM composition, not workflow YAML.
 
 Both build workflows report their local gates on every pull request,
@@ -194,7 +195,7 @@ on PRs, while only payload changes rebuild automatically on `main`. An empty
 selection skips builds explicitly. Failed discovery, contract
 tests, or unexpectedly skipped acceptance jobs fail the relevant gate.
 Branch protection should require both `Automerge gate` (Debian) and
-`PGRX acceptance`. Configure these checks after their first runs; changing the
+`Source-build acceptance`. Configure these checks after their first runs; changing the
 workflow files does not change repository rules. Mixed Debian/PGRX changes
 run both build families without a separate PR-scope policy.
 For a working branch without a pull request, dispatch the relevant build workflow.
@@ -219,7 +220,7 @@ downstream suite inside the pinned generator image, matching CI's Syft,
 SPDX validator, and composer:
 
 ```sh
-generator=$(sed -n 's/^ *SBOM_GENERATOR: //p' .github/workflows/pgrx-tests.yml)
+generator=$(sed -n 's/^ *SBOM_GENERATOR: //p' .github/workflows/source-build-tests.yml)
 test -n "$generator"
 docker run --rm --entrypoint python3 \
   --volume "$PWD:/workspace:ro" --workdir /workspace \
@@ -227,9 +228,9 @@ docker run --rm --entrypoint python3 \
 
 actionlint .github/workflows/bake.yml \
   .github/workflows/bake_targets.yml \
-  .github/workflows/pgrx.yml \
-  .github/workflows/pgrx_targets.yml \
-  .github/workflows/pgrx-tests.yml \
+  .github/workflows/source-build.yml \
+  .github/workflows/source-build-targets.yml \
+  .github/workflows/source-build-tests.yml \
   .github/workflows/cnpg-versions.yml \
   .github/workflows/smoke.yml
 ```
