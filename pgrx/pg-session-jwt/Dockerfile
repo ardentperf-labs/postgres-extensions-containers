@@ -16,7 +16,7 @@ ARG PGRX_SOURCE_REVISION
 
 USER 0
 
-COPY pgrx/ /pgrx/
+COPY source-build/ /source-build/
 WORKDIR /build
 ADD https://github.com/neondatabase/pg_session_jwt/archive/${EXT_VERSION}.tar.gz /tmp/source.tar.gz
 RUN tar -xzf /tmp/source.tar.gz --strip-components=1 -C /build
@@ -30,7 +30,7 @@ RUN cp Cargo.lock /tmp/pgrx-original-Cargo.lock && \
     ! cmp -s /tmp/pgrx-original-Cargo.lock Cargo.lock && \
     echo '262845e77a113cf8d81fde7517d04df81f5f694d63a0c848fed72ff5b4390434  Cargo.lock' | sha256sum --check --strict -
 
-RUN /pgrx/install-pgrx-build-environment.sh "${PG_MAJOR}" /build/Cargo.lock
+RUN /source-build/pgrx/install-pgrx-build-environment.sh "${PG_MAJOR}" /build/Cargo.lock
 
 # The upstream build example in Issue #28 uses `cargo pgrx install --release`:
 # https://github.com/neondatabase/pg_session_jwt/issues/28#issuecomment-2685604932
@@ -38,7 +38,7 @@ RUN /pgrx/install-pgrx-build-environment.sh "${PG_MAJOR}" /build/Cargo.lock
 RUN cargo pgrx install --release
 
 ARG PGRX_BUILD_TIMESTAMP
-RUN /pgrx/finalize-pgrx-evidence.sh
+RUN /source-build/pgrx/finalize-pgrx-evidence.sh
 
 FROM scratch AS pgrx-sbom
 COPY --from=builder /build/pgrx-sbom/ /pgrx-sbom/

@@ -16,12 +16,12 @@ ARG PGRX_SOURCE_REVISION
 
 USER 0
 
-COPY pgrx/ /pgrx/
+COPY source-build/ /source-build/
 WORKDIR /build
 # EXT_VERSION is the exact upstream Git tag; preserve its v prefix.
 ADD https://github.com/supabase/pg_graphql/archive/${EXT_VERSION}.tar.gz /tmp/source.tar.gz
 RUN tar -xzf /tmp/source.tar.gz --strip-components=1 -C /build
-RUN /pgrx/install-pgrx-build-environment.sh "${PG_MAJOR}" /build/Cargo.lock
+RUN /source-build/pgrx/install-pgrx-build-environment.sh "${PG_MAJOR}" /build/Cargo.lock
 # This is the upstream release build command:
 # https://github.com/supabase/pg_graphql/blob/v1.6.2/dockerfiles/db/Dockerfile#L37-L38
 RUN cargo pgrx install --release --features pg${PG_MAJOR}
@@ -29,7 +29,7 @@ RUN cargo pgrx install --release --features pg${PG_MAJOR}
 # Do not remove this line: the finalizer generates the SBOM material
 # automatically.
 ARG PGRX_BUILD_TIMESTAMP
-RUN /pgrx/finalize-pgrx-evidence.sh
+RUN /source-build/pgrx/finalize-pgrx-evidence.sh
 
 FROM scratch AS pgrx-sbom
 COPY --from=builder /build/pgrx-sbom/ /pgrx-sbom/

@@ -157,7 +157,7 @@ def main():
             "about",
             "generate",
             "--config",
-            "/pgrx/license-about.toml",
+            "/source-build/pgrx/license-about.toml",
             "--format",
             "json",
             "--locked",

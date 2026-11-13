@@ -16,7 +16,7 @@ ARG PGRX_SOURCE_REVISION
 
 USER 0
 
-COPY pgrx/ /pgrx/
+COPY source-build/ /source-build/
 WORKDIR /build
 ADD https://gitlab.com/dalibo/postgresql_anonymizer/-/archive/${EXT_VERSION}/postgresql_anonymizer-${EXT_VERSION}.tar.gz /tmp/source.tar.gz
 RUN tar -xzf /tmp/source.tar.gz --strip-components=1 -C /build
@@ -28,7 +28,7 @@ RUN cp Cargo.lock /tmp/pgrx-original-Cargo.lock && \
     ! cmp -s /tmp/pgrx-original-Cargo.lock Cargo.lock && \
     echo '2a30c53c32de09d29aed744677dab082396ff6c91c27664fbe32d3b1117b0e42  Cargo.lock' | sha256sum --check --strict -
 
-RUN /pgrx/install-pgrx-build-environment.sh "${PG_MAJOR}" /build/Cargo.lock
+RUN /source-build/pgrx/install-pgrx-build-environment.sh "${PG_MAJOR}" /build/Cargo.lock
 # The upstream extension target packages anon and installs its runtime CSV data:
 # https://gitlab.com/dalibo/postgresql_anonymizer/-/blob/3.3.2/Makefile
 RUN make extension PGVER=pg${PG_MAJOR} PG_CONFIG=/usr/lib/postgresql/${PG_MAJOR}/bin/pg_config
@@ -36,7 +36,7 @@ RUN make extension PGVER=pg${PG_MAJOR} PG_CONFIG=/usr/lib/postgresql/${PG_MAJOR}
 # Do not remove this line: the finalizer generates the SBOM material
 # automatically.
 ARG PGRX_BUILD_TIMESTAMP
-RUN /pgrx/finalize-pgrx-evidence.sh
+RUN /source-build/pgrx/finalize-pgrx-evidence.sh
 
 FROM scratch AS pgrx-sbom
 COPY --from=builder /build/pgrx-sbom/ /pgrx-sbom/

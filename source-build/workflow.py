@@ -24,7 +24,7 @@ def metadata(path):
                 "-f",
                 str(path),
                 "-f",
-                str(ROOT / "pgrx/inventory.hcl"),
+                str(ROOT / "source-build/inventory.hcl"),
                 "--print",
                 "inventory",
             ]
@@ -40,7 +40,7 @@ def metadata(path):
 def discover():
     return {
         p.parent.name: value
-        for p in sorted(ROOT.glob("*/metadata.hcl"))
+        for p in sorted(ROOT.glob("pgrx/*/metadata.hcl"))
         if (value := metadata(p)).get("build_system", "debian") == "pgrx"
     }
 

@@ -16,14 +16,14 @@ ARG PGRX_SOURCE_REVISION
 
 USER 0
 
-COPY pgrx/ /pgrx/
+COPY source-build/ /source-build/
 WORKDIR /build
 
 # The source archive is selected by the exact upstream Git tag.
 ADD https://github.com/CrunchyData/pg_parquet/archive/${EXT_VERSION}.tar.gz /tmp/source.tar.gz
 RUN tar -xzf /tmp/source.tar.gz --strip-components=1 -C /build
 
-RUN /pgrx/install-pgrx-build-environment.sh "${PG_MAJOR}" /build/Cargo.lock
+RUN /source-build/pgrx/install-pgrx-build-environment.sh "${PG_MAJOR}" /build/Cargo.lock
 
 # Upstream package command: https://github.com/CrunchyData/pg_parquet/blob/v0.5.1/Makefile#L40-L41
 RUN cargo pgrx package \
@@ -32,7 +32,7 @@ RUN cargo pgrx package \
       --no-default-features
 
 ARG PGRX_BUILD_TIMESTAMP
-RUN /pgrx/finalize-pgrx-evidence.sh
+RUN /source-build/pgrx/finalize-pgrx-evidence.sh
 
 FROM scratch AS pgrx-sbom
 # Do not remove this line: the finalizer generates the SBOM material automatically.

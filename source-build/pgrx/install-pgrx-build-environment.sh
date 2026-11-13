@@ -26,5 +26,5 @@ apt-get install --yes --no-install-recommends \
     xz-utils \
     patch
 rm -rf /var/lib/apt/lists/*
-python3 /pgrx/install_tools.py "$pg_major" "$lock_file"
-install -D -m 0644 /pgrx/sbom/augment_spdx.py /usr/local/share/cnpg-sbom/augment_spdx.py
+python3 /source-build/pgrx/install_tools.py "$pg_major" "$lock_file"
+install -D -m 0644 /source-build/pgrx/sbom/augment_spdx.py /usr/local/share/cnpg-sbom/augment_spdx.py

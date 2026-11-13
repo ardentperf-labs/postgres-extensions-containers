@@ -112,7 +112,7 @@ def prepare(inputs, generator, output):
                 "-f",
                 "docker-bake-pgrx.hcl",
                 "-f",
-                extension + "/metadata.hcl",
+                "pgrx/" + extension + "/metadata.hcl",
                 "--print",
             ],
             env=environment,

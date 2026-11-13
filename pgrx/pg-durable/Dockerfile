@@ -16,7 +16,7 @@ ARG PGRX_SOURCE_REVISION
 
 USER 0
 
-COPY pgrx/ /pgrx/
+COPY source-build/ /source-build/
 WORKDIR /build
 
 
@@ -27,7 +27,7 @@ RUN tar -xzf /tmp/source.tar.gz --strip-components=1 -C /build
 
 # Call the shared installer after extracting the source. It derives the
 # matching cargo-pgrx version from Cargo.lock and prepares the pgrx/SBOM tools.
-RUN /pgrx/install-pgrx-build-environment.sh "${PG_MAJOR}" /build/Cargo.lock
+RUN /source-build/pgrx/install-pgrx-build-environment.sh "${PG_MAJOR}" /build/Cargo.lock
 
 
 # Upstream package command, adapted only for the shared installer and /build:
@@ -41,7 +41,7 @@ RUN cargo pgrx package \
 # Do not remove this line: the finalizer generates the SBOM material
 # automatically.
 ARG PGRX_BUILD_TIMESTAMP
-RUN /pgrx/finalize-pgrx-evidence.sh
+RUN /source-build/pgrx/finalize-pgrx-evidence.sh
 
 FROM scratch AS pgrx-sbom
 COPY --from=builder /build/pgrx-sbom/ /pgrx-sbom/

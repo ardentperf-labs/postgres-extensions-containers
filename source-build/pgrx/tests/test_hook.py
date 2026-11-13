@@ -7,8 +7,8 @@ import tempfile
 from types import SimpleNamespace
 import unittest
 
-ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / 'pgrx' / 'sbom'))
+ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / 'source-build' / 'pgrx' / 'sbom'))
 from augment_spdx import augment_spdx
 
 

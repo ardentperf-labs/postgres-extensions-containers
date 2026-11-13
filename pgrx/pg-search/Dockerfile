@@ -16,7 +16,7 @@ ARG PGRX_SOURCE_REVISION
 
 USER 0
 
-COPY pgrx/ /pgrx/
+COPY source-build/ /source-build/
 WORKDIR /build
 ADD https://github.com/paradedb/paradedb/archive/${EXT_VERSION}.tar.gz /tmp/source.tar.gz
 RUN tar -xzf /tmp/source.tar.gz --strip-components=1 -C /build
@@ -24,14 +24,14 @@ RUN tar -xzf /tmp/source.tar.gz --strip-components=1 -C /build
 # ParadeDB builds with LLD and OpenBLAS:
 # https://github.com/paradedb/paradedb/blob/v0.26.6/docker/Dockerfile.source#L16-L19
 RUN apt-get update && apt-get install -y --no-install-recommends lld libopenblas-dev
-RUN /pgrx/install-pgrx-build-environment.sh "${PG_MAJOR}" /build/Cargo.lock
+RUN /source-build/pgrx/install-pgrx-build-environment.sh "${PG_MAJOR}" /build/Cargo.lock
 
 # ParadeDB packages from the pg_search workspace directory:
 # https://github.com/paradedb/paradedb/blob/v0.26.6/.github/workflows/publish-pg_search-debian.yml#L300-L307
 RUN cd pg_search && cargo pgrx package
 
 ARG PGRX_BUILD_TIMESTAMP
-RUN /pgrx/finalize-pgrx-evidence.sh
+RUN /source-build/pgrx/finalize-pgrx-evidence.sh
 
 FROM scratch AS pgrx-sbom
 # Do not remove this line; the finalizer generates the SBOM material automatically.

@@ -16,12 +16,12 @@ ARG PGRX_SOURCE_REVISION
 
 USER 0
 
-COPY pgrx/ /pgrx/
+COPY source-build/ /source-build/
 WORKDIR /build
 ADD https://github.com/supabase/pg_jsonschema/archive/${EXT_VERSION}.tar.gz /tmp/source.tar.gz
 RUN tar -xzf /tmp/source.tar.gz --strip-components=1 -C /build
 
-RUN /pgrx/install-pgrx-build-environment.sh "${PG_MAJOR}" /build/Cargo.lock
+RUN /source-build/pgrx/install-pgrx-build-environment.sh "${PG_MAJOR}" /build/Cargo.lock
 
 # The pgrx build arguments mirror the upstream command:
 # https://github.com/supabase/pg_jsonschema/blob/v0.3.4/.github/workflows/release.yml#L61-L63
@@ -30,7 +30,7 @@ RUN cargo pgrx package \
       --features pg${PG_MAJOR}
 
 ARG PGRX_BUILD_TIMESTAMP
-RUN /pgrx/finalize-pgrx-evidence.sh
+RUN /source-build/pgrx/finalize-pgrx-evidence.sh
 
 FROM scratch AS pgrx-sbom
 COPY --from=builder /build/pgrx-sbom/ /pgrx-sbom/

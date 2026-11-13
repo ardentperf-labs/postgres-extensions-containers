@@ -12,9 +12,10 @@ import tomllib
 import urllib.request
 
 from build_config import RECIPES, effective_features
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from source import resolve_source
 
-PGRX = Path("/pgrx")
+PGRX = Path("/source-build/pgrx")
 BUILD = Path("/build")
 
 

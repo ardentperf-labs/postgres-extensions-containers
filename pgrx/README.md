@@ -170,7 +170,7 @@ uses live operator manifests and catalogs, including development images for
 ### Try an unsigned local build
 
 Use the extension's ordinary Bake targets with
-`-f docker-bake.hcl -f docker-bake-pgrx.hcl -f <extension>/metadata.hcl`
+`-f docker-bake.hcl -f docker-bake-pgrx.hcl -f pgrx/<extension>/metadata.hcl`
 in that order. Supply `build_timestamp` and the digest-qualified `sbom_generator`
 from preparation. Select explicit named Bake targets to build a single local
 distribution, and restrict the platform to your host's native architecture
@@ -223,7 +223,7 @@ generator=$(sed -n 's/^ *SBOM_GENERATOR: //p' .github/workflows/pgrx-tests.yml)
 test -n "$generator"
 docker run --rm --entrypoint python3 \
   --volume "$PWD:/workspace:ro" --workdir /workspace \
-  "$generator" pgrx/test.py
+  "$generator" source-build/pgrx/test.py
 
 actionlint .github/workflows/bake.yml \
   .github/workflows/bake_targets.yml \
@@ -250,8 +250,8 @@ metadata. `get-targets` defaults to Debian; use `--build-system pgrx` for PGRX
 or `--build-system all` for both families. OS-library maintenance excludes PGRX
 targets; catalog and testing-value generation support both.
 
-**Start from the [PGRX templates](templates/) and follow their structure.**
-The [Dockerfile template](templates/Dockerfile.tmpl) contains the integration
+**Start from the [PGRX templates](../source-build/pgrx/templates/) and follow their structure.**
+The [Dockerfile template](../source-build/pgrx/templates/Dockerfile.tmpl) contains the integration
 points used by CI, native builds, and SBOM generation. Adapt the source URL,
 upstream build commands, dependencies, and copied runtime files for the extension;
 keep the shared setup and evidence steps.
@@ -271,16 +271,16 @@ For a new extension:
    by helper scripts rather than referenced directly in the Dockerfile. Docker
    arguments are stage-scoped, so retain repeated declarations such as `PG_MAJOR`
    in the final stage too.
-3. Keep the stage named `builder`, copy `pgrx/` to `/pgrx/`, and extract the source
-   into `/build`. **Call `/pgrx/install-pgrx-build-environment.sh "${PG_MAJOR}"
+3. Keep the stage named `builder`, copy `source-build/` to `/source-build/`, and extract the source
+   into `/build`. **Call `/source-build/pgrx/install-pgrx-build-environment.sh "${PG_MAJOR}"
    /build/Cargo.lock` after extraction and before compilation.** It installs the
    build environment, selects cargo-pgrx from the source lockfile, and prepares
    the SBOM hook and reporting tools.
-4. Add the extension to `RECIPES` in [`build_config.py`](build_config.py), matching
+4. Add the extension to `RECIPES` in [`build_config.py`](../source-build/pgrx/build_config.py), matching
    the Dockerfile's manifest path, features, and package/install layout. Add any
    required apt dependencies and keep the upstream recipe URL immediately above
    the build commands.
-5. **Call `/pgrx/finalize-pgrx-evidence.sh` after compilation and packaging.** It
+5. **Call `/source-build/pgrx/finalize-pgrx-evidence.sh` after compilation and packaging.** It
    records the completed payload and generates Cargo and license evidence needed
    by the SBOM hook. Preserve the diagnostic `pgrx-sbom` stage and copy the
    generated Rust license notices into the final image alongside the runtime
@@ -309,17 +309,17 @@ in the extension README.
 
 ## Directory guide
 
-Extension-specific Dockerfiles and metadata live at repository root. The main
-entrypoints and supporting directories here are:
+Extension-specific Dockerfiles and metadata live under `pgrx/<extension>/`. The main
+entrypoints and supporting directories under `source-build/` are:
 
 | File or directory | Purpose |
 | --- | --- |
-| [`prepare.py`](prepare.py) | Turns extension metadata into native build jobs and Bake definitions. |
-| [`assemble.py`](assemble.py) | Combines platform images, preserves attestations, and publishes checked tags. |
-| [`build_config.py`](build_config.py) | Registers extension recipes and their Cargo feature selection. |
-| [`install-pgrx-build-environment.sh`](install-pgrx-build-environment.sh) | Required Dockerfile setup step: installs build tools and the SBOM hook. |
-| [`finalize-pgrx-evidence.sh`](finalize-pgrx-evidence.sh) | Required post-build step: collects Cargo, license, and runtime-payload evidence. |
-| [`templates/`](templates/) | Dockerfile, metadata, and README templates to follow for new extensions. |
-| [`sbom/`](sbom/) | Hook that adds verified Rust dependencies and licenses to the shared generator's SPDX output. |
-| [`dependencies/`](dependencies/) | Rust, rustup, and cargo-about version configuration for extension builders. |
-| [`tests/`](tests/) | PGRX tests, run with `python3 pgrx/test.py`. |
+| [`prepare.py`](../source-build/prepare.py) | Turns extension metadata into native build jobs and Bake definitions. |
+| [`assemble.py`](../source-build/assemble.py) | Combines platform images, preserves attestations, and publishes checked tags. |
+| [`build_config.py`](../source-build/pgrx/build_config.py) | Registers extension recipes and their Cargo feature selection. |
+| [`install-pgrx-build-environment.sh`](../source-build/pgrx/install-pgrx-build-environment.sh) | Required Dockerfile setup step: installs build tools and the SBOM hook. |
+| [`finalize-pgrx-evidence.sh`](../source-build/pgrx/finalize-pgrx-evidence.sh) | Required post-build step: collects Cargo, license, and runtime-payload evidence. |
+| [`templates/`](../source-build/pgrx/templates/) | Dockerfile, metadata, and README templates to follow for new extensions. |
+| [`sbom/`](../source-build/pgrx/sbom/) | Hook that adds verified Rust dependencies and licenses to the shared generator's SPDX output. |
+| [`dependencies/`](../source-build/pgrx/dependencies/) | Rust, rustup, and cargo-about version configuration for extension builders. |
+| [`tests/`](../source-build/pgrx/tests/) | PGRX tests, run with `python3 source-build/pgrx/test.py`. |
