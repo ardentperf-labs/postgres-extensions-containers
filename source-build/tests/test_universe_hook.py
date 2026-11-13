@@ -1,0 +1,101 @@
+"""Infrastructure composition contract; no extension runtime behavior."""
+import copy
+import importlib.util
+import json
+import hashlib
+from pathlib import Path
+import tempfile
+from types import SimpleNamespace
+import unittest
+
+ROOT = Path(__file__).resolve().parents[2]
+
+
+def load(name):
+    spec = importlib.util.spec_from_file_location(name, ROOT / 'universe/pg-duckdb' / (name + '.py'))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+class HookComposition(unittest.TestCase):
+    def test_preserves_scan_and_adds_source_identity(self):
+        hook = load('augment_spdx')
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / 'build').mkdir()
+            components = []
+            for name, version, revision, parent in [('pg_duckdb', '1.2.0', 'pg-sha', None), ('duckdb', '2.0.0', 'duck-sha', 'pg_duckdb')]:
+                components.append(dict(name=name, version=version, revision=revision, parent=parent,
+                    repository='https://github.com/duckdb/' + name,
+                    purl='pkg:github/duckdb/' + name + '@' + revision,
+                    notices=[], license='MIT', copyright='Copyright authors', license_text=''))
+            for name in ['cldr', 'Unicode Character Database']:
+                components.append(dict(name=name, version='17', revision='same-file', parent='duckdb',
+                    repository='https://github.com/duckdb/duckdb', purl=None,
+                    notices=[], license='MIT', copyright='Copyright authors', license_text=''))
+            (root / 'build/universe-evidence.json').write_text(json.dumps(dict(components=components, payload=[])))
+            document = dict(SPDXID='SPDXRef-DOCUMENT', packages=[dict(SPDXID='SPDXRef-libc', name='libc6', versionInfo='2.41')],
+                files=[dict(SPDXID='SPDXRef-so', fileName='./lib/pg_duckdb.so')], relationships=[dict(spdxElementId='SPDXRef-libc', relationshipType='CONTAINS', relatedSpdxElement='SPDXRef-so')])
+            before = copy.deepcopy(document)
+            result = hook.augment_spdx(document, SimpleNamespace(api_version=1, builder_path=root))
+            self.assertEqual(document, before)
+            self.assertEqual(result['packages'][0], before['packages'][0])
+            self.assertEqual(result['files'], before['files'])
+            self.assertIn(before['relationships'][0], result['relationships'])
+            package_ids = [p['SPDXID'] for p in result['packages']]
+            self.assertEqual(len(package_ids), len(set(package_ids)))
+            source_ids = set(package_ids[1:])
+            self.assertFalse(any(r['relationshipType'] == 'CONTAINS' and r['spdxElementId'] in source_ids for r in result['relationships']))
+            duck = next(p for p in result['packages'] if p['name'] == 'duckdb')
+            self.assertEqual(duck['versionInfo'], '2.0.0')
+            self.assertEqual(duck['externalRefs'][0]['referenceLocator'], 'pkg:github/duckdb/duckdb@duck-sha')
+            self.assertEqual(duck['licenseDeclared'], 'MIT')
+
+    def test_revision_notices_and_payload_binding(self):
+        hook = load('augment_spdx')
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / 'build').mkdir()
+            path = 'licenses/Redis HyperLogLog/LICENSE'
+            for stage in ['payload', 'final']:
+                notice = root / stage / path
+                notice.parent.mkdir(parents=True)
+                notice.write_text('Original combined MIT and BSD notices')
+            text = (root / 'payload' / path).read_text()
+            component = dict(name='pg_duckdb', version='sha:third_party/hyperloglog',
+                revision='sha:third_party/hyperloglog', parent=None,
+                repository='https://github.com/duckdb/duckdb', purl=None,
+                notices=[path], license='LicenseRef-composite', copyright='Copyright authors', license_text=text)
+            evidence = dict(components=[component], payload=[dict(path=path,
+                sha256=hashlib.sha256(text.encode()).hexdigest())])
+            (root / 'build/universe-evidence.json').write_text(json.dumps(evidence))
+            document = dict(SPDXID='SPDXRef-DOCUMENT', packages=[], relationships=[], files=[
+                dict(SPDXID='SPDXRef-notice', fileName='./' + path, checksums=[dict(
+                    algorithm='SHA256', checksumValue=evidence['payload'][0]['sha256'])]),
+                dict(SPDXID='SPDXRef-so', fileName='./lib/pg_duckdb.so')])
+            context = SimpleNamespace(api_version=1, builder_path=root, final_path=root / 'final')
+            result = hook.augment_spdx(document, context)
+            package = result['packages'][0]
+            self.assertEqual(package['versionInfo'], component['version'])
+            self.assertEqual(package['downloadLocation'], 'https://github.com/duckdb/duckdb/tree/sha/third_party/hyperloglog')
+            self.assertEqual(result['hasExtractedLicensingInfos'][0]['extractedText'], text)
+            self.assertIn(dict(spdxElementId=package['SPDXID'], relationshipType='OTHER', comment='Redistribution notice for this source component',
+                               relatedSpdxElement='SPDXRef-notice'), result['relationships'])
+            (root / 'final' / path).write_text('notice lost during staging')
+            with self.assertRaisesRegex(ValueError, 'builder/final payload mismatch'):
+                hook.augment_spdx(document, context)
+
+    def test_versions_follow_selected_macros(self):
+        evidence = load('evidence')
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / 'fmt'
+            (root / 'include/fmt').mkdir(parents=True)
+            header = root / 'include/fmt/core.h'
+            for macro, expected in [('60102', '6.1.2'), ('110103', '11.1.3')]:
+                header.write_text('#define FMT_VERSION ' + macro + '\n')
+                self.assertEqual(evidence.vendor_identity(root, 'revision'), ('fmt', expected, 'pkg:github/fmtlib/fmt@' + expected))
+
+
+if __name__ == '__main__':
+    unittest.main()
