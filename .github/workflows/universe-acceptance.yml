@@ -11,6 +11,7 @@ jobs:
     permissions:
       pull-requests: read
       contents: read
+      statuses: write
     steps:
       - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
         with:
@@ -19,14 +20,15 @@ jobs:
             const {data: actor} = await github.rest.repos.getCollaboratorPermissionLevel({...context.repo, username: context.triggeringActor || process.env.GITHUB_TRIGGERING_ACTOR});
             if (actor.permission !== 'admin') throw new Error('Project admin required');
             const {data: pr} = await github.rest.pulls.get({...context.repo, pull_number: 4});
-            if (pr.state !== 'open' || pr.head.sha !== '630f008749b08d46da4251061f30448056cbcaa8') throw new Error('Authorize the current PR head');
+            if (pr.state !== 'open' || pr.head.sha !== '27ef4e7d967e3e4bbc47a3cc0c2bd104716c9147') throw new Error('Authorize the current PR head');
+            await github.rest.repos.createCommitStatus({...context.repo, sha: pr.head.sha, context: 'Scoped Universe acceptance', state: 'pending', target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`});
   contracts:
     needs: authorize
     permissions:
       contents: read
-    uses: ardentperf-labs/postgres-extensions-containers/.github/workflows/source-build-tests.yml@630f008749b08d46da4251061f30448056cbcaa8
+    uses: ardentperf-labs/postgres-extensions-containers/.github/workflows/source-build-tests.yml@27ef4e7d967e3e4bbc47a3cc0c2bd104716c9147
     with:
-      ref: 630f008749b08d46da4251061f30448056cbcaa8
+      ref: 27ef4e7d967e3e4bbc47a3cc0c2bd104716c9147
   duckdb:
     needs: authorize
     permissions:
@@ -36,10 +38,10 @@ jobs:
       packages: write
       id-token: write
       security-events: write
-    uses: ardentperf-labs/postgres-extensions-containers/.github/workflows/source-build-targets.yml@630f008749b08d46da4251061f30448056cbcaa8
+    uses: ardentperf-labs/postgres-extensions-containers/.github/workflows/source-build-targets.yml@27ef4e7d967e3e4bbc47a3cc0c2bd104716c9147
     with:
       pr_number: '4'
-      ref: 630f008749b08d46da4251061f30448056cbcaa8
+      ref: 27ef4e7d967e3e4bbc47a3cc0c2bd104716c9147
       extension_name: pg-duckdb
       build_family: universe
   pgrx:
@@ -51,10 +53,10 @@ jobs:
       packages: write
       id-token: write
       security-events: write
-    uses: ardentperf-labs/postgres-extensions-containers/.github/workflows/source-build-targets.yml@630f008749b08d46da4251061f30448056cbcaa8
+    uses: ardentperf-labs/postgres-extensions-containers/.github/workflows/source-build-targets.yml@27ef4e7d967e3e4bbc47a3cc0c2bd104716c9147
     with:
       pr_number: '4'
-      ref: 630f008749b08d46da4251061f30448056cbcaa8
+      ref: 27ef4e7d967e3e4bbc47a3cc0c2bd104716c9147
       extension_name: pg-durable
       build_family: pgrx
   debian:
@@ -66,8 +68,29 @@ jobs:
       packages: write
       id-token: write
       security-events: write
-    uses: ardentperf-labs/postgres-extensions-containers/.github/workflows/bake_targets.yml@630f008749b08d46da4251061f30448056cbcaa8
+    uses: ardentperf-labs/postgres-extensions-containers/.github/workflows/bake_targets.yml@27ef4e7d967e3e4bbc47a3cc0c2bd104716c9147
     with:
       pr_number: '4'
-      ref: 630f008749b08d46da4251061f30448056cbcaa8
+      ref: 27ef4e7d967e3e4bbc47a3cc0c2bd104716c9147
       extension_name: debversion
+  result:
+    if: always() && needs.authorize.result == 'success'
+    needs: [authorize, contracts, duckdb, pgrx, debian]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      statuses: write
+      pull-requests: read
+    steps:
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        with:
+          script: |
+            const {data: actor} = await github.rest.repos.getCollaboratorPermissionLevel({...context.repo, username: process.env.GITHUB_TRIGGERING_ACTOR});
+            if (actor.permission !== 'admin') throw new Error('Project admin required');
+            const {data: pr} = await github.rest.pulls.get({...context.repo, pull_number: 4});
+            if (pr.state !== 'open' || pr.head.sha !== '27ef4e7d967e3e4bbc47a3cc0c2bd104716c9147') throw new Error('PR changed');
+            const passed = Object.values(JSON.parse(process.env.RESULTS)).every(job => job.result === 'success');
+            await github.rest.repos.createCommitStatus({...context.repo, sha: pr.head.sha, context: 'Scoped Universe acceptance', state: passed ? 'success' : 'failure', target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`, description: 'Only pg-duckdb, pg-durable and debversion; not full migration acceptance'});
+            if (!passed) throw new Error('Scoped acceptance failed');
