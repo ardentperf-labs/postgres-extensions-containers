@@ -37,13 +37,13 @@ the Cluster requests the extension by name. Shared installation/version checks
 and the pod's candidate image-volume digest assertion always run. Existing
 recipe suites also run when present; Universe requires no separate suite.
 
-`scan-sbom.sh IMAGE@sha256:DIGEST REPORT_DIRECTORY linux/amd64` extracts the
-attached native SPDX document and runs Grype and Grant. Omit the platform to
-require both AMD64 and ARM64 documents. Vulnerability findings are informational
-and remain visible in the reports; scanner execution errors still fail the gate.
-Grant reports licenses; the generator's inventory, notices and SPDX validation
-remain required. Release acceptance validates that scanning works, rather than
-requiring a particular vulnerability count.
+CI retains the pre-migration PGRX security checks: the shared upstream
+`security-scans` action runs Dockle and optional Snyk. Universe adds no Grype or
+Grant CI step. The shared generator's inventory, notices and SPDX validation
+remain part of building the images. For optional local vulnerability and license
+reports, use the existing [consumer verification guide](../pgrx/README.md#verify-images).
+The CNPG smoke matrix is unchanged from PGRX; image builds still use native
+AMD64 and ARM64 runners.
 
 ## Privileged execution and rollout
 

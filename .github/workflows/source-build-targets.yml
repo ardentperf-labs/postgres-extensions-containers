@@ -255,17 +255,6 @@ jobs:
         registry_token: ${{ secrets.GITHUB_TOKEN }}
         snyk_token: ${{ secrets.SNYK_TOKEN }}
         dockerfile: ${{ inputs.build_family }}/${{ inputs.extension_name }}/Dockerfile
-    - name: Scan both native SPDX documents
-      env:
-        IMAGE: ${{ format('{0}@{1}', matrix.image, matrix.digest) }}
-      run: source-build/scan-sbom.sh "$IMAGE" "$RUNNER_TEMP/spdx-reports"
-    - name: Preserve SPDX vulnerability and license reports
-      if: always()
-      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-      with:
-        name: spdx-${{ inputs.extension_name }}-${{ strategy.job-index }}
-        path: ${{ runner.temp }}/spdx-reports
-        if-no-files-found: error
   smoke:
     needs:
     - assemble
@@ -275,7 +264,6 @@ jobs:
       matrix:
         image: ${{ fromJSON(needs.assemble.outputs.provenance_matrix) }}
         cnpg: ${{ fromJSON(needs.generate-smoke-test-matrix.outputs.versions) }}
-        runner: [ubuntu-24.04, ubuntu-24.04-arm]
     permissions:
       contents: read
       packages: read
@@ -285,7 +273,6 @@ jobs:
       ref: ${{ inputs.ref }}
       image: ${{ format('{0}@{1}', matrix.image.image, matrix.image.digest) }}
       cnpg_version: ${{ matrix.cnpg }}
-      runner: ${{ matrix.runner }}
   # Use Debian's shared copy-images action with combined Bake metadata. It copies
   # the checked images and signs their production digests; production-provenance
   # then attests each index in its destination repository.

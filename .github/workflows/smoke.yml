@@ -3,10 +3,6 @@ name: Extension smoke test
 on:
   workflow_call:
     inputs:
-      runner:
-        description: Centrally selected native runtime runner
-        type: string
-        default: ubuntu-26.04
       ref:
         description: Optional commit SHA to test
         type: string
@@ -29,7 +25,7 @@ permissions: {}
 jobs:
   smoke:
     name: Smoke test
-    runs-on: ${{ inputs.runner }}
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
       packages: read

@@ -146,10 +146,10 @@ require `ld_library_path = ["lib"]`; without it CNPG cannot find libcurl.
 The final attached SBOM includes the selected bundled components and generated
 data, with miniz's source version distinguished from its compatibility macro.
 
-Grype successfully reports findings in the shipped Debian runtime dependencies,
-including libcurl and Kerberos. Findings are informational and do not block
-acceptance; scanner execution failures still do. See issue #3 for exact image
-digests, reports and Debian advisory references. Renovate tracks stable upstream
+A one-off local Grype/Grant run successfully produced vulnerability and license
+reports, including findings in libcurl and Kerberos. These reports are acceptance
+evidence, not additional CI gates. CI uses the same shared security action as
+pre-migration PGRX. See issue #3 for image digests and local reports. Renovate tracks stable upstream
 GitHub releases and opens source-update PRs; SQL mappings and bundled-source
 evidence require review before those updates can merge.
 Native ARM64 builds/runtime, hosted signing/SLSA, protection rules, production

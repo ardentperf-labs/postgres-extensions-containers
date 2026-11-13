@@ -137,16 +137,6 @@
         "#\\s*renovate:\\s*datasource=(?<datasource>github-releases)\\s+depName=(?<depName>\\S+)\\s+versioning=(?<versioning>\\S+)\\s+package\\s*=\\s*\"(?<currentValue>[^\"]+)\""
       ],
       "depTypeTemplate": "universe-source"
-    },
-    {
-      "description": "Source-build scanner image digests",
-      "customType": "regex",
-      "managerFilePatterns": [
-        "/^source-build/scan-sbom\\.sh$/"
-      ],
-      "matchStrings": [
-        "# renovate: datasource=(?<datasource>docker) depName=(?<depName>[^\\s]+) versioning=(?<versioning>docker)\\s+[A-Z_]+=(?:[^\\s]+):(?<currentValue>[^@\\s]+)@(?<currentDigest>sha256:[a-f0-9]+)"
-      ]
     }
   ],
   "packageRules": [
