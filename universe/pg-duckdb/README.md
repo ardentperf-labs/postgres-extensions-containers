@@ -152,5 +152,7 @@ evidence, not additional CI gates. CI uses the same shared security action as
 pre-migration PGRX. See issue #3 for image digests and local reports. Renovate tracks stable upstream
 GitHub releases and opens source-update PRs; SQL mappings and bundled-source
 evidence require review before those updates can merge.
-Native ARM64 builds/runtime, hosted signing/SLSA, protection rules, production
-publication and a real Renovate follow-up have not been validated.
+See the canonical issue for separately recorded hosted architecture builds,
+signing/SLSA, combined GHCR-backed runtime testing and rollout status. Candidate
+validation does not establish production publication or a real Renovate merge
+and release cycle.
