@@ -138,4 +138,7 @@
 /prioritize/ @ardentperf
 /pg-rage-terminator/ @ardentperf
 /pltcl/ @ardentperf
-/postgresql-anonymizer/ @ardentperf
+/pgrx/postgresql-anonymizer/ @ardentperf
+
+# Universe pilot
+/universe/pg-duckdb/ @ardentperf

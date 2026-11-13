@@ -17,6 +17,7 @@ target "default" {
     build = getBuildMatrix()
   }
   name = getBuildName(metadata.name, build.distro, build.pgVersion)
+  dockerfile = "pgrx/${metadata.name}/Dockerfile"
   args = {
     PGRX_EXTENSION = metadata.name
     PGRX_DISTRO = build.distro

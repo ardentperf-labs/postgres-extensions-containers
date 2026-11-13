@@ -106,7 +106,7 @@ To build, test, and publish every extension using the latest merged inputs:
 ```bash
 gh workflow run bake.yml --repo cnpg-extensions/postgres-extensions-containers \
   --ref main -f extension_name=all
-gh workflow run pgrx.yml --repo cnpg-extensions/postgres-extensions-containers \
+gh workflow run source-build.yml --repo cnpg-extensions/postgres-extensions-containers \
   --ref main -f extension_name=all
 ```
 

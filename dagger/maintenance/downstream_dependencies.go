@@ -16,55 +16,65 @@ const baseImageDependencyPrefix = "base-image:"
 func resolveTestingDependencies(ctx context.Context, source *dagger.Directory,
 	dependencies []string,
 ) ([]*testingExtensionInfo, error) {
-	return resolveDependencies(dependencies, func(name string) (*extensionMetadata, error) {
-		exists, err := source.Exists(ctx, name)
-		if err != nil {
-			return nil, err
-		}
-		if !exists {
-			return nil, nil
-		}
-		metadata, err := parseExtensionMetadata(ctx, source.Directory(name))
-		if err != nil {
-			return nil, fmt.Errorf("failed to parse dependency metadata %q: %w", name, err)
-		}
-		return metadata, nil
-	})
+	inventory, err := recipeInventory(ctx, source)
+	if err != nil {
+		return nil, err
+	}
+	return resolveDependencies(dependencies, func(name string) (*extensionMetadata, error) { return inventory[name], nil })
 }
 
 func resolveDependencies(dependencies []string,
 	lookupMetadata func(string) (*extensionMetadata, error),
 ) ([]*testingExtensionInfo, error) {
 	var out []*testingExtensionInfo
-	for _, requiredDependency := range dependencies {
-		dep, isBaseImageDependency, err := parseRequiredDependency(requiredDependency)
-		if err != nil {
-			return nil, err
-		}
-		if isBaseImageDependency {
-			out = append(out, &testingExtensionInfo{
-				SQLName:         dep,
-				CreateExtension: true,
-			})
-			continue
+	state := map[string]int{}
+	var visit func([]string) error
+	visit = func(dependencies []string) error {
+		for _, requiredDependency := range dependencies {
+			dep, isBaseImageDependency, err := parseRequiredDependency(requiredDependency)
+			if err != nil {
+				return err
+			}
+			if isBaseImageDependency {
+				out = append(out, &testingExtensionInfo{
+					SQLName:         dep,
+					CreateExtension: true,
+				})
+				continue
+			}
+
+			if state[dep] == 1 {
+				return fmt.Errorf("dependency cycle at %q", dep)
+			}
+			if state[dep] == 2 {
+				continue
+			}
+			state[dep] = 1
+			info, err := catalogTestingDependency(dep)
+			if err != nil {
+				return err
+			}
+			metadata, err := lookupMetadata(dep)
+			if err != nil {
+				return err
+			}
+			if metadata != nil {
+				if err := visit(metadata.RequiredExtensions); err != nil {
+					return err
+				}
+				info.Configuration.Name = metadata.Name
+				info.SQLName = metadata.SQLName
+				info.CreateExtension = metadata.CreateExtension
+			}
+			out = append(out, info)
+			state[dep] = 2
 		}
 
-		info, err := catalogTestingDependency(dep)
-		if err != nil {
-			return nil, err
-		}
-		metadata, err := lookupMetadata(dep)
-		if err != nil {
-			return nil, err
-		}
-		if metadata != nil {
-			info.Configuration.Name = metadata.Name
-			info.SQLName = metadata.SQLName
-			info.CreateExtension = metadata.CreateExtension
-		}
-		out = append(out, info)
+		return nil
 	}
-
+	if err := visit(dependencies); err != nil {
+		return nil, err
+	}
 	return out, nil
 }
 

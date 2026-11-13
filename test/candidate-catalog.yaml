@@ -1,0 +1,7 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: ClusterImageCatalog
+metadata:
+  name: ($values.catalog.metadata.name)
+  labels: ($values.catalog.metadata.labels)
+spec:
+  images: ($values.catalog.spec.images)
