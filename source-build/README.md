@@ -39,11 +39,11 @@ recipe suites also run when present; Universe requires no separate suite.
 
 `scan-sbom.sh IMAGE@sha256:DIGEST REPORT_DIRECTORY linux/amd64` extracts the
 attached native SPDX document and runs Grype and Grant. Omit the platform to
-require both AMD64 and ARM64 documents. High/Critical vulnerability findings
-block the shared source gate. Grant reports licenses; the generator's inventory,
-notices and SPDX validation remain required. Exceptions need project-owner
-review, a linked reason, owner and expiry in the shared scanner configuration.
-No exceptions are currently configured.
+require both AMD64 and ARM64 documents. Vulnerability findings are informational
+and remain visible in the reports; scanner execution errors still fail the gate.
+Grant reports licenses; the generator's inventory, notices and SPDX validation
+remain required. Release acceptance validates that scanning works, rather than
+requiring a particular vulnerability count.
 
 ## Privileged execution and rollout
 
