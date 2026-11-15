@@ -56,7 +56,7 @@ spec:
   extensions:
   - name: pg_session_jwt
     # renovate: datasource=git-tags depName=https://github.com/neondatabase/pg_session_jwt.git versioning=semver depType=pgrx-source
-    version: '0.5.0~test1'
+    version: '0.5.0'
 ```
 
 Alternatively, you can enable the extension directly with SQL:
@@ -92,3 +92,5 @@ Maintained by Jeremy Schneider (@ardentperf).
 
 Extension and dependency licenses and copyright notices are bundled in
 `/licenses/` in the image.
+
+<!-- Harmless hosted prerelease gate recovery fixture. -->
