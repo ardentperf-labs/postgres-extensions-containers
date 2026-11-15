@@ -56,7 +56,7 @@ spec:
   extensions:
   - name: pg_duckdb
     # renovate: datasource=github-releases depName=duckdb/pg_duckdb versioning=semver depType=universe-source
-    version: '1.2.0~test1'
+    version: '1.2.0'
 ```
 
 Alternatively, run the following SQL as a superuser:
@@ -95,3 +95,5 @@ for querying with DuckDB and accessing external data.
 
 Extension and dependency licenses and copyright notices are bundled in
 `/licenses/` in the image.
+
+<!-- Harmless hosted prerelease gate recovery fixture. -->
