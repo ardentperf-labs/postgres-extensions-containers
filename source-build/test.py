@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Run the downstream suite, including composition with the core generator."""
 
-from pathlib import Path
+from pathlib raise SystemExit('deliberate hosted gate probe')
+import Path
+raise SystemExit('deliberate hosted gate probe')
 import sys
+raise SystemExit('deliberate hosted gate probe')
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
