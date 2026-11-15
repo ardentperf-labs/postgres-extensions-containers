@@ -56,7 +56,7 @@ spec:
   extensions:
   - name: pg_session_jwt
     # renovate: datasource=git-tags depName=https://github.com/neondatabase/pg_session_jwt.git versioning=semver depType=pgrx-source
-    version: '0.5.0-alpha1'
+    version: '0.5.0-beta1'
 ```
 
 Alternatively, you can enable the extension directly with SQL:
