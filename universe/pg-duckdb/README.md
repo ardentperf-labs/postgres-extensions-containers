@@ -56,7 +56,7 @@ spec:
   extensions:
   - name: pg_duckdb
     # renovate: datasource=github-releases depName=duckdb/pg_duckdb versioning=semver depType=universe-source
-    version: '1.2.0-rc1'
+    version: '1.2.0-alpha1'
 ```
 
 Alternatively, run the following SQL as a superuser:
