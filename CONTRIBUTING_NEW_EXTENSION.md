@@ -3,11 +3,6 @@
 This guide walks you through the lifecycle of adding a new extension, from
 setting up your environment to submitting a Pull Request.
 
-Read the [extension requirements](README.md#extension-requirements) and
-[Debian-first inclusion policy](source-build/README.md#inclusion-policy-debian-packaging-first)
-before choosing a build route. An upstream rejection is not required, but check
-that the extension is not already packaged upstream.
-
 > [!IMPORTANT]
 > Please ensure you have also read the general
 > [CONTRIBUTING.md](https://github.com/cloudnative-pg/governance/blob/main/CONTRIBUTING.md)

@@ -6,11 +6,6 @@ This repository provides **maintenance scripts** for building **immutable
 container images** containing Debian-packaged and source-built PostgreSQL
 extensions for [CloudNativePG](https://cloudnative-pg.io/).
 
-We offer a very wide selection of PostgreSQL extensions through Debian packages,
-PGRX builds, and Universe builds. Extensions outside upstream's licensing policy
-and extensions eligible for future upstream inclusion are both welcome, subject
-to the [extension requirements](#extension-requirements) below.
-
 ## Documentation
 
 - [Adding a New Extension](./CONTRIBUTING_NEW_EXTENSION.md): A step-by-step
@@ -65,17 +60,12 @@ catalogs, except `pg-gvm` and `rdkit`, which are Trixie-only.
 
 This repository tracks the upstream
 [cloudnative-pg/postgres-extensions-containers](https://github.com/cloudnative-pg/postgres-extensions-containers)
-build infrastructure as closely as possible, including shared release and test
-conventions. We continually incorporate upstream improvements and keep intentional
-downstream differences explicit; see the [upstream merge process](MERGE.md).
+build infrastructure as closely as possible. Recipe organization differs as follows:
 
-An upstream rejection is not a prerequisite for proposing an extension here.
-Upstream takes precedence: when it adds an extension maintained here, we remove
-our local packaging in favor of the upstream-maintained image. Our generated
-catalog retains upstream definitions and adds locally maintained extensions.
+- Extensions present upstream are removed here (they are maintained there).
+- Additional extensions use Debian packages or the PGRX and Universe source-build paths.
 
-Additional extensions follow the Debian, PGRX, or Universe build paths under the
-[Debian-first inclusion policy](source-build/README.md#inclusion-policy-debian-packaging-first).
+This keeps merging upstream infrastructure improvements straightforward.
 
 ---
 
@@ -97,8 +87,6 @@ The project adheres to the following frameworks:
 
 When proposing a new extension, the following criteria must be met:
 
-- **Scope:** The extension must provide useful functionality within CloudNativePG
-  and must not already be packaged upstream. No prior upstream rejection is required.
 - **Licensing:** All distributed components must comply with the
   [Open Source Licensing Policy](source-build/README.md#open-source-licensing-policy).
 - **Structure:** only one extension can be included within an extension folder.
@@ -108,12 +96,8 @@ When proposing a new extension, the following criteria must be met:
   should have packages available for both current Debian `stable` and `oldstable`.
   The [PostgreSQL Global Development Group (PGDG)](https://wiki.postgresql.org/wiki/Apt)
   is the recommended source, but other Debian repositories are acceptable
-  provided they meet the same standards. Rust extensions use the [PGRX path](source-build/pgrx/README.md);
+  provided they meet the same standards. Rust extensions use the [PGRX path](pgrx/README.md);
   other source builds must meet the [Source Build inclusion criteria](source-build/README.md#inclusion-policy-debian-packaging-first).
-- **Compatibility:** Support the project's current PostgreSQL and Debian targets
-  under the shared [CNPG support policy](.github/workflows/cnpg-versions.yml).
-  Document required preload libraries, configuration, and operational limitations,
-  and demonstrate the extension working in the shared runtime smoke tests.
 - **Dependency evidence:** Identify shipped dependencies and their actual versions,
   preserve required notices, and account for them in the shared SBOM. Source builds
   must meet the [dependency evidence requirements](source-build/README.md#dependency-evidence-in-the-sbom)
